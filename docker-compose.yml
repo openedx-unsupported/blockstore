@@ -1,0 +1,25 @@
+db:
+  image: mysql:5.6
+  container_name: db
+  environment:
+    MYSQL_ROOT_PASSWORD: ""
+    MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+
+memcache:
+  image: memcached:1.4.24
+  container_name: memcache
+
+blockstore:
+  # Uncomment this line to use the official blockstore base image
+  image: blockstore:v1
+
+  # Uncomment the next two lines to build from a local configuration repo
+  #build: ../configuration
+  #dockerfile: docker/build/blockstore/Dockerfile
+
+  container_name: blockstore
+  volumes:
+    - .:/edx/app/blockstore/blockstore
+  command: /edx/app/blockstore/devstack.sh start
+  ports:
+    - "8080:8080" # TODO: change this to your port
