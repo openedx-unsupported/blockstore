@@ -1,4 +1,5 @@
 """ Core models. """
+import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -30,3 +31,61 @@ class User(AbstractUser):
     @python_2_unicode_compatible
     def __str__(self):
         return str(self.get_full_name())
+
+
+class Tag(models.Model):
+    """Tag for marking content"""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255, unique=True)
+
+    class Meta:
+        ordering = ('name',)
+    
+    def get_full_name(self):
+        return self.name
+
+    @python_2_unicode_compatible
+    def __str__(self):
+        return str(self.get_full_name())
+
+
+class Unit(models.Model):
+    """Learning Object: a unit of learnable content."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=255)
+    summary = models.TextField()
+    author = models.ForeignKey('User', models.SET_NULL, blank=True, null=True)
+    tags = models.ManyToManyField(Tag)
+
+    def get_full_name(self):
+        return self.title
+
+    @python_2_unicode_compatible
+    def __str__(self):
+        return str(self.get_full_name())
+
+
+class Pathway(models.Model):
+    """Learning Context: a group of units joined together into a larger learning experience."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=255, default="Pathway")
+    summary = models.TextField(default="Summary")
+    author = models.ForeignKey('User', models.SET_NULL, blank=True, null=True)
+    units = models.ManyToManyField(Unit, through='PathwayUnit')
+
+    def get_full_name(self):
+        return self.title
+
+    @python_2_unicode_compatible
+    def __str__(self):
+        return str(self.get_full_name())
+
+
+class PathwayUnit(models.Model):
+    """Provides (optional) ordering of units in a Pathway"""
+    index = models.PositiveIntegerField(null=True, default=None)
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    pathway = models.ForeignKey(Pathway, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ('index', 'pathway', 'unit')
