@@ -80,6 +80,11 @@ class Pathway(models.Model):
     def __str__(self):
         return str(self.get_full_name())
 
+    @property
+    def tags(self):
+        """Returns the tags used by units in this pathway."""
+        return Tag.objects.filter(unit__in=self.units.all()).distinct()
+
 
 class PathwayUnit(models.Model):
     """Provides (optional) ordering of units in a Pathway"""
