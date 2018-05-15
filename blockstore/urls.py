@@ -19,9 +19,10 @@ from auth_backends.urls import auth_urlpatterns
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
+from graphene_django.views import GraphQLView
 from rest_framework_swagger.views import get_swagger_view
 
-from blockstore.apps.core import views as core_views
+from blockstore.apps.core import views as core_views, schema as core_schema
 
 admin.autodiscover()
 
@@ -32,6 +33,7 @@ urlpatterns = auth_urlpatterns + [
     # Use the same auth views for all logins, including those originating from the browseable API.
     url(r'^api-auth/', include(auth_urlpatterns, namespace='rest_framework')),
     url(r'^auto_auth/$', core_views.AutoAuth.as_view(), name='auto_auth'),
+    url(r'^graphql', GraphQLView.as_view(graphiql=True, schema=core_schema.schema)),
     url(r'^health/$', core_views.health, name='health'),
 ]
 
