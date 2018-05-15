@@ -1,63 +1,47 @@
 """
 GraphQL schemas for the blockstore models.
 """
-import graphene
-from graphene_django.types import DjangoObjectType
+from graphene import relay, ObjectType, Schema, resolve_only_args
+from graphene_django import DjangoObjectType
 from graphene_django.debug import DjangoDebug
+from graphene_django.filter import DjangoFilterConnectionField
 
 
 from .models import Tag, Unit, Pathway
 
 
-class TagType(DjangoObjectType):
-    """Tag graphql type"""
+class TagNode(DjangoObjectType):
+    """GraphQL Tag node"""
     class Meta:
         model = Tag
+        filter_fields = ['name',]
+        interfaces = (relay.Node, )
 
 
-class UnitType(DjangoObjectType):
-    """Unit graphql type"""
+class UnitNode(DjangoObjectType):
+    """GraphQL Unit node"""
     class Meta:
         model = Unit
+        filter_fields = ['tags', 'author', ]
+        interfaces = (relay.Node, )
 
 
-class PathwayType(DjangoObjectType):
-    """Unit graphql type"""
+class PathwayNode(DjangoObjectType):
+    """GraphQL Pathway node"""
     class Meta:
         model = Pathway
+        filter_fields = ['author', 'units',]
+        interfaces = (relay.Node, )
 
 
-class Query(graphene.ObjectType):
+class Query(ObjectType):
     """GraphQL queries"""
-    # For debugging raw sql, parameters, etc.
-    debug = graphene.Field(DjangoDebug, name='__debug')
+    pathways = DjangoFilterConnectionField(PathwayNode)
+    pathway = relay.Node.Field(PathwayNode)
+    units = DjangoFilterConnectionField(UnitNode)
+    unit = relay.Node.Field(UnitNode)
+    tags = DjangoFilterConnectionField(TagNode)
+    tag = relay.Node.Field(TagNode)
 
-    tags = graphene.List(TagType)
-    units = graphene.List(UnitType)
-    unit = graphene.Field(UnitType, id=graphene.String())
 
-    pathways = graphene.List(PathwayType)
-    pathway = graphene.Field(PathwayType, id=graphene.String())
-
-    def resolve_tags(self, args, context, info):
-        return Tag.objects.all()
-
-    def resolve_units(self, args, context, info):
-        return Unit.objects.select_related('author').all()
-
-    def resolve_unit(self, info, **kwargs):
-        id = kwargs.get('id')
-        if id is not None:
-            return Unit.objects.get(id=id)
-        return None
-
-    def resolve_pathways(self, args, context, info):
-        return Pathway.objects.select_related('author').all()
-
-    def resolve_pathway(self, info, **kwargs):
-        id = kwargs.get('id')
-        if id is not None:
-            return Pathway.objects.get(id=id)
-        return None
-
-schema = graphene.Schema(query=Query)
+schema = Schema(query=Query)
