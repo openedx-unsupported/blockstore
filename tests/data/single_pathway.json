@@ -1,0 +1,713 @@
+[
+  {
+    "model": "core.tag",
+    "pk": "1b7497f1-5282-400f-95b4-ecbcf75c8609",
+    "fields": {
+      "name": "Colony PCR"
+    }
+  },
+  {
+    "model": "core.tag",
+    "pk": "1fbde5aa-3771-4258-9fdd-627017864e0f",
+    "fields": {
+      "name": "PCR"
+    }
+  },
+  {
+    "model": "core.tag",
+    "pk": "2b957099-4559-4483-b504-de7e82fe5ee8",
+    "fields": {
+      "name": "Primers"
+    }
+  },
+  {
+    "model": "core.tag",
+    "pk": "3d561b12-27ed-473e-af68-fa6e9873d6dc",
+    "fields": {
+      "name": "Tools"
+    }
+  },
+  {
+    "model": "core.tag",
+    "pk": "5aafeacb-d542-4547-8120-8300fb611754",
+    "fields": {
+      "name": "Assessment"
+    }
+  },
+  {
+    "model": "core.tag",
+    "pk": "79704161-016a-4e37-bc87-8600e77a624f",
+    "fields": {
+      "name": "Genetic engineering"
+    }
+  },
+  {
+    "model": "core.tag",
+    "pk": "92acad5a-31cb-4908-8312-4f5f4d8f9513",
+    "fields": {
+      "name": "Video"
+    }
+  },
+  {
+    "model": "core.tag",
+    "pk": "988ea6ce-2521-4d07-a6c1-c3826522cb94",
+    "fields": {
+      "name": "Laboratory basics"
+    }
+  },
+  {
+    "model": "core.tag",
+    "pk": "b9c2743e-4d2e-42e2-8fa1-515009402e8b",
+    "fields": {
+      "name": "Drug discovery"
+    }
+  },
+  {
+    "model": "core.tag",
+    "pk": "c776bfcb-6344-4f5b-a529-63f7cada7816",
+    "fields": {
+      "name": "Case study"
+    }
+  },
+  {
+    "model": "core.tag",
+    "pk": "da2496ce-9511-4767-9680-10ad5870127e",
+    "fields": {
+      "name": "Microbiology"
+    }
+  },
+  {
+    "model": "core.tag",
+    "pk": "dccefb18-ed06-459b-a3ef-c008be3f6b6d",
+    "fields": {
+      "name": "Taq polymerase"
+    }
+  },
+  {
+    "model": "core.pathwayunit",
+    "pk": 1,
+    "fields": {
+      "index": 2,
+      "unit": "4c4d88fa-8edd-4dbd-aabd-c344f77ab1dd",
+      "pathway": "3130c36b-437e-415c-878a-71549ef1f0ce"
+    }
+  },
+  {
+    "model": "core.pathwayunit",
+    "pk": 2,
+    "fields": {
+      "index": 10,
+      "unit": "e71b3fcf-ba68-4bd0-b6c1-a5697d555348",
+      "pathway": "3130c36b-437e-415c-878a-71549ef1f0ce"
+    }
+  },
+  {
+    "model": "core.pathwayunit",
+    "pk": 3,
+    "fields": {
+      "index": 1,
+      "unit": "92d51918-5b3b-4df5-b4da-745bb5a6e673",
+      "pathway": "3130c36b-437e-415c-878a-71549ef1f0ce"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 1,
+    "fields": {
+      "name": "Can add log entry",
+      "content_type": 1,
+      "codename": "add_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 2,
+    "fields": {
+      "name": "Can change log entry",
+      "content_type": 1,
+      "codename": "change_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 3,
+    "fields": {
+      "name": "Can delete log entry",
+      "content_type": 1,
+      "codename": "delete_logentry"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 4,
+    "fields": {
+      "name": "Can add group",
+      "content_type": 2,
+      "codename": "add_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 5,
+    "fields": {
+      "name": "Can change group",
+      "content_type": 2,
+      "codename": "change_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 6,
+    "fields": {
+      "name": "Can delete group",
+      "content_type": 2,
+      "codename": "delete_group"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 7,
+    "fields": {
+      "name": "Can add permission",
+      "content_type": 3,
+      "codename": "add_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 8,
+    "fields": {
+      "name": "Can change permission",
+      "content_type": 3,
+      "codename": "change_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 9,
+    "fields": {
+      "name": "Can delete permission",
+      "content_type": 3,
+      "codename": "delete_permission"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 10,
+    "fields": {
+      "name": "Can add content type",
+      "content_type": 4,
+      "codename": "add_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 11,
+    "fields": {
+      "name": "Can change content type",
+      "content_type": 4,
+      "codename": "change_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 12,
+    "fields": {
+      "name": "Can delete content type",
+      "content_type": 4,
+      "codename": "delete_contenttype"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 13,
+    "fields": {
+      "name": "Can add session",
+      "content_type": 5,
+      "codename": "add_session"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 14,
+    "fields": {
+      "name": "Can change session",
+      "content_type": 5,
+      "codename": "change_session"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 15,
+    "fields": {
+      "name": "Can delete session",
+      "content_type": 5,
+      "codename": "delete_session"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 16,
+    "fields": {
+      "name": "Can add association",
+      "content_type": 6,
+      "codename": "add_association"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 17,
+    "fields": {
+      "name": "Can change association",
+      "content_type": 6,
+      "codename": "change_association"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 18,
+    "fields": {
+      "name": "Can delete association",
+      "content_type": 6,
+      "codename": "delete_association"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 19,
+    "fields": {
+      "name": "Can add nonce",
+      "content_type": 7,
+      "codename": "add_nonce"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 20,
+    "fields": {
+      "name": "Can change nonce",
+      "content_type": 7,
+      "codename": "change_nonce"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 21,
+    "fields": {
+      "name": "Can delete nonce",
+      "content_type": 7,
+      "codename": "delete_nonce"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 22,
+    "fields": {
+      "name": "Can add partial",
+      "content_type": 8,
+      "codename": "add_partial"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 23,
+    "fields": {
+      "name": "Can change partial",
+      "content_type": 8,
+      "codename": "change_partial"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 24,
+    "fields": {
+      "name": "Can delete partial",
+      "content_type": 8,
+      "codename": "delete_partial"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 25,
+    "fields": {
+      "name": "Can add user social auth",
+      "content_type": 9,
+      "codename": "add_usersocialauth"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 26,
+    "fields": {
+      "name": "Can change user social auth",
+      "content_type": 9,
+      "codename": "change_usersocialauth"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 27,
+    "fields": {
+      "name": "Can delete user social auth",
+      "content_type": 9,
+      "codename": "delete_usersocialauth"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 28,
+    "fields": {
+      "name": "Can add code",
+      "content_type": 10,
+      "codename": "add_code"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 29,
+    "fields": {
+      "name": "Can change code",
+      "content_type": 10,
+      "codename": "change_code"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 30,
+    "fields": {
+      "name": "Can delete code",
+      "content_type": 10,
+      "codename": "delete_code"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 31,
+    "fields": {
+      "name": "Can add Flag",
+      "content_type": 11,
+      "codename": "add_flag"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 32,
+    "fields": {
+      "name": "Can change Flag",
+      "content_type": 11,
+      "codename": "change_flag"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 33,
+    "fields": {
+      "name": "Can delete Flag",
+      "content_type": 11,
+      "codename": "delete_flag"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 34,
+    "fields": {
+      "name": "Can add Switch",
+      "content_type": 12,
+      "codename": "add_switch"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 35,
+    "fields": {
+      "name": "Can change Switch",
+      "content_type": 12,
+      "codename": "change_switch"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 36,
+    "fields": {
+      "name": "Can delete Switch",
+      "content_type": 12,
+      "codename": "delete_switch"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 37,
+    "fields": {
+      "name": "Can add Sample",
+      "content_type": 13,
+      "codename": "add_sample"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 38,
+    "fields": {
+      "name": "Can change Sample",
+      "content_type": 13,
+      "codename": "change_sample"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 39,
+    "fields": {
+      "name": "Can delete Sample",
+      "content_type": 13,
+      "codename": "delete_sample"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 40,
+    "fields": {
+      "name": "Can add user",
+      "content_type": 14,
+      "codename": "add_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 41,
+    "fields": {
+      "name": "Can change user",
+      "content_type": 14,
+      "codename": "change_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 42,
+    "fields": {
+      "name": "Can delete user",
+      "content_type": 14,
+      "codename": "delete_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 43,
+    "fields": {
+      "name": "Can add pathway unit",
+      "content_type": 15,
+      "codename": "add_pathwayunit"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 44,
+    "fields": {
+      "name": "Can change pathway unit",
+      "content_type": 15,
+      "codename": "change_pathwayunit"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 45,
+    "fields": {
+      "name": "Can delete pathway unit",
+      "content_type": 15,
+      "codename": "delete_pathwayunit"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 46,
+    "fields": {
+      "name": "Can add pathway",
+      "content_type": 16,
+      "codename": "add_pathway"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 47,
+    "fields": {
+      "name": "Can change pathway",
+      "content_type": 16,
+      "codename": "change_pathway"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 48,
+    "fields": {
+      "name": "Can delete pathway",
+      "content_type": 16,
+      "codename": "delete_pathway"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 49,
+    "fields": {
+      "name": "Can add tag",
+      "content_type": 17,
+      "codename": "add_tag"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 50,
+    "fields": {
+      "name": "Can change tag",
+      "content_type": 17,
+      "codename": "change_tag"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 51,
+    "fields": {
+      "name": "Can delete tag",
+      "content_type": 17,
+      "codename": "delete_tag"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 52,
+    "fields": {
+      "name": "Can add unit",
+      "content_type": 18,
+      "codename": "add_unit"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 53,
+    "fields": {
+      "name": "Can change unit",
+      "content_type": 18,
+      "codename": "change_unit"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 54,
+    "fields": {
+      "name": "Can delete unit",
+      "content_type": 18,
+      "codename": "delete_unit"
+    }
+  },
+  {
+    "model": "core.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$36000$KhOS1odeN1rv$+zv5pbQAQ1MwW772HWBuWL6P4mCBIwChYtbNo8YL1Cs=",
+      "last_login": "2018-05-11T07:07:38Z",
+      "is_superuser": true,
+      "username": "superuser",
+      "first_name": "Super",
+      "last_name": "User",
+      "email": "jill+superuser@opencraft.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2018-05-11T07:07:27Z",
+      "full_name": "Super User",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "core.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$36000$w8jI5Bh78s8f$lu5Nbz4UILfRdFmCjuiJFLHEd+VfM//faJdsG/grgw4=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "mary",
+      "first_name": "Mary",
+      "last_name": "Liu",
+      "email": "maryliu@example.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2018-05-11T07:12:21Z",
+      "full_name": "Mary Liu",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "core.user",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$36000$UvFq6ud2cUWk$WO/lr2dFbO35H7HgiXDSL8Mwphl+sFVg8DPR60knqIs=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "joe",
+      "first_name": "Joe",
+      "last_name": "Santiago",
+      "email": "joesantiago@example.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2018-05-11T07:13:26Z",
+      "full_name": "Joe Santiago",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "core.unit",
+    "pk": "4c4d88fa-8edd-4dbd-aabd-c344f77ab1dd",
+    "fields": {
+      "title": "Engineering a Theraputic Protein to Treat Diabetes",
+      "summary": "Explore the role of PCR in engineering of theraputic proteins including insulin.",
+      "author": 2,
+      "tags": [
+        "c776bfcb-6344-4f5b-a529-63f7cada7816",
+        "79704161-016a-4e37-bc87-8600e77a624f",
+        "da2496ce-9511-4767-9680-10ad5870127e",
+        "1fbde5aa-3771-4258-9fdd-627017864e0f",
+        "2b957099-4559-4483-b504-de7e82fe5ee8"
+      ]
+    }
+  },
+  {
+    "model": "core.unit",
+    "pk": "92d51918-5b3b-4df5-b4da-745bb5a6e673",
+    "fields": {
+      "title": "How to use a Micropipette",
+      "summary": "Micropipettes are used to accurately transfer small volumes and their proper use is critical to successful biotechnology research.",
+      "author": 2,
+      "tags": [
+        "988ea6ce-2521-4d07-a6c1-c3826522cb94",
+        "da2496ce-9511-4767-9680-10ad5870127e",
+        "3d561b12-27ed-473e-af68-fa6e9873d6dc",
+        "92acad5a-31cb-4908-8312-4f5f4d8f9513"
+      ]
+    }
+  },
+  {
+    "model": "core.unit",
+    "pk": "e71b3fcf-ba68-4bd0-b6c1-a5697d555348",
+    "fields": {
+      "title": "Explain the Role of Primers",
+      "summary": "Using knowledge gained about PCR, you will answer a series of questions related to PCR, primer function, and design.",
+      "author": 3,
+      "tags": [
+        "5aafeacb-d542-4547-8120-8300fb611754",
+        "79704161-016a-4e37-bc87-8600e77a624f",
+        "da2496ce-9511-4767-9680-10ad5870127e",
+        "1fbde5aa-3771-4258-9fdd-627017864e0f",
+        "2b957099-4559-4483-b504-de7e82fe5ee8",
+        "dccefb18-ed06-459b-a3ef-c008be3f6b6d"
+      ]
+    }
+  },
+  {
+    "model": "core.pathway",
+    "pk": "3130c36b-437e-415c-878a-71549ef1f0ce",
+    "fields": {
+      "title": "Intro to PCR",
+      "summary": "What you'll Learn\r\n==============\r\n\r\nPCR is an important technique that allows researchers to create many copies of a specific region of DNA.  This pathway provides content that will aid the understanding of this process.",
+      "author": 2
+    }
+  }
+]
