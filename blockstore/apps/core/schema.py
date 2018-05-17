@@ -1,7 +1,7 @@
 """
 GraphQL schemas for the blockstore models.
 """
-from graphene import relay, ObjectType, Schema, resolve_only_args
+from graphene import relay, ObjectType, Schema, List
 from graphene_django import DjangoObjectType
 from graphene_django.debug import DjangoDebug
 from graphene_django.filter import DjangoFilterConnectionField
@@ -28,10 +28,16 @@ class UnitNode(DjangoObjectType):
 
 class PathwayNode(DjangoObjectType):
     """GraphQL Pathway node"""
+    tags = List(TagNode)
+
     class Meta:
         model = Pathway
         filter_fields = ['author', 'units',]
         interfaces = (relay.Node, )
+
+    @staticmethod
+    def resolve_tags(self, info, **kwargs):
+        return self.tags
 
 
 class Query(ObjectType):
