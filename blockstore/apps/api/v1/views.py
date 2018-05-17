@@ -1,1 +1,64 @@
-# Create your views here.
+"""
+Blockstore API views
+"""
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
+
+from ..serializers import TagSerializer, UnitSerializer, PathwaySerializer
+from ..permissions import IsOwnerOrReadOnly
+from ...core.models import Tag, Unit, Pathway
+
+
+
+class PaginatedView(object):
+    """
+    Paginate the list views.
+    """
+    pagination_class = PageNumberPagination
+    page_size = 10
+    max_page_size = 100
+    page_size_query_param = 'per_page'
+
+
+class TagView(object):
+    queryset = Tag.objects
+    serializer_class = TagSerializer
+
+class TagList(TagView, PaginatedView, ListAPIView):
+    permission_classes = ()
+
+class TagNew(TagView, CreateAPIView):
+    permission_classes = (IsAuthenticated,)
+
+class TagGetOrUpdate(TagView, RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsOwnerOrReadOnly,)
+    lookup_field = 'name'
+
+
+class UnitView(object):
+    queryset = Unit.objects.prefetch_related('tags')
+    serializer_class = UnitSerializer
+
+class UnitList(UnitView, PaginatedView, ListAPIView):
+    permission_classes = ()
+
+class UnitNew(UnitView, CreateAPIView):
+    permission_classes = (IsAuthenticated,)
+
+class UnitGetOrUpdate(UnitView, RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsOwnerOrReadOnly,)
+
+
+class PathwayView(object):
+    queryset = Pathway.objects.prefetch_related('units', 'units__tags')
+    serializer_class = PathwaySerializer
+
+class PathwayList(PathwayView, PaginatedView, ListAPIView):
+    permission_classes = ()
+
+class PathwayNew(PathwayView, CreateAPIView):
+    permission_classes = (IsAuthenticated,)
+
+class PathwayGetOrUpdate(PathwayView, RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsOwnerOrReadOnly,)
