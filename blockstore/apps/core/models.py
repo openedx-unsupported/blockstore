@@ -71,6 +71,9 @@ class Pathway(models.Model):
     author = models.ForeignKey('User', models.SET_NULL, blank=True, null=True)
     units = models.ManyToManyField(Unit, through='PathwayUnit')
 
+    class Meta:
+        ordering = ('id',)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._first_unit = None
