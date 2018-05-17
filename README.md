@@ -5,7 +5,7 @@ Blockstore
 
 [![Dependency Status](https://gemnasium.com/badges/github.com/open-craft/blockstore.svg)](https://gemnasium.com/github.com/open-craft/blockstore)
 
-The `README.md` file should start with a brief description of the repository. It should make clear where this fits in to the overall Open edX codebase. You may also want to provide a brief overview of the code in this repository, including the main components and useful entry points for starting to understand the code in more detail, or link to a comparable description in your repo's docs.
+Blockstore comprises Learning Units, Pathways, and various metadata used to store online learning materials.
 
 How to Run
 ----------
@@ -16,12 +16,16 @@ This project uses python 3.  To build the requirements, run:
 $ sudo apt-get install python3.x-dev libmysqlclient-dev  # replace 3.x with your version of python 3
 $ mkvirtualenv --python=/path/to/python3 blockstore
 (blockstore) $ make requirements
+(blockstore) $ make migrate
+(blockstore) $ ./manage.py createsuperuser  # if using Django Admin
 ```
 
 To run the service:
 ```python
 (blockstore) $ ./manage.py runserver 0.0.0.0:8000
 ```
+
+Visit `/api-docs` to see the Swagger UI, or `/admin` to access the Django Admin.
 
 Documentation
 -------------
