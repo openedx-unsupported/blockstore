@@ -3,6 +3,7 @@ from blockstore.settings.base import *
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost']
+CORS_ORIGIN_WHITELIST = ['localhost:3000/']
 
 # CACHE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#caches

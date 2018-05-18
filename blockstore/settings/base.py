@@ -14,6 +14,7 @@ SECRET_KEY = os.environ.get('BLOCKSTORE_SECRET_KEY', 'insecure-secret-key')
 DEBUG = False
 
 ALLOWED_HOSTS = []
+CORS_ORIGIN_WHITELIST = []
 
 # Application definition
 
@@ -29,6 +30,7 @@ INSTALLED_APPS = (
 THIRD_PARTY_APPS = (
     'rest_framework',
     'rest_framework_swagger',
+    'corsheaders',
     'social_django',
     'waffle',
 )
@@ -42,6 +44,8 @@ INSTALLED_APPS += THIRD_PARTY_APPS
 INSTALLED_APPS += PROJECT_APPS
 
 MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
