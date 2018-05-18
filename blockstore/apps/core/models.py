@@ -115,3 +115,10 @@ class PathwayUnit(models.Model):
 
     class Meta:
         ordering = ('index', 'pathway', 'unit')
+
+    def get_full_name(self):
+        return _("{pathway}[{index}] -> {unit}").format(pathway=self.pathway, unit=self.unit, index=self.index)
+
+    @python_2_unicode_compatible
+    def __str__(self):
+        return str(self.get_full_name())
