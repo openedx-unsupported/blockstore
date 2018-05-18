@@ -1,14 +1,19 @@
 """
 Blockstore API views
 """
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 
-from ..serializers import TagSerializer, UnitSerializer, PathwaySerializer
+from ..serializers import (
+    PathwaySerializer,
+    TagSerializer,
+    TagUnitsSerializer,
+    UnitSerializer,
+    UnitPathwaysSerializer,
+)
 from ..permissions import IsOwnerOrReadOnly
 from ...core.models import Tag, Unit, Pathway
-
 
 
 class PaginatedView(object):
@@ -22,7 +27,7 @@ class PaginatedView(object):
 
 
 class TagView(object):
-    queryset = Tag.objects
+    queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 class TagList(TagView, PaginatedView, ListAPIView):
@@ -33,6 +38,11 @@ class TagNew(TagView, CreateAPIView):
 
 class TagGetOrUpdate(TagView, RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrReadOnly,)
+    lookup_field = 'name'
+
+class TagUnits(TagView, PaginatedView, RetrieveAPIView):
+    serializer_class = TagUnitsSerializer
+    permission_classes = ()
     lookup_field = 'name'
 
 
@@ -48,6 +58,10 @@ class UnitNew(UnitView, CreateAPIView):
 
 class UnitGetOrUpdate(UnitView, RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrReadOnly,)
+
+class UnitPathways(UnitView, PaginatedView, RetrieveAPIView):
+    serializer_class = UnitPathwaysSerializer
+    permission_classes = ()
 
 
 class PathwayView(object):
