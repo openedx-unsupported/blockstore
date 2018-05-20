@@ -5,3 +5,5 @@ gevent
 gunicorn
 mysqlclient
 PyYAML
+python-memcached
+newrelic
