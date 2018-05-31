@@ -108,17 +108,6 @@ class AnonymousAccessTest(TestCase):
         self.assertEqual(response.data, serialized.data)
         self.assertIn("tags", response.data)
 
-    def test_get_unit_pathways(self):
-        """Viewing the pathways that contain a unit is allowed to anonymous users."""
-        unit = Unit.objects.get(id='c6283b14-56db-468c-a548-8c9a36165fef')
-        url = reverse('api:v1:unit.pathways', kwargs={'pk': unit.id})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        serialized = UnitPathwaysSerializer(unit)
-        self.assertEqual(response.data, serialized.data)
-        self.assertIn("pathways", response.data)
-        self.assertEqual(len(response.data["pathways"]), 2)
-
     @ddt.data(
         'put', 'patch', 'delete'
     )
@@ -182,3 +171,25 @@ class AnonymousAccessTest(TestCase):
             data={'name': uuid.uuid4()},
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+@ddt.ddt
+class DiscoverabilityTest(TestCase):
+    """
+    As a LabXchange educator, I want to be able to discover existing high-quality content (Learning Objects)
+    (not covered) that exists in courses on edx.org and other Open edX sites
+    and to offer it to students in new contexts like Pathways.
+    """
+    fixtures = ['multiple_pathways']
+    client = Client()
+
+    def test_get_unit_pathways(self):
+        """Viewing the pathways that contain a unit is allowed to anonymous users."""
+        unit = Unit.objects.get(id='c6283b14-56db-468c-a548-8c9a36165fef')
+        url = reverse('api:v1:unit.pathways', kwargs={'pk': unit.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        serialized = UnitPathwaysSerializer(unit)
+        self.assertEqual(response.data, serialized.data)
+        self.assertIn("pathways", response.data)
+        self.assertEqual(len(response.data["pathways"]), 2)
