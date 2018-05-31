@@ -7,7 +7,6 @@ from social_django.models import UserSocialAuth
 from blockstore.apps.core.models import User
 
 
-# pylint: disable=no-member
 class UserTests(TestCase):
     """ User model tests. """
     TEST_CONTEXT = {'foo': 'bar', 'baz': None}

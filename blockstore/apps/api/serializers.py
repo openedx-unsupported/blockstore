@@ -20,6 +20,7 @@ class UnitSerializer(ModelSerializer):
         fields = '__all__'
 
     tags = SerializerMethodField()
+
     def get_tags(self, obj):
         return [tag.name for tag in obj.tags.all()]
 
@@ -31,6 +32,7 @@ class TagUnitsSerializer(ModelSerializer):
         fields = '__all__'
 
     units = SerializerMethodField()
+
     def get_units(self, obj):
         """Fetch the tagged units."""
         # TODO: paginate units
@@ -45,6 +47,7 @@ class PathwaySerializer(ModelSerializer):
         fields = '__all__'
 
     units = SerializerMethodField()
+
     def get_units(self, obj):
         """Fetch the pathway units, in sorted order."""
         # For some reason, DRF doesn't respect the ManyToManyField's through model ordering
@@ -57,6 +60,7 @@ class PathwaySerializer(ModelSerializer):
 class UnitPathwaysSerializer(UnitSerializer):
     """Serialize the Unit model with related Pathways"""
     pathways = SerializerMethodField()
+
     def get_pathways(self, obj):
         """Fetch the pathways that contain the current unit."""
         # TODO add pagination

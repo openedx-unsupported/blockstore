@@ -34,25 +34,25 @@ Authentication
 Set up an OAuth2 client on Open edX with the following settings, e.g.:
 
 * Name: blockstore
-* Url: http://localhost:8000/oauth2
+* Url: http://localhost:18000/oauth2
 * Redirect uri: http://localhost:8080/complete/edx-oidc/
 * Client id: blockstore-client
 * Client secret: blockstore-secret
 * Client type: Confidential (Web applications)
 
-Copy 1blockstore/settings/private.py.example` to `blockstore/settings/private.py`, and update it, e.g.:
+Copy `blockstore/settings/private.py.example` to `blockstore/settings/private.py`, and update it, e.g.:
 ```python
 SOCIAL_AUTH_EDX_OIDC_KEY = 'blockstore-client'
 SOCIAL_AUTH_EDX_OIDC_SECRET = 'blockstore-secret'
 SOCIAL_AUTH_EDX_OIDC_URL_ROOT = 'http://localhost:8000/oauth2'
-SOCIAL_AUTH_EDX_OIDC_LOGOUT_URL = 'http://localhost:8000/logout'
+SOCIAL_AUTH_EDX_OIDC_LOGOUT_URL = 'http://localhost:8080/logout'
 SOCIAL_AUTH_EDX_OIDC_ID_TOKEN_DECRYPTION_KEY = SOCIAL_AUTH_EDX_OIDC_SECRET
 
-ALLOWED_HOSTS = ['locahost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 INTERNAL_IPS = ('localhost',)
 
 # Port for running the React front-end
-CORS_ORIGIN_WHITELIST = ['locahost:3000']
+CORS_ORIGIN_WHITELIST = ['localhost:3000']
 ```
 
 Documentation

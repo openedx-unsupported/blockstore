@@ -18,11 +18,11 @@ class User(AbstractUser):
         Assumes user has authenticated at least once with edX Open ID Connect.
         """
         try:
-            return self.social_auth.first().extra_data[u'access_token']  # pylint: disable=no-member
+            return self.social_auth.first().extra_data[u'access_token']
         except Exception:  # pylint: disable=broad-except
             return None
 
-    class Meta(object):  # pylint:disable=missing-docstring
+    class Meta(object):
         get_latest_by = 'date_joined'
 
     def get_full_name(self):
@@ -79,7 +79,9 @@ class Pathway(models.Model):
         self._first_unit = None
 
     def get_full_name(self):
-        return _("Pathway: {unit}").format(unit=self.first_unit)
+        return _("Pathway: {title}").format(  # pylint: disable=no-member
+            title=self.title,
+        )
 
     @python_2_unicode_compatible
     def __str__(self):
@@ -117,7 +119,11 @@ class PathwayUnit(models.Model):
         ordering = ('index', 'pathway', 'unit')
 
     def get_full_name(self):
-        return _("{pathway}[{index}] -> {unit}").format(pathway=self.pathway, unit=self.unit, index=self.index)
+        return _("{pathway}[{index}] -> {unit}").format(  # pylint: disable=no-member
+            pathway=self.pathway,
+            unit=self.unit,
+            index=self.index,
+        )
 
     @python_2_unicode_compatible
     def __str__(self):

@@ -47,8 +47,8 @@ test: clean
 	coverage report
 
 quality:
-	pep8 --config=.pep8 blockstore *.py
-	pylint --rcfile=pylintrc blockstore *.py
+	pycodestyle --config=.pycodestylerc blockstore *.py
+	pylint --rcfile=.pylintrc blockstore *.py
 
 validate: test quality
 

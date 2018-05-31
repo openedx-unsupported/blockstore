@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 import blockstore.apps.core.models as core_models
 
+
 @admin.register(core_models.User)
 class CustomUserAdmin(UserAdmin):
     """ Admin configuration for the custom User model. """
@@ -33,14 +34,13 @@ class UnitAdmin(admin.ModelAdmin):
 
 class PathwayUnitInline(admin.TabularInline):
     model = core_models.PathwayUnit
-    extra = 10 # how many rows to show
+    extra = 10  # how many rows to show
 
 
 @admin.register(core_models.Pathway)
 class PathwayAdmin(admin.ModelAdmin):
     """Admin configuration for the Pathway model."""
     inlines = (PathwayUnitInline,)
-    pass
 
 
 @admin.register(core_models.PathwayUnit)

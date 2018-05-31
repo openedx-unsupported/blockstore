@@ -30,15 +30,19 @@ class TagView(object):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
+
 class TagList(TagView, PaginatedView, ListAPIView):
     permission_classes = ()
+
 
 class TagNew(TagView, CreateAPIView):
     permission_classes = (IsAuthenticated,)
 
+
 class TagGetOrUpdate(TagView, RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrReadOnly,)
     lookup_field = 'name'
+
 
 class TagUnits(TagView, PaginatedView, RetrieveAPIView):
     serializer_class = TagUnitsSerializer
@@ -50,14 +54,18 @@ class UnitView(object):
     queryset = Unit.objects.prefetch_related('tags')
     serializer_class = UnitSerializer
 
+
 class UnitList(UnitView, PaginatedView, ListAPIView):
     permission_classes = ()
+
 
 class UnitNew(UnitView, CreateAPIView):
     permission_classes = (IsAuthenticated,)
 
+
 class UnitGetOrUpdate(UnitView, RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrReadOnly,)
+
 
 class UnitPathways(UnitView, PaginatedView, RetrieveAPIView):
     serializer_class = UnitPathwaysSerializer
@@ -68,11 +76,14 @@ class PathwayView(object):
     queryset = Pathway.objects.prefetch_related('units', 'units__tags')
     serializer_class = PathwaySerializer
 
+
 class PathwayList(PathwayView, PaginatedView, ListAPIView):
     permission_classes = ()
 
+
 class PathwayNew(PathwayView, CreateAPIView):
     permission_classes = (IsAuthenticated,)
+
 
 class PathwayGetOrUpdate(PathwayView, RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrReadOnly,)

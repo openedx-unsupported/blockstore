@@ -7,4 +7,4 @@ django-nose
 edx-lint
 mock
 nose-ignore-docstring
-pep8
+pycodestyle
