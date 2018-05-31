@@ -32,8 +32,18 @@ class AnonymousAccessTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         serialized = PathwaySerializer(pathways, many=True)
         self.assertEqual(response.data['results'], serialized.data)
+
+        # Pathway units are present and properly sorted
         self.assertIn("units", response.data['results'][0])
+        self.assertEqual(len(response.data['results'][0]['units']), 4)
+        serialized = [UnitSerializer(unit).data for unit in pathways.first().units.all()]
+        self.assertEqual(serialized, response.data['results'][0]['units'])
+
+        # Pathway units' tags are present as expected
         self.assertIn("tags", response.data['results'][0])
+        self.assertEqual(len(response.data['results'][0]['tags']), 7)
+        serialized = [TagSerializer(tag).data for tag in pathways.first().tags.all()]
+        self.assertEqual(serialized, response.data['results'][0]['tags'])
 
     def test_get_pathway(self):
         """Viewing a single pathway is allowed to anonymous users."""
@@ -43,8 +53,18 @@ class AnonymousAccessTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         serialized = PathwaySerializer(pathway)
         self.assertEqual(response.data, serialized.data)
+
+        # Pathway units are present and properly sorted
         self.assertIn("units", response.data)
+        self.assertEqual(len(response.data['units']), 4)
+        serialized = [UnitSerializer(unit).data for unit in pathway.units.all()]
+        self.assertEqual(serialized, response.data['units'])
+
+        # Pathway units' tags are present as expected
         self.assertIn("tags", response.data)
+        self.assertEqual(len(response.data['tags']), 7)
+        serialized = [TagSerializer(tag).data for tag in pathway.tags.all()]
+        self.assertEqual(serialized, response.data['tags'])
 
     @ddt.data(
         'put', 'patch', 'delete'

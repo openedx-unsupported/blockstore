@@ -1,9 +1,17 @@
 """
 Blockstore serializers
 """
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, ListSerializer
 
 from ..core.models import Tag, Unit, Pathway, PathwayUnit
+
+
+class TagListSerializer(ListSerializer):
+    """Serialize a list of Tags to a simple list of names"""
+    class Meta:
+        model = Tag
+        fields = 'name'
+    field_name = 'name'
 
 
 class TagSerializer(ModelSerializer):
@@ -11,6 +19,7 @@ class TagSerializer(ModelSerializer):
     class Meta:
         model = Tag
         fields = '__all__'
+        list_serializer_class = TagListSerializer
 
 
 class UnitSerializer(ModelSerializer):
@@ -18,11 +27,7 @@ class UnitSerializer(ModelSerializer):
     class Meta:
         model = Unit
         fields = '__all__'
-
-    tags = SerializerMethodField()
-
-    def get_tags(self, obj):
-        return [tag.name for tag in obj.tags.all()]
+        extra_fields = ['tags']
 
 
 class TagUnitsSerializer(ModelSerializer):
@@ -47,7 +52,7 @@ class PathwaySerializer(ModelSerializer):
         fields = '__all__'
 
     units = SerializerMethodField()
-    tags = SerializerMethodField()
+    tags = TagSerializer(many=True, read_only=True)
 
     def get_units(self, obj):
         """Fetch the pathway units, in sorted order."""
@@ -56,9 +61,6 @@ class PathwaySerializer(ModelSerializer):
         joins = joins.order_by('index', 'unit')
         joins = joins.prefetch_related('unit', 'unit__tags')
         return UnitSerializer((join.unit for join in joins), many=True).data
-
-    def get_tags(self, obj):
-        return [tag.name for tag in obj.tags]
 
 
 class UnitPathwaysSerializer(UnitSerializer):
