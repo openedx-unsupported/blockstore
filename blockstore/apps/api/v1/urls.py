@@ -19,5 +19,5 @@ urlpatterns = [
     # Pathways
     url(r'^pathways/?', views.PathwayList.as_view(), name='pathways'),
     url(r'^pathway/new/?', views.PathwayNew.as_view(), name='pathway.new'),
-    url(r'^pathway/{0}/?$'.format(UUID_PATTERN), views.UnitGetOrUpdate.as_view(), name='pathway'),
+    url(r'^pathway/{0}/?$'.format(UUID_PATTERN), views.PathwayGetOrUpdate.as_view(), name='pathway'),
 ]

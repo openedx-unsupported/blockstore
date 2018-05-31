@@ -4,7 +4,7 @@ from django.test import TestCase
 from django_dynamic_fixture import G
 from social_django.models import UserSocialAuth
 
-from blockstore.apps.core.models import User
+from ...core.models import User, Tag, Unit, Pathway, PathwayUnit
 
 
 class UserTests(TestCase):
@@ -43,3 +43,57 @@ class UserTests(TestCase):
         full_name = 'Bob'
         user = G(User, full_name=full_name)
         self.assertEqual(str(user), full_name)
+
+
+class ModelTest(TestCase):
+    """Test the model's string """
+    fixtures = ['multiple_pathways']
+
+    def test_first_pathway(self):
+        pathway = Pathway.objects.first()
+        self.assertEqual(str(pathway), "Pathway: Three Steps of PCR")
+        self.assertEqual(str(pathway.first_unit), "Three Steps of PCR")
+
+    def test_last_pathway(self):
+        pathway = Pathway.objects.last()
+        self.assertEqual(str(pathway), "Pathway: Separating DNA with Gel Electrophoresis")
+
+    def test_pathway_summary(self):
+        pathway = Pathway.objects.first()
+        self.assertEqual(pathway.summary, "Simulation")
+
+    def test_pathway_tags(self):
+        pathway = Pathway.objects.first()
+        self.assertEqual(
+            [str(tag) for tag in pathway.tags],
+            ['ABE',
+             'Colony PCR',
+             'Laboratory basics',
+             'Microbiology',
+             'PCR',
+             'Tools',
+             'Video'])
+
+    def test_first_unit(self):
+        unit = Unit.objects.first()
+        self.assertEqual(str(unit), "Intro to PCR")
+
+    def test_last_unit(self):
+        unit = Unit.objects.last()
+        self.assertEqual(str(unit), "DNA Sequencing")
+
+    def test_first_pathway_unit(self):
+        pathway_unit = PathwayUnit.objects.first()
+        self.assertEqual(str(pathway_unit), "Pathway: Three Steps of PCR[1] -> Laboratory basics")
+
+    def test_last_pathway_unit(self):
+        pathway_unit = PathwayUnit.objects.last()
+        self.assertEqual(str(pathway_unit), "Pathway: Intro to PCR[11] -> Three Steps of PCR")
+
+    def test_first_tag(self):
+        tag = Tag.objects.first()
+        self.assertEqual(str(tag), "ABE")
+
+    def test_last_tag(self):
+        tag = Tag.objects.last()
+        self.assertEqual(str(tag), "Video")

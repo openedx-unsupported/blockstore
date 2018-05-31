@@ -8,3 +8,4 @@ edx-lint
 mock
 nose-ignore-docstring
 pycodestyle
+ddt

@@ -47,6 +47,7 @@ class PathwaySerializer(ModelSerializer):
         fields = '__all__'
 
     units = SerializerMethodField()
+    tags = SerializerMethodField()
 
     def get_units(self, obj):
         """Fetch the pathway units, in sorted order."""
@@ -55,6 +56,9 @@ class PathwaySerializer(ModelSerializer):
         joins = joins.order_by('index', 'unit')
         joins = joins.prefetch_related('unit', 'unit__tags')
         return UnitSerializer((join.unit for join in joins), many=True).data
+
+    def get_tags(self, obj):
+        return [tag.name for tag in obj.tags]
 
 
 class UnitPathwaysSerializer(UnitSerializer):
