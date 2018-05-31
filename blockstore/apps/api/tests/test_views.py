@@ -6,7 +6,7 @@ import ddt
 from rest_framework import status
 from django.test import TestCase, Client
 from django.urls import reverse
-from ...core.models import Tag, Unit, Pathway
+from ...core.models import Tag, Unit, Pathway, User
 from ..serializers import (
     TagSerializer,
     TagUnitsSerializer,
@@ -193,3 +193,27 @@ class DiscoverabilityTest(TestCase):
         self.assertEqual(response.data, serialized.data)
         self.assertIn("pathways", response.data)
         self.assertEqual(len(response.data["pathways"]), 2)
+
+    def test_add_pathway_with_units(self):
+        """Logged-in users can create pathways with units."""
+        user = User.objects.create(username="user")
+        user.set_password('password')
+        user.save()
+        self.assertTrue(self.client.login(username=user.username, password="password"))
+
+        # Create a pathway with units
+        unit = Unit.objects.get(id='c6283b14-56db-468c-a548-8c9a36165fef')
+        url = reverse('api:v1:pathway.new')
+        response = self.client.post(
+            url,
+            data={
+                'author': user.id,
+                'units': [unit.id],
+            }
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # New pathway is owned by the user, and contains the expected unit(s) and tags
+        pathway = Pathway.objects.get(id=response.data['id'])
+        self.assertEqual(pathway.author.id, user.id)
+        self.assertEqual(list(pathway.units.all()), [unit])

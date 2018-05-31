@@ -1,6 +1,7 @@
 """
 Blockstore serializers
 """
+from uuid import UUID
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, ListSerializer
 
 from ..core.models import Tag, Unit, Pathway, PathwayUnit
@@ -12,6 +13,10 @@ class TagListSerializer(ListSerializer):
         model = Tag
         fields = 'name'
     field_name = 'name'
+
+    def update(self, instance, validated_data):
+        """TODO: allow units to update their tag lists."""
+        return super().update(instance, validated_data)
 
 
 class TagSerializer(ModelSerializer):
@@ -51,16 +56,37 @@ class PathwaySerializer(ModelSerializer):
         model = Pathway
         fields = '__all__'
 
-    units = SerializerMethodField()
+    # Tags are inferred from the units and so cannot be updated
     tags = TagSerializer(many=True, read_only=True)
+    units = UnitSerializer(many=True)
 
-    def get_units(self, obj):
-        """Fetch the pathway units, in sorted order."""
-        # For some reason, DRF doesn't respect the ManyToManyField's through model ordering
-        joins = PathwayUnit.objects.filter(pathway=obj)
-        joins = joins.order_by('index', 'unit')
-        joins = joins.prefetch_related('unit', 'unit__tags')
-        return UnitSerializer((join.unit for join in joins), many=True).data
+    def to_internal_value(self, data):
+        """Convert any provided unit UUIDs to Units."""
+        unit_ids = data.getlist('units', [])
+        internal_value = super().to_internal_value(data)
+        for unit_id in unit_ids:
+            units = Unit.objects.filter(id=UUID('{%s}' % unit_id))
+            for unit in units:
+                internal_value['units'].append(unit)
+        return internal_value
+
+    def _add_units(self, pathway, units):
+        """Create associated pathway units if provided"""
+        for unit in units:
+            PathwayUnit.objects.create(pathway=pathway, unit=unit)
+        return pathway
+
+    def update(self, instance, validated_data):
+        """Update pathway with given units, if any"""
+        units = validated_data.pop('units')
+        pathway = super().update(instance, validated_data)
+        return self._add_units(pathway, units)
+
+    def create(self, validated_data):
+        """Create pathway with given units, if any"""
+        units = validated_data.pop('units')
+        pathway = Pathway.objects.create(**validated_data)
+        return self._add_units(pathway, units)
 
 
 class UnitPathwaysSerializer(UnitSerializer):
