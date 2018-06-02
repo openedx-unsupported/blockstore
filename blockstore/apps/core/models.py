@@ -57,6 +57,9 @@ class Unit(models.Model):
     author = models.ForeignKey('User', models.SET_NULL, blank=True, null=True)
     tags = models.ManyToManyField(Tag)
 
+    class Meta:
+        ordering = ('id',)
+
     def get_full_name(self):
         return self.title
 

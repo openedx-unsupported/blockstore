@@ -1,7 +1,9 @@
 """
 Blockstore API permissions
 """
+from django.core.exceptions import ValidationError
 from rest_framework.permissions import BasePermission, SAFE_METHODS
+from ..core.models import Pathway
 
 
 class IsOwnerOrReadOnly(BasePermission):
@@ -14,5 +16,22 @@ class IsOwnerOrReadOnly(BasePermission):
         if request.method in SAFE_METHODS:
             return True
 
-        # Instance must have an attribute named `owner`.
+        # Instance must have an attribute named `author`.
         return hasattr(obj, 'author') and obj.author == request.user
+
+
+class IsOwnerOfPathway(IsOwnerOrReadOnly):
+    """
+    Object-level permission granted only to authors of the pathway indicated in the request data.
+    """
+    def has_permission(self, request, view):
+        """Can add or delete units on own pathway."""
+        if super().has_permission(request, view):
+            pathway_id = request.data.get('pathway', None)
+            try:
+                pathway = Pathway.objects.get(id=pathway_id)
+            except (Pathway.DoesNotExist, ValidationError):
+                return False
+
+            return super().has_object_permission(request, view, pathway)
+        return False

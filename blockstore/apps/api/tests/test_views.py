@@ -16,13 +16,34 @@ from ..serializers import (
 )
 
 
+class UserClientMixin(object):
+    """Initializes a user on the class, and a client on the instance."""
+    user = None
+    username = 'user'
+    password = 'password'
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = User.objects.create(username=cls.username)
+        cls.user.set_password(cls.password)
+        cls.user.save()
+
+    def setUp(self):
+        super().setUp()
+        self.client = Client()
+
+    def assert_login(self):
+        """Ensure the user is logged in."""
+        self.assertTrue(self.client.login(username=self.username, password=self.password))
+
+
 @ddt.ddt
-class AnonymousAccessTest(TestCase):
+class AnonymousAccessTest(UserClientMixin, TestCase):
     """
     As an anonymous user, I want to view all publicly accessible content on the platform.
     """
     fixtures = ['multiple_pathways']
-    client = Client()
 
     def test_list_pathways(self):
         """Listing pathways is allowed to anonymous users."""
@@ -66,11 +87,31 @@ class AnonymousAccessTest(TestCase):
         serialized = [TagSerializer(tag).data for tag in pathway.tags.all()]
         self.assertEqual(serialized, response.data['tags'])
 
+    def test_create_pathway_denied(self):
+        """Creating a pathway is denied to anonymous users."""
+        url = reverse('api:v1:pathway.new')
+        response = self.client.post(
+            url,
+            data={'uuid': uuid.uuid4()},
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     @ddt.data(
-        'put', 'patch', 'delete'
+        ('put', False),
+        ('patch', False),
+        ('delete', False),
+        ('put', True),
+        ('patch', True),
+        ('delete', True),
     )
-    def test_modify_pathway_denied(self, http_method):
-        """Modifying a pathway is denied to anonymous users."""
+    @ddt.unpack
+    def test_modify_pathway_denied(self, http_method, auth_user):
+        """Modifying a pathway is denied to anonymous users and non-authors."""
+        if auth_user:
+            self.assert_login()
+        else:
+            self.client.logout()
+
         pathway = Pathway.objects.first()
         url = reverse('api:v1:pathway', kwargs={'pk': pathway.id})
         response = getattr(self.client, http_method)(
@@ -79,12 +120,26 @@ class AnonymousAccessTest(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_create_pathway_denied(self):
-        """Creating a pathway is denied to anonymous users."""
-        url = reverse('api:v1:pathway.new')
+    @ddt.data(
+        False, True
+    )
+    def test_add_units_to_pathway_denied(self, auth_user):
+        """Adding pathway units is denied to anonymous users."""
+        if auth_user:
+            self.assert_login()
+        else:
+            self.client.logout()
+
+        pathway = Pathway.objects.first()
+        unit = Unit.objects.get(id='c6283b14-56db-468c-a548-8c9a36165fef')
+        url = reverse('api:v1:pathway.unit')
         response = self.client.post(
             url,
-            data={'uuid': uuid.uuid4()},
+            data={
+                'pathway': pathway.id,
+                'unit': unit.id,
+                'index': 99,
+            }
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -174,14 +229,13 @@ class AnonymousAccessTest(TestCase):
 
 
 @ddt.ddt
-class DiscoverabilityTest(TestCase):
+class DiscoverabilityTest(UserClientMixin, TestCase):
     """
     As a LabXchange educator, I want to be able to discover existing high-quality content (Learning Objects)
     (not covered) that exists in courses on edx.org and other Open edX sites
     and to offer it to students in new contexts like Pathways.
     """
     fixtures = ['multiple_pathways']
-    client = Client()
 
     def test_get_unit_pathways(self):
         """Viewing the pathways that contain a unit is allowed to anonymous users."""
@@ -196,10 +250,7 @@ class DiscoverabilityTest(TestCase):
 
     def test_add_pathway_with_units(self):
         """Logged-in users can create pathways with units."""
-        user = User.objects.create(username="user")
-        user.set_password('password')
-        user.save()
-        self.assertTrue(self.client.login(username=user.username, password="password"))
+        self.assert_login()
 
         # Create a pathway with units
         unit = Unit.objects.get(id='c6283b14-56db-468c-a548-8c9a36165fef')
@@ -207,7 +258,7 @@ class DiscoverabilityTest(TestCase):
         response = self.client.post(
             url,
             data={
-                'author': user.id,
+                'author': self.user.id,
                 'units': [unit.id],
             }
         )
@@ -215,5 +266,74 @@ class DiscoverabilityTest(TestCase):
 
         # New pathway is owned by the user, and contains the expected unit(s) and tags
         pathway = Pathway.objects.get(id=response.data['id'])
-        self.assertEqual(pathway.author.id, user.id)
+        self.assertEqual(pathway.author.id, self.user.id)
         self.assertEqual(list(pathway.units.all()), [unit])
+
+    @ddt.data(
+        (None, 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'),
+        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', None),
+        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'),
+        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'c6283b14-56db-468c-a548-8c9a36165fef'),
+        ('c6283b14-56db-468c-a548-8c9a36165fef', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'),
+    )
+    @ddt.unpack
+    def test_add_unit_to_pathway_must_exist(self, unit_id, pathway_id):
+        """The pathway must exist before we can add units to it."""
+        url = reverse('api:v1:pathway.unit')
+        response = self.client.post(
+            url,
+            data={
+                'pathway': pathway_id,
+                'unit': unit_id,
+            }
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_add_unit_to_pathway(self):
+        """Logged-in users can add units to the pathways they own."""
+        self.assert_login()
+
+        # Create a pathway
+        url = reverse('api:v1:pathway.new')
+        response = self.client.post(
+            url,
+            data={'author': self.user.id}
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # New pathway is owned by the user
+        pathway = Pathway.objects.get(id=response.data['id'])
+        self.assertEqual(pathway.author.id, self.user.id)
+
+        # Retrieve the new pathway: it contains no units
+        url = reverse('api:v1:pathway', kwargs={'pk': pathway.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("units", response.data)
+        self.assertEqual(len(response.data['units']), 0)
+
+        # Add an existing unit to the pathway
+        unit = Unit.objects.get(id='c6283b14-56db-468c-a548-8c9a36165fef')
+        url = reverse('api:v1:pathway.unit')
+        response = self.client.post(
+            url,
+            data={
+                'pathway': pathway.id,
+                'unit': unit.id,
+                'index': 99,
+            }
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Retrieve the updated pathway: it contains the added unit, and its tags
+        url = reverse('api:v1:pathway', kwargs={'pk': pathway.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("units", response.data)
+        self.assertEqual(len(response.data['units']), 1)
+        self.assertEqual(response.data['units'][0]['id'], str(unit.id))
+
+        # Pathway units' tags are present as expected
+        self.assertIn("tags", response.data)
+        serialized = TagSerializer(unit.tags.all(), many=True).data
+        self.assertEqual(serialized, response.data['tags'])

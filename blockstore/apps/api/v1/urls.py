@@ -20,4 +20,6 @@ urlpatterns = [
     url(r'^pathways/?', views.PathwayList.as_view(), name='pathways'),
     url(r'^pathway/new/?', views.PathwayNew.as_view(), name='pathway.new'),
     url(r'^pathway/{0}/?$'.format(UUID_PATTERN), views.PathwayGetOrUpdate.as_view(), name='pathway'),
+    # Pathway Units
+    url(r'^pathway/unit/?$', views.PathwayUnitCreateOrDelete.as_view(), name='pathway.unit'),
 ]

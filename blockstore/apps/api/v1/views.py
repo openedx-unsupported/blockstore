@@ -1,7 +1,13 @@
 """
 Blockstore API views
 """
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView, RetrieveAPIView
+from rest_framework.generics import (
+    CreateAPIView,
+    DestroyAPIView,
+    ListAPIView,
+    RetrieveUpdateDestroyAPIView,
+    RetrieveAPIView,
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 
@@ -11,8 +17,9 @@ from ..serializers import (
     TagUnitsSerializer,
     UnitSerializer,
     UnitPathwaysSerializer,
+    PathwayUnitSerializer,
 )
-from ..permissions import IsOwnerOrReadOnly
+from ..permissions import IsOwnerOrReadOnly, IsOwnerOfPathway
 from ...core.models import Tag, Unit, Pathway
 
 
@@ -87,3 +94,8 @@ class PathwayNew(PathwayView, CreateAPIView):
 
 class PathwayGetOrUpdate(PathwayView, RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrReadOnly,)
+
+
+class PathwayUnitCreateOrDelete(CreateAPIView, DestroyAPIView):
+    serializer_class = PathwayUnitSerializer
+    permission_classes = (IsOwnerOfPathway,)
