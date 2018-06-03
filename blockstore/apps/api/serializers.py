@@ -4,19 +4,7 @@ Blockstore serializers
 from uuid import UUID
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, ListSerializer
 
-from ..core.models import Tag, Unit, Pathway, PathwayUnit
-
-
-class TagListSerializer(ListSerializer):
-    """Serialize a list of Tags to a simple list of names"""
-    class Meta:
-        model = Tag
-        fields = 'name'
-    field_name = 'name'
-
-    def update(self, instance, validated_data):
-        """TODO: allow units to update their tag lists."""
-        return super().update(instance, validated_data)
+from ..core.models import Tag, Unit, Pathway, PathwayUnit, PathwayTag
 
 
 class TagSerializer(ModelSerializer):
@@ -24,7 +12,6 @@ class TagSerializer(ModelSerializer):
     class Meta:
         model = Tag
         fields = '__all__'
-        list_serializer_class = TagListSerializer
 
 
 class UnitSerializer(ModelSerializer):
@@ -56,29 +43,40 @@ class PathwaySerializer(ModelSerializer):
         model = Pathway
         fields = '__all__'
 
-    # Tags are inferred from the units and so cannot be updated
-    tags = TagSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=False)
     units = UnitSerializer(many=True, read_only=False)
 
     def to_internal_value(self, data):
         """Convert any provided unit UUIDs to Units."""
         internal_value = super().to_internal_value(data)
-        unit_ids = data.getlist('units', [])
-        units = Unit.objects.filter(id__in=(UUID('{%s}' % unit_id) for unit_id in unit_ids))
-        internal_value['units'] = [unit for unit in units.all()]
+        for (field, cls) in (
+            ('units', Unit),
+            ('tags', Tag),
+        ):
+            obj_ids = data.getlist(field, [])
+            objs = cls.objects.filter(id__in=(UUID('{%s}' % id) for id in obj_ids))
+            internal_value[field] = list(objs.all())
         return internal_value
+
+    def _add_tags(self, pathway, tags):
+        """Create associated pathway tags if provided."""
+        for tag in tags:
+            PathwayTag.objects.create(pathway=pathway, tag=tag)
 
     def _add_units(self, pathway, units):
         """Create associated pathway units if provided."""
         for unit in units:
+            # TODO: preserve sort order
             PathwayUnit.objects.create(pathway=pathway, unit=unit)
-        return pathway
 
     def create(self, validated_data):
         """Create pathway with given units, if any."""
+        tags = validated_data.pop('tags')
         units = validated_data.pop('units')
         pathway = Pathway.objects.create(**validated_data)
-        return self._add_units(pathway, units)
+        self._add_tags(pathway, tags)
+        self._add_units(pathway, units)
+        return pathway
 
 
 class UnitPathwaysSerializer(UnitSerializer):
@@ -99,3 +97,10 @@ class PathwayUnitSerializer(ModelSerializer):
     class Meta:
         model = PathwayUnit
         fields = '__all__'
+
+
+class PathwayTagSerializer(ModelSerializer):
+    """Serialize the PathwayTag model"""
+    class Meta:
+        model = PathwayTag
+        fields = ['pathway', 'tag']

@@ -73,6 +73,7 @@ class Pathway(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     author = models.ForeignKey('User', models.SET_NULL, blank=True, null=True)
     units = models.ManyToManyField(Unit, through='PathwayUnit')
+    _tags = models.ManyToManyField(Tag, through='PathwayTag')
 
     class Meta:
         ordering = ('id',)
@@ -108,8 +109,30 @@ class Pathway(models.Model):
 
     @property
     def tags(self):
-        """Returns the tags used by units in this pathway."""
-        return Tag.objects.filter(unit__in=self.units.all()).distinct()
+        """Returns this pathway's tags combined with the tags of unit in this pathway."""
+        return Tag.objects.filter(
+            models.Q(unit__in=self.units.all()) |
+            models.Q(id__in=self._tags.all())
+         ).distinct().order_by('name')
+
+
+class PathwayTag(models.Model):
+    """Provides Pathway Tags"""
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    pathway = models.ForeignKey(Pathway, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ('tag__name', 'pathway')
+
+    def get_full_name(self):
+        return _("{pathway} -> {tag}").format(  # pylint: disable=no-member
+            pathway=self.pathway,
+            tag=self.tag,
+        )
+
+    @python_2_unicode_compatible
+    def __str__(self):
+        return str(self.get_full_name())
 
 
 class PathwayUnit(models.Model):

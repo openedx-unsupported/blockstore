@@ -4,7 +4,7 @@ from django.test import TestCase
 from django_dynamic_fixture import G
 from social_django.models import UserSocialAuth
 
-from ...core.models import User, Tag, Unit, Pathway, PathwayUnit
+from ...core.models import User, Tag, Unit, Pathway, PathwayUnit, PathwayTag
 
 
 class UserTests(TestCase):
@@ -46,7 +46,7 @@ class UserTests(TestCase):
 
 
 class ModelTest(TestCase):
-    """Test the model's string """
+    """Test the model's string and fields."""
     fixtures = ['multiple_pathways']
 
     def test_first_pathway(self):
@@ -89,6 +89,14 @@ class ModelTest(TestCase):
     def test_last_pathway_unit(self):
         pathway_unit = PathwayUnit.objects.last()
         self.assertEqual(str(pathway_unit), "Pathway: Intro to PCR[11] -> Three Steps of PCR")
+
+    def test_first_pathway_tag(self):
+        pathway_tag = PathwayTag.objects.first()
+        self.assertEqual(str(pathway_tag), "Pathway: Intro to PCR -> Laboratory basics")
+
+    def test_last_pathway_tag(self):
+        pathway_tag = PathwayTag.objects.last()
+        self.assertEqual(str(pathway_tag), "Pathway: Intro to PCR -> PCR")
 
     def test_first_tag(self):
         tag = Tag.objects.first()

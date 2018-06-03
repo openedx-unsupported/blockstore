@@ -17,6 +17,7 @@ from ..serializers import (
     TagUnitsSerializer,
     UnitSerializer,
     UnitPathwaysSerializer,
+    PathwayTagSerializer,
     PathwayUnitSerializer,
 )
 from ..permissions import IsOwnerOrReadOnly, IsOwnerOfPathway
@@ -98,4 +99,9 @@ class PathwayGetOrUpdate(PathwayView, RetrieveUpdateDestroyAPIView):
 
 class PathwayUnitCreateOrDelete(CreateAPIView, DestroyAPIView):
     serializer_class = PathwayUnitSerializer
+    permission_classes = (IsOwnerOfPathway,)
+
+
+class PathwayTagCreateOrDelete(CreateAPIView, DestroyAPIView):
+    serializer_class = PathwayTagSerializer
     permission_classes = (IsOwnerOfPathway,)
