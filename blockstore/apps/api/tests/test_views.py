@@ -1,6 +1,7 @@
 """
 Test the API views and URLs.
 """
+import json
 import uuid
 import ddt
 from rest_framework import status
@@ -147,7 +148,9 @@ class AccessDeniedTest(UserClientMixin, TestCase):
 
     @ddt.data(
         ('post', False),
+        ('delete', False),
         ('post', True),
+        ('delete', True),
     )
     @ddt.unpack
     def test_add_pathway_tags_denied(self, http_method, auth_user):
@@ -162,42 +165,13 @@ class AccessDeniedTest(UserClientMixin, TestCase):
         url = reverse('api:v1:pathway.tag')
         response = getattr(self.client, http_method)(
             url,
-            data={
-                'pathway': pathway.id,
-                'tag': tag.id,
-            }
+            data=json.dumps({
+                'pathway': str(pathway.id),
+                'tag': str(tag.id),
+            }),
+            content_type='application/json',
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_add_pathway_tag(self):
-        """Logged-in users can add tags to the pathways they own."""
-        self.assert_login()
-
-        # Create a pathway
-        url = reverse('api:v1:pathway.new')
-        response = self.client.post(
-            url,
-            data={'author': self.user.id}
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        # New pathway is owned by the user, no tags, no units.
-        pathway = Pathway.objects.get(id=response.data['id'])
-        self.assertEqual(pathway.author.id, self.user.id)
-        self.assertEqual(list(pathway.tags.all()), [])
-        self.assertEqual(list(pathway.units.all()), [])
-
-        # Add an existing tag to the pathway
-        url = reverse('api:v1:pathway.tag')
-        tag = Tag.objects.get(name='Microbiology')
-        response = self.client.post(
-            url,
-            data={
-                'pathway': pathway.id,
-                'tag': tag.id,
-            }
-        )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_list_units(self):
         """Listing units is allowed to anonymous users."""
@@ -357,27 +331,6 @@ class DiscoverabilityTest(UserClientMixin, TestCase):
         # Tags sorted by name
         self.assertEqual(list(pathway.tags.all()), list(reversed(tags)))
 
-    @ddt.data(
-        (None, 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'),
-        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', None),
-        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'),
-        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'c6283b14-56db-468c-a548-8c9a36165fef'),
-        ('c6283b14-56db-468c-a548-8c9a36165fef', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'),
-    )
-    @ddt.unpack
-    def test_add_unit_to_pathway_must_exist(self, unit_id, pathway_id):
-        """The pathway must exist before we can add units to it."""
-        self.assert_login()
-        url = reverse('api:v1:pathway.unit')
-        response = self.client.post(
-            url,
-            data={
-                'pathway': pathway_id,
-                'unit': unit_id,
-            }
-        )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
     def test_add_unit_and_tags_to_pathway(self):
         """Logged-in users can add units and tags to the pathways they own."""
         self.assert_login()
@@ -501,3 +454,111 @@ class PathwayTaggingTest(UserClientMixin, TestCase):
         self.assertEqual(len(response.data['tags']), 1)
         self.assertEqual(response.data['tags'][0]['id'], str(tag.id))
         self.assertEqual(response.data['tags'][0]['name'], tag.name)
+
+    def test_add_or_remove_pathway_tag(self):
+        """Logged-in users can add or remove tags on the pathways they own."""
+        self.assert_login()
+
+        # Create a pathway
+        url = reverse('api:v1:pathway.new')
+        response = self.client.post(
+            url,
+            data={'author': self.user.id}
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # New pathway is owned by the user, no tags, no units.
+        pathway = Pathway.objects.get(id=response.data['id'])
+        self.assertEqual(pathway.author.id, self.user.id)
+        self.assertEqual(list(pathway.tags.all()), [])
+        self.assertEqual(list(pathway.units.all()), [])
+
+        # Add an existing tag to the pathway
+        url = reverse('api:v1:pathway.tag')
+        tag = Tag.objects.get(name='Microbiology')
+        response = self.client.post(
+            url,
+            data={
+                'pathway': pathway.id,
+                'tag': tag.id,
+            }
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        pathway.refresh_from_db()
+        self.assertEquals(list(pathway.tags.all()), [tag])
+
+        # Remove added tag from the pathway
+        response = self.client.delete(
+            url,
+            data=json.dumps({
+                'pathway': str(pathway.id),
+                'tag': str(tag.id),
+            }),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        pathway.refresh_from_db()
+        self.assertEquals(list(pathway.tags.all()), [])
+
+
+@ddt.ddt
+class InvalidRequestTest(UserClientMixin, TestCase):
+    """
+    Test coverage for invalid request data.
+    """
+    fixtures = ['multiple_pathways']
+
+    def test_pathway_tag_not_found(self):
+        """Deleting a pathway tag that doesn't exist throws a 404."""
+        # Create a pathway with no tags
+        pathway = Pathway.objects.create(author=self.user)
+        tag = Tag.objects.get(name='Laboratory basics')
+
+        self.assert_login()
+        url = reverse('api:v1:pathway.tag')
+        response = self.client.delete(
+            url,
+            data=json.dumps({
+                'pathway': str(pathway.id),
+                'tag': str(tag.id),
+            }),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_invalid_pathway(self):
+        """Deleting a pathway tag with an invalid pathway or tag uuid throws a 404."""
+        pathway = Pathway.objects.create(author=self.user)
+
+        self.assert_login()
+        url = reverse('api:v1:pathway.tag')
+        response = self.client.delete(
+            url,
+            data=json.dumps({
+                'pathway': str(pathway.id),
+                'tag': 'aaa',
+            }),
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @ddt.data(
+        (None, 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'),
+        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', None),
+        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'),
+        ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'c6283b14-56db-468c-a548-8c9a36165fef'),
+        ('c6283b14-56db-468c-a548-8c9a36165fef', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'),
+    )
+    @ddt.unpack
+    def test_add_unit_to_pathway_must_exist(self, unit_id, pathway_id):
+        """The pathway must exist before we can add units to it."""
+        self.assert_login()
+        url = reverse('api:v1:pathway.unit')
+        response = self.client.post(
+            url,
+            data={
+                'pathway': pathway_id,
+                'unit': unit_id,
+            }
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

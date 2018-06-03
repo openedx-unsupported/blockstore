@@ -10,6 +10,7 @@ from rest_framework.generics import (
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.generics import get_object_or_404
 
 from ..serializers import (
     PathwaySerializer,
@@ -21,7 +22,7 @@ from ..serializers import (
     PathwayUnitSerializer,
 )
 from ..permissions import IsOwnerOrReadOnly, IsOwnerOfPathway
-from ...core.models import Tag, Unit, Pathway
+from ...core.models import Tag, Unit, Pathway, PathwayTag
 
 
 class PaginatedView(object):
@@ -105,3 +106,14 @@ class PathwayUnitCreateOrDelete(CreateAPIView, DestroyAPIView):
 class PathwayTagCreateOrDelete(CreateAPIView, DestroyAPIView):
     serializer_class = PathwayTagSerializer
     permission_classes = (IsOwnerOfPathway,)
+    queryset = PathwayTag.objects.all()
+
+    def get_object(self):
+        """Fetch pathway tag from pathway and tag uuid."""
+        pathway_id = self.request.data.get('pathway')
+        tag_id = self.request.data.get('tag')
+        assert pathway_id and tag_id, (
+            "Expected view %s to be called with 'pathway' and 'tag' "
+            "in the request data" % self.__class__.__name__
+        )
+        return get_object_or_404(self.queryset, pathway=pathway_id, tag=tag_id)
