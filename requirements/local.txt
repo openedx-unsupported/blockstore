@@ -1,0 +1,8 @@
+# Packages required for local development
+-r test.txt
+-r docs.txt
+
+django-debug-toolbar
+docker-compose
+edx-i18n-tools
+transifex-client

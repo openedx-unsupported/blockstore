@@ -1,0 +1,8 @@
+django==1.11.13
+django-cors-headers
+django-extensions
+django-rest-swagger
+django-waffle
+djangorestframework
+edx-auth-backends
+pytz
