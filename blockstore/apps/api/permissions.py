@@ -26,7 +26,7 @@ class IsOwnerOfPathway(IsOwnerOrReadOnly):
     """
     def has_permission(self, request, view):
         """Can add or delete units on own pathway."""
-        if IsAuthenticated().has_permission(request, view):
+        if IsAuthenticated().has_permission(request, view) and 'pathway' in request.data:
             pathway_id = request.data['pathway']
             try:
                 pathway = Pathway.objects.get(id=pathway_id)
