@@ -3,21 +3,6 @@ import os
 from blockstore.settings.base import *
 
 
-# TEST SETTINGS
-INSTALLED_APPS += (
-    'django_nose',
-)
-
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
-NOSE_ARGS = [
-    '--with-ignore-docstrings',
-    '--logging-level=DEBUG',
-]
-
-# END TEST SETTINGS
-
-
 # IN-MEMORY TEST DATABASE
 DATABASES = {
     'default': {
@@ -30,3 +15,6 @@ DATABASES = {
     },
 }
 # END IN-MEMORY TEST DATABASE
+
+# So we don't leave mix Bundle files from test runs with our local dev server.
+DEFAULT_FILE_STORAGE = 'inmemorystorage.InMemoryStorage'

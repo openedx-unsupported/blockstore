@@ -28,15 +28,15 @@ pip-log.txt
 default.db
 
 # Static assets
-media/cache/
+media/
 assets/
 
 # Unit test / coverage reports
 .coverage
 htmlcov
 .tox
-nosetests.xml
 unittests.xml
+.pytest_cache
 
 ### Internationalization artifacts
 *.mo
@@ -81,3 +81,4 @@ private.py
 *.trace
 
 docs/_build/
+
