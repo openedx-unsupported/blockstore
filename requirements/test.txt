@@ -2,9 +2,9 @@
 -r base.txt
 
 coverage
-django-dynamic-fixture
-django-nose
+dj-inmemorystorage
 edx-lint
-mock
-nose-ignore-docstring
 pep8
+pytest
+pytest-cov
+pytest-django

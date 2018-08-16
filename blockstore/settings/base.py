@@ -36,6 +36,7 @@ THIRD_PARTY_APPS = (
 PROJECT_APPS = (
     'blockstore.apps.core',
     'blockstore.apps.api',
+    'blockstore.apps.bundles.apps.BundlesConfig',
 )
 
 INSTALLED_APPS += THIRD_PARTY_APPS
@@ -108,9 +109,7 @@ STATIC_ROOT = root('assets')
 STATIC_URL = '/static/'
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
-STATICFILES_DIRS = (
-    root('static'),
-)
+STATICFILES_DIRS = []
 
 # TEMPLATE CONFIGURATION
 # See: https://docs.djangoproject.com/en/1.11/ref/settings/#templates
@@ -179,7 +178,7 @@ LOGIN_REDIRECT_URL = '/admin/'
 # END AUTHENTICATION CONFIGURATION
 
 
-# OPENEDX-SPECIFIC CONFIGURATION 
+# OPENEDX-SPECIFIC CONFIGURATION
 PLATFORM_NAME = 'Your Platform Name Here'
 # END OPENEDX-SPECIFIC CONFIGURATION
 
