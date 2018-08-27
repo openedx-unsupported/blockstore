@@ -1,0 +1,10 @@
+{
+  "meta": {
+    "version": 1
+  },
+
+  "components": [
+    "/questions/problem1.olx",
+    "/questions/problem2.olx"
+  ]
+}

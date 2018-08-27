@@ -1,0 +1,12 @@
+{
+  "meta": {
+    "version": 1
+  },
+
+  "main_component" : "/sequence1.olx",
+
+  "dependencies": {
+    "control-center": "bundle-vertical-uuid@3",
+    "problems": "bundle-blocks-uuid@4"
+  }
+}

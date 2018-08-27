@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "version": 1
+  },
+
+  "main_component": "/control-center/info1.olx",
+
+  "components": [
+    "/control-center/media/teaser.olx"
+  ],
+
+  "assets": [
+    "/files/"
+  ]
+}
