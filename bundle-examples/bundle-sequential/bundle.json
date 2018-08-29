@@ -3,10 +3,20 @@
     "version": 1
   },
 
-  "main_component" : "/sequence1.olx",
+  "components" : [
+    "/sequence1.olx"
+  ],
 
   "dependencies": {
-    "control-center": "bundle-vertical-uuid@3",
-    "problems": "bundle-blocks-uuid@4"
+
+    "control-center": {
+      "bundle_uuid": "bundle-vertical-uuid",
+      "version_num": 3
+    },
+
+    "problems": {
+      "bundle_uuid": "bundle-blocks-uuid",
+      "version_num": 11
+    }
   }
 }

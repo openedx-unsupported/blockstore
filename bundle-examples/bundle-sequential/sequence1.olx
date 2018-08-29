@@ -5,7 +5,7 @@
     <html path="/introduction/b53d.olx"/>
   </vertical>
 
-  <vertical path="//control-center/info1.olx"/>
+  <vertical path="//control-center/control-center/info1.olx"/>
 
   <vertical id="290bfec3750f4c33a7818e5ade8396a1" display_name="General Themes / Concepts">
     <html path="/introduction/a6e1.olx"/>

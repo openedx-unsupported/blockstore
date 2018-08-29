@@ -3,9 +3,8 @@
     "version": 1
   },
 
-  "main_component": "/control-center/info1.olx",
-
   "components": [
+    "/control-center/info1.olx",
     "/control-center/media/teaser.olx"
   ],
 
