@@ -1,14 +1,13 @@
 {
-  "meta": {
-    "version": 1
-  },
+  "schema": 0.1,
+
+  "type": "olx/sequence",
 
   "components" : [
     "/sequence1.olx"
   ],
 
   "dependencies": {
-
     "control-center": {
       "bundle_uuid": "bundle-vertical-uuid",
       "version_num": 3

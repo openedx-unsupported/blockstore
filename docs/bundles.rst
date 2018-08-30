@@ -5,12 +5,10 @@ The Blockstore does not parse or process files other than ``bundle.json``.
 However, some conventions should be followed by authoring clients for interoperability:
 
 * Files in a Bundle can be organized freely by authoring clients, including in directories.
-* OLX files must use the **.olx** extension. Files with a different extension may be ignored or not treated as
-  OLX by plugins and other clients. Files of any other type should not use this extension.
-* The path to an OLX file may be used as a component of the XBlock ID. Therefore moving an OLX file or changing its
-  name will be equivalent to deleting the XBlock and creating a new one.
 * A **bundle.json** file must be added to the root of the Bundle by authoring clients. This file specifies the
   shareable components, bundle dependencies, assets and other metadata. See below for details.
+* OLX files must use the **.olx** extension. Files with a different extension may be ignored or not treated as
+  OLX by plugins and other clients. Files of any other type should not use this extension.
 
 Paths
 -------------------------
@@ -41,8 +39,8 @@ of the Bundle.
   /e/f/
 
 For files in other Bundles, the URI must be a network-path reference which begins with two slash characters followed
-by the alias of the relevant Bundle version as specified in ``bundle.json`` followed by a single slash character
-and full path of the directory or file from the root of that Bundle.
+by the alias of the relevant Bundle version as specified in ``bundle.json`` followed by the absolute-path reference
+of the directory or file from the root of its Bundle.
 
 .. code-block::
 
@@ -60,16 +58,29 @@ bundle.json
 The bundle.json file contains metadata about the Bundle. Authoring clients must add and update this themselves.
 It can contain the following fields:
 
-meta
+schema
 ~~~~~~~~~~~~~~~~~~~~~~
 
-The **meta** field is required and specifies the document format version.
+The **schema** field is required and specifies the document format version.
 
 .. code-block::
 
-  "meta": {
-    "version": 1
-  },
+  "schema": 0.1
+
+type
+~~~~~~~~~~~~~~~~~~~~~~
+
+The **type** field is required and should specify the type of content in the Bundle. Its value must be one of:
+
+- olx/collection
+- olx/course
+- olx/sequence
+- olx/unit
+- static
+
+.. code-block::
+
+    "type": "olx/collection"
 
 components
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -109,8 +120,8 @@ dependencies
 The optional **dependencies** field is a map of aliases to bundle version info objects. The later must have
 two fields: **bundle_uuid** and **version_num**.
 
-If a file from another Bundle is to be referenced, a version of that Bundle must be specified in this field
-because cross-Bundle URIs use the alias as the authority.
+If a file from another Bundle is to be referenced, a version of that Bundle must be specified in this field.
+URIs to directories or files in other Bundles use the alias as the authority.
 
 .. code-block::
 
