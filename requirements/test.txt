@@ -4,6 +4,7 @@
 coverage
 dj-inmemorystorage
 edx-lint
+factory_boy
 pep8
 pytest
 pytest-cov

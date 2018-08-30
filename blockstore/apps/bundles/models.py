@@ -76,7 +76,7 @@ class Collection(models.Model):
     Target Scale: 100K rows
     """
     id = models.BigAutoField(primary_key=True)
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     title = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_index=True)
 
     def __str__(self):
@@ -91,13 +91,12 @@ class Bundle(models.Model):
     Target Scale: 100M rows
     """
     id = models.BigAutoField(primary_key=True)
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     title = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_index=True)
 
-    # Comment for now just to make testing easier.
-    # collection = models.ForeignKey(
-    #     Collection, related_name="bundles", related_query_name="bundle"
-    # )
+    collection = models.ForeignKey(
+        Collection, related_name="bundles", related_query_name="bundle", editable=False
+    )
 
     slug = models.SlugField(allow_unicode=True)  # For pretty URLs
     description = models.TextField(max_length=10_000)
@@ -118,10 +117,10 @@ class BundleVersion(models.Model):
     """
     id = models.BigAutoField(primary_key=True)
     bundle = models.ForeignKey(
-        Bundle, related_name="versions", related_query_name="version"
+        Bundle, related_name="versions", related_query_name="version", editable=False
     )
-    version_num = models.PositiveIntegerField()
-    snapshot_digest = models.BinaryField(max_length=20, db_index=True)
+    version_num = models.PositiveIntegerField(editable=False)
+    snapshot_digest = models.BinaryField(max_length=20, db_index=True, editable=False)
     change_description = models.TextField(max_length=1_000, blank=True)
 
     class Meta:

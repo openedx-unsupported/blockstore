@@ -26,7 +26,7 @@ class Command(BaseCommand):
         description = options['description']
 
         # Create Bundle -- there are no Versions at this point.
-        bundle = Bundle.objects.create(slug=slug, title=title, description=description)
+        bundle = Bundle.objects.create(slug=slug, title=title, description=description, collection=Collection.objects.first())
         print("Created Bundle: {} ({})".format(bundle.uuid, bundle.title))
 
         # Fetch Bundle data from source directory
