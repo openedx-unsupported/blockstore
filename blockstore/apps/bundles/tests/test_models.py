@@ -8,9 +8,16 @@ from django.test import TestCase
 
 from ..store import BundleDataStore
 from ..models import Bundle, BundleVersion
-
+from .factories import CollectionFactory
 
 class TestBundleVersionCreation(TestCase):
+
+    def setUp(self):
+
+        super().setUp()
+
+        self.collection = CollectionFactory(title="Collection 1")
+
 
     def test_auto_creation(self):
         """Creating a Snapshot should trigger creation of a BundleVersion."""
@@ -31,7 +38,7 @@ class TestBundleVersionCreation(TestCase):
 
         # Bundle creation and the first version
         bundle = Bundle.objects.create(
-            uuid=bundle_uuid, title="Auto-Create Test Bundle"
+            uuid=bundle_uuid, title="Auto-Create Test Bundle", collection=self.collection
         )
         snapshot_1 = store.create_snapshot(bundle_uuid, file_mapping)
         self.assertEqual(bundle.versions.count(), 1)

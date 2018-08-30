@@ -239,20 +239,22 @@ class BundleDataStore():
             created_at=created_at,
         )
 
-    def create_snapshot(self, bundle_uuid, paths_to_files):
+    def _save_file(self, bundle_uuid, path, file, public=False):
         """
-        paths_to_files is a dir of file paths to Django File objects
+        Save file at path and return a FileInfo object for it.
         """
-        files = {}
-        for path, file in paths_to_files.items():
-            file_hash = FileInfo.generate_hash(file)
-            data_write_location = "{}/data/{}".format(bundle_uuid, file_hash.hexdigest())
-            if not default_storage.exists(data_write_location):
-                default_storage.save(data_write_location, file)
+        file_hash = FileInfo.generate_hash(file)
+        data_write_location = "{}/data/{}".format(bundle_uuid, file_hash.hexdigest())
+        if not default_storage.exists(data_write_location):
+            default_storage.save(data_write_location, file)
+        return FileInfo(
+            path=path, public=public, size=file.size, hash_digest=file_hash.digest()
+        )
 
-            files[str(path)] = FileInfo(
-                path=path, public=False, size=file.size, hash_digest=file_hash.digest()
-            )
+    def _create_snapshot(self, bundle_uuid, files):
+        """
+        Create a BundleSnapshot object and save its JSON serialization to storage.
+        """
 
         snapshot = BundleSnapshot.create(bundle_uuid=bundle_uuid, files=files)
         summary_json_str = json.dumps(snapshot, cls=BundleJSONEncoder, indent=2, sort_keys=True)
@@ -269,3 +271,28 @@ class BundleDataStore():
         logger.info("Created Snapshot %s for Bundle %s", snapshot.hash_digest.hex(), bundle_uuid)
 
         return snapshot
+
+    def create_snapshot(self, bundle_uuid, paths_to_files):
+        """
+        Save the files, create a BundleSnapshot object and save its JSON serialization to storage.
+        """
+        files = {}
+        for path, file in paths_to_files.items():
+            files[str(path)] = self._save_file(bundle_uuid, path, file)
+
+        return self._create_snapshot(bundle_uuid, files)
+
+    def snapshot_by_adding_path(self, snapshot, path, public, data):
+        """
+        Create and save a BundleSnapshot with a file added at path to snapshot.
+        """
+        files = dict(snapshot.files)
+        files[str(path)] = self._save_file(snapshot.bundle_uuid, path, data, public)
+        return self._create_snapshot(snapshot.bundle_uuid, files)
+
+    def snapshot_by_removing_path(self, snapshot, path):
+        """
+        Create and save a BundleSnapshot with file at path removed from snapshot.
+        """
+        files = {p:snapshot.files[p] for p in snapshot.files if p != path}
+        return self._create_snapshot(snapshot.bundle_uuid, files)
