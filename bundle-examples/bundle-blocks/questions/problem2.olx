@@ -1,0 +1,9 @@
+<problem id="ab5f0fe35ced424fbee6e8b9381840fb" display_name="Checkboxes" markdown="&#10;&gt;&gt;Blockstore supports versions for which entities?&lt;&lt;&#10;&#10;[ ] Collections&#10;[ ] Bundles&#10;&#10;">
+<choiceresponse>
+  <label>Blockstore supports versions for which entities?</label>
+<checkboxgroup>
+    <choice correct="false">Collections</choice>
+    <choice correct="false">Bundles</choice>
+  </checkboxgroup>
+</choiceresponse>
+</problem>

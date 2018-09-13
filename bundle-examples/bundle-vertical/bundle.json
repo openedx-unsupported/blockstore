@@ -1,0 +1,14 @@
+{
+  "schema": 0.1,
+
+  "type": "olx/unit",
+
+  "components": [
+    "/control-center/info1.olx",
+    "/control-center/media/teaser.olx"
+  ],
+
+  "assets": [
+    "/files/"
+  ]
+}

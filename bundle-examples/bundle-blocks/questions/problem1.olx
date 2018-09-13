@@ -1,0 +1,10 @@
+<problem id="9c2aacff3e964be39a2bafdf9231587e" display_name="Multiple Choice" markdown="&#10;&gt;&gt;Where does the Blockstore store blocks content?&lt;&lt;&#10;&#10;( ) MySQL&#10;( ) Mongo&#10;( ) S3&#10;">
+<multiplechoiceresponse>
+  <label>Where does the Blockstore store blocks content?</label>
+<choicegroup type="MultipleChoice">
+    <choice correct="false">MySQL</choice>
+    <choice correct="false">Mongo</choice>
+    <choice correct="false">S3</choice>
+  </choicegroup>
+</multiplechoiceresponse>
+</problem>

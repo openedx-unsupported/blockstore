@@ -1,0 +1,10 @@
+{
+  "schema": 0.1,
+
+  "type": "olx/collection",
+
+  "components": [
+    "/questions/problem1.olx",
+    "/questions/problem2.olx"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schema": 0.1,
+
+  "type": "olx/sequence",
+
+  "components" : [
+    "/sequence1.olx"
+  ],
+
+  "dependencies": {
+    "control-center": {
+      "bundle_uuid": "bundle-vertical-uuid",
+      "version_num": 3
+    },
+
+    "problems": {
+      "bundle_uuid": "bundle-blocks-uuid",
+      "version_num": 11
+    }
+  }
+}
