@@ -10,11 +10,11 @@ However, some conventions should be followed by authoring clients for interopera
 * OLX files must use the **.olx** extension. Files with a different extension may be ignored or not treated as
   OLX by plugins and other clients. Files of any other type should not use this extension.
 
-Paths
+File URIs
 -------------------------
 
-Files can be referenced with paths which are relative references as specified in section 4.2 of
-`RFC 3986 <http://www.ietf.org/rfc/rfc3986.txt>`_.
+Files can be referenced with Absolute URI as specified in section 4.3 of
+`RFC 3986 <http://www.ietf.org/rfc/rfc3986.txt>`_. The scheme for file URIs is **bundle**.
 
 XBlock Runtimes are expected to provide a service which allows reading a file given a URI or for converting a URI into
 an internet accessible URL that can be passed to client applications.
@@ -26,29 +26,37 @@ an internet accessible URL that can be passed to client applications.
   url_1 = blockstore_service.url_for_path(path_of_directory_1)
   url_2 = blockstore_service.url_for_path(path_of_file_2)
 
-For directories or files in the same Bundle as the XBlock, the URI must be an absolute-path reference
-which consists of a single slash character followed by the full path of the directory or file from the root
-of the Bundle.
+For directories or files in the same Bundle as the XBlock, the URI must be of the form:
 
 .. code-block::
 
-  /bundle.json
-  /mcqs/mcq1.olx
-  /b/c/icon.png
-  /d/README
-  /e/f/
+  scheme ":" <path from root of Bundle>
 
-For files in other Bundles, the URI must be a network-path reference which begins with two slash characters followed
-by the alias of the relevant Bundle version as specified in ``bundle.json`` followed by the absolute-path reference
-of the directory or file from the root of its Bundle.
+Examples:
 
 .. code-block::
 
-  //problems/description.olx
-  //problems/mcqs/mcq1.olx
-  //problems/images/
-  //problems/resources/intro.pdf
-  //videos_lectures/vid/lecture1.olx
+  bundle:/bundle.json
+  bundle:/mcqs/mcq1.olx
+  bundle:/b/c/icon.png
+  bundle:/d/README
+  bundle:/e/f/
+
+For directories or files in other Bundles, the URI must be of the form:
+
+.. code-block::
+
+  scheme ":" "//" <Bundle alias> <path from root of Bundle>
+
+Examples:
+
+.. code-block::
+
+  bundle://problems/description.olx
+  bundle://problems/mcqs/mcq1.olx
+  bundle://problems/images/
+  bundle://problems/resources/intro.pdf
+  bundle://videos_lectures/vid/lecture1.olx
 
 If relative-path references are used in files, XBlocks will be responsible for prepending the URI of the relevant
 base directory when necessary.
@@ -109,10 +117,10 @@ should be internet accessible from client applications via URLs.
 
 .. code-block::
 
-  "assets": {
+  "assets": [
     "/images",
     "/resources/intro.pdf"
-  }
+  ]
 
 dependencies
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -127,11 +135,11 @@ URIs to directories or files in other Bundles use the alias as the authority.
 
   "dependencies": {
     "problems": {
-      "bundle_uuid": "21d45e735e134c41ae3b24fde26d4369",
+      "bundle_uuid": "159f55e4-8cb0-46b1-a866-e967e632c5af",
       "version_num": 8,
     },
     "videos_lectures": {
-      "bundle_uuid": "b97c9907ecd54f4eb5f4c7eb51dd58e3",
+      "bundle_uuid": "53766bd7-0fc1-400b-911b-85cd98b271a4",
       "version_num": 12
     }
   }

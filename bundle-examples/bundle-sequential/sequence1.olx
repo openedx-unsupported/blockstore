@@ -1,15 +1,15 @@
 <sequential display_name="What is Blockstore?">
 
   <vertical id="4d5ec9e8e6cb4f5c861ac266b3bc7c13" display_name="Introduction">
-    <html path="/introduction/d68c.olx"/>
-    <html path="/introduction/b53d.olx"/>
+    <html path="bundle:/introduction/d68c.olx"/>
+    <html path="bundle:/introduction/b53d.olx"/>
   </vertical>
 
-  <vertical path="//control-center/control-center/info1.olx"/>
+  <vertical path="bundle://control-center/control-center/info1.olx"/>
 
   <vertical id="290bfec3750f4c33a7818e5ade8396a1" display_name="General Themes / Concepts">
-    <html path="/introduction/a6e1.olx"/>
+    <html path="bundle:/introduction/a6e1.olx"/>
   </vertical>
 
-  <vertical path="/vertical1.olx" />
+  <vertical path="bundle:/vertical1.olx" />
 </sequential>
