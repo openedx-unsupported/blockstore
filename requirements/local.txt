@@ -3,6 +3,3 @@
 -r docs.txt
 
 django-debug-toolbar
-docker-compose
-edx-i18n-tools
-transifex-client

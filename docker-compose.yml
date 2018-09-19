@@ -1,25 +1,25 @@
-db:
-  image: mysql:5.6
-  container_name: db
-  environment:
-    MYSQL_ROOT_PASSWORD: ""
-    MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+version: '3'
 
-memcache:
-  image: memcached:1.4.24
-  container_name: memcache
+services:
 
-blockstore:
-  # Uncomment this line to use the official blockstore base image
-  image: blockstore:v1
+  blockstore:
+    container_name: edx.devstack.blockstore
+    image: opencraft/blockstore:latest
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    stdin_open: true
+    tty: true
+    entrypoint: ["/bin/bash"]
+    networks:
+      - default
+      - devstack
+    ports:
+      - "18250:18250"
+    volumes:
+      - ./:/blockstore/app/:cached
 
-  # Uncomment the next two lines to build from a local configuration repo
-  #build: ../configuration
-  #dockerfile: docker/build/blockstore/Dockerfile
-
-  container_name: blockstore
-  volumes:
-    - .:/edx/app/blockstore/blockstore
-  command: /edx/app/blockstore/devstack.sh start
-  ports:
-    - "8000:8000" # TODO: change this to your port
+networks:
+  devstack:
+    external:
+      name: devstack_default

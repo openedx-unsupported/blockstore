@@ -3,9 +3,11 @@
 
 coverage
 dj-inmemorystorage
+django_dynamic_fixture
 edx-lint
 factory_boy
-pep8
+mock
+pycodestyle
 pytest
 pytest-cov
 pytest-django
