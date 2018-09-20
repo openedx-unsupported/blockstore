@@ -1,3 +1,4 @@
+""" Constants for the API. """
 
 FILE_PATH_REGEX = '[^:]+'
 

@@ -18,7 +18,7 @@ class HyperlinkedRelatedField(relations.HyperlinkedRelatedField):
         self.lookup_url_kwargs = kwargs.pop('lookup_url_kwargs', self.lookup_fields)
         super().__init__(*args, **kwargs)
 
-    def get_url(self, obj, view_name, request, format):
+    def get_url(self, obj, view_name, request, format):  # pylint: disable=redefined-builtin
 
         # Unsaved objects will not yet have a valid URL.
         if hasattr(obj, 'pk') and obj.pk in (None, ''):

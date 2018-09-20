@@ -1,8 +1,13 @@
-from django.core.management.base import BaseCommand, CommandError
+""" Command to create a collection. """
+
+from django.core.management.base import BaseCommand
 
 from ...models import Collection
 
+
 class Command(BaseCommand):
+    """ Command to create a collection. """
+
     help = 'Creates a Collection'
 
     def add_arguments(self, parser):
@@ -12,4 +17,3 @@ class Command(BaseCommand):
         title = options['title']
         collection = Collection.objects.create(title=title)
         print("Created Collection: {} ({})".format(collection.uuid, collection.title))
-

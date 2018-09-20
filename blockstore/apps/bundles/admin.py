@@ -1,16 +1,18 @@
+""" Admin for bundles. """
+
 from pathlib import Path
-import codecs
-import html
 import json
 
 from django.contrib import admin
-from django.utils.html import escape, format_html, format_html_join
-from django.utils.translation import ugettext_lazy as _
+from django.utils.html import format_html, format_html_join
 
 from .models import Bundle, BundleVersion, Collection
 from .store import BundleJSONEncoder
 
+
 class BundleVersionInline(admin.StackedInline):
+    """ BundleVersion inline view. """
+
     model = BundleVersion
     readonly_fields = (
         'version_num',
@@ -29,10 +31,6 @@ class BundleVersionInline(admin.StackedInline):
         BundleVersion references.
         """
         snapshot = obj.snapshot()
-        rows_data = [
-            (html.escape(pathname), html.escape(Path(pathname).name), snapshot.url(pathname))
-            for pathname in sorted(snapshot.files)
-        ]
         header_html = format_html("<tr><th>File</th><th>Public</th><th>Size</th><th>Hash Digest</th></tr>")
         rows_html = format_html_join(
             '\n',

@@ -1,3 +1,5 @@
+""" Tests for api v1 views. """
+
 from django.test import TestCase
 from django.core.files.base import ContentFile
 from rest_framework.reverse import reverse
@@ -25,6 +27,7 @@ TEXT_FILE = ContentFile(TEXT_CONTENT_BYTES)
 
 
 class ViewsBaseTestCase(TestCase):
+    """ Base class for tests. """
 
     def setUp(self):
 
@@ -52,6 +55,7 @@ class ViewsBaseTestCase(TestCase):
 
 
 class BundleViewSetTestCase(ViewsBaseTestCase):
+    """ Tests for BundleViewSet. """
 
     def test_list(self):
 
@@ -118,6 +122,7 @@ class BundleViewSetTestCase(ViewsBaseTestCase):
 
 
 class BundleVersionViewSetTestCase(ViewsBaseTestCase):
+    """ Tests for BundleVersionViewSet. """
 
     def test_list(self):
 
@@ -149,6 +154,7 @@ class BundleVersionViewSetTestCase(ViewsBaseTestCase):
 
 
 class CollectionViewSetTestCase(ViewsBaseTestCase):
+    """ Tests for CollectionViewSet. """
 
     def test_list(self):
 
@@ -210,6 +216,7 @@ class CollectionViewSetTestCase(ViewsBaseTestCase):
 
 
 class BundleFileReadOnlyViewSetTestCase(ViewsBaseTestCase):
+    """ Tests for BundleFileReadonlyViewSet. """
 
     def test_list(self):
 
@@ -272,6 +279,7 @@ class BundleFileReadOnlyViewSetTestCase(ViewsBaseTestCase):
 
 
 class BundleFileViewSetTestCase(ViewsBaseTestCase):
+    """ Tests for BundleFileViewSet. """
 
     def test_list(self):
 

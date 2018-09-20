@@ -7,14 +7,11 @@ BundleStore is the primary interface for the actual data stored by a Bundle.
 Whenever there's a need for hashing of content in some way, we use 20-byte
 BLAKE2b.
 """
-from collections import namedtuple
 from contextlib import contextmanager
 from datetime import datetime, timezone
-import base64
 import codecs
 import hashlib
 import logging
-import pathlib
 import json
 import uuid
 
@@ -29,6 +26,7 @@ snapshot_created = Signal(providing_args=["bundle_uuid", "hash_digest"])
 
 
 logger = logging.getLogger(__name__)
+
 
 @attr.s(frozen=True)
 class FileInfo():
@@ -47,10 +45,10 @@ class FileInfo():
         """
         For a given django.core.files.File object, return a 20-byte BLAKE2 hash.
         """
-        hash = hashlib.blake2b(digest_size=20)
+        blake_hash = hashlib.blake2b(digest_size=20)  # pylint: disable=no-member
         for chunk in file.chunks():
-            hash.update(chunk)
-        return hash
+            blake_hash.update(chunk)
+        return blake_hash
 
 # @attr.s(frozen=True)
 # class Link():
@@ -105,6 +103,7 @@ class BundleSnapshot():
 
     @classmethod
     def create(cls, bundle_uuid, files, created_at=None):
+        """ Create a BundleSnapshot. """
         created_at = created_at or datetime.now(timezone.utc)
         str_to_be_hashed = json.dumps(
             [bundle_uuid, created_at, sorted(files.items())],
@@ -112,7 +111,9 @@ class BundleSnapshot():
             indent=None,
             separators=(',', ':'),
         )
-        hash_digest = hashlib.blake2b(str_to_be_hashed.encode('utf-8'), digest_size=20).digest()
+        hash_digest = hashlib.blake2b(  # pylint: disable=no-member
+            str_to_be_hashed.encode('utf-8'), digest_size=20
+        ).digest()
         return cls(
             bundle_uuid=bundle_uuid,
             files=files,
@@ -122,11 +123,12 @@ class BundleSnapshot():
 
     def url(self, path):
         """Return a user-accessible URL to download a path from this Snapshot."""
-        file_info = self.files[path]
+        file_info = self.files[path]  # pylint: disable=unsubscriptable-object
         storage_path = '{}/data/{}'.format(
             self.bundle_uuid, file_info.hash_digest.hex()
         )
         return default_storage.url(storage_path)
+
 
 @contextmanager
 def files_from_disk(bundle_data_path):
@@ -150,26 +152,26 @@ def files_from_disk(bundle_data_path):
 
 
 class BundleJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, FileInfo):
+    def default(self, o):  # pylint: disable=method-hidden
+        if isinstance(o, FileInfo):
             return [
-                obj.public,
-                obj.size,
-                obj.hash_digest.hex(),
+                o.public,
+                o.size,
+                o.hash_digest.hex(),
             ]
-        elif isinstance(obj, uuid.UUID):
-            return str(obj)
-        elif isinstance(obj, datetime):
-            return obj.isoformat()
-        elif isinstance(obj, BundleSnapshot):
+        elif isinstance(o, uuid.UUID):
+            return str(o)
+        elif isinstance(o, datetime):
+            return o.isoformat()
+        elif isinstance(o, BundleSnapshot):
             return {
-                'bundle_uuid': obj.bundle_uuid,
-                'hash_digest': obj.hash_digest.hex(),
-                'files': obj.files,
-                'created_at': obj.created_at,
+                'bundle_uuid': o.bundle_uuid,
+                'hash_digest': o.hash_digest.hex(),
+                'files': o.files,
+                'created_at': o.created_at,
                 '_version': 1,
             }
-        return json.JSONEncoder.default(self, obj)
+        return json.JSONEncoder.default(self, o)
 
 
 class BundleDataStore():
@@ -213,6 +215,7 @@ class BundleDataStore():
     implementation details.
     """
     def snapshot(self, bundle_uuid, snapshot_digest):
+        """ Return a snapshot. """
         storage_path = "{}/snapshots/{}.json".format(bundle_uuid, snapshot_digest.hex())
         with default_storage.open(storage_path) as snapshot_file:
             snapshot_json = json.load(snapshot_file)
@@ -258,7 +261,9 @@ class BundleDataStore():
 
         snapshot = BundleSnapshot.create(bundle_uuid=bundle_uuid, files=files)
         summary_json_str = json.dumps(snapshot, cls=BundleJSONEncoder, indent=2, sort_keys=True)
-        summary_write_location = "{}/snapshots/{}.json".format(bundle_uuid, snapshot.hash_digest.hex())
+        summary_write_location = "{}/snapshots/{}.json".format(
+            bundle_uuid, snapshot.hash_digest.hex()  # pylint: disable=no-member
+        )
 
         if not default_storage.exists(summary_write_location):
             default_storage.save(summary_write_location, ContentFile(summary_json_str))
@@ -268,7 +273,9 @@ class BundleDataStore():
             bundle_uuid=bundle_uuid,
             hash_digest=snapshot.hash_digest,
         )
-        logger.info("Created Snapshot %s for Bundle %s", snapshot.hash_digest.hex(), bundle_uuid)
+        logger.info(
+            "Created Snapshot %s for Bundle %s", snapshot.hash_digest.hex(), bundle_uuid  # pylint: disable=no-member
+        )
 
         return snapshot
 
@@ -294,5 +301,5 @@ class BundleDataStore():
         """
         Create and save a BundleSnapshot with file at path removed from snapshot.
         """
-        files = {p:snapshot.files[p] for p in snapshot.files if p != path}
+        files = {p: snapshot.files[p] for p in snapshot.files if p != path}
         return self._create_snapshot(snapshot.bundle_uuid, files)

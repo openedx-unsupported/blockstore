@@ -1,3 +1,4 @@
+""" Tests for api v1 serializers. """
 
 from django.test import TestCase
 from django.conf import settings
@@ -105,6 +106,7 @@ class CollectionSerializerTestCase(SerializerBaseTestCase):
 class FileInfoSerializerTestCase(SerializerBaseTestCase):
 
     def test_file_info_serializer_data(self):
+        # pylint: disable=unsubscriptable-object
 
         request = self.request_factory.get('/')
         request.parser_context = {
@@ -121,7 +123,7 @@ class FileInfoSerializerTestCase(SerializerBaseTestCase):
             file_info, context={'request': request}
         )
 
-        self.assertSequenceEqual(list(file_info_serializer.data.keys()), [
+        self.assertSequenceEqual(list(file_info_serializer.data.keys()), [  # pylint: disable=no-member
             'data', 'path', 'public', 'size', 'url'
         ])
 
