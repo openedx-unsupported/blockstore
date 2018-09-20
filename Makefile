@@ -39,6 +39,7 @@ blockstore-shell:
 clean: ## Remove all generated files
 	find . -name '*.pyc' -delete
 	${VENV_BIN}/coverage erase
+	rm -f diff-cover.html
 
 requirements: ## Install requirements for development
 	${VENV_BIN}/pip install -qr requirements/local.txt --exists-action w
@@ -51,7 +52,9 @@ runserver:  ## Run django development server
 
 test: clean ## Run tests and generate coverage report
 	${VENV_BIN}/coverage run ./manage.py test blockstore --settings=blockstore.settings.test
-	${VENV_BIN}/coverage report
+	${VENV_BIN}/coverage html
+	${VENV_BIN}/coverage xml
+	${VENV_BIN}/diff-cover coverage.xml --html-report diff-cover.html
 
 html_coverage: ## Generate HTML coverage report
 	${VENV_BIN}/coverage html

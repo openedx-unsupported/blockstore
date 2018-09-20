@@ -2,6 +2,7 @@
 -r base.txt
 
 coverage
+diff-cover
 dj-inmemorystorage
 django_dynamic_fixture
 edx-lint
