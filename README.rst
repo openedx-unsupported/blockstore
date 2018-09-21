@@ -1,12 +1,13 @@
-Blockstore  |Travis|_ |Codecov|_
+Blockstore
 ===================================================
-.. |Travis| image:: https://travis-ci.org/edx/blockstore.svg?branch=master
-.. _Travis: https://travis-ci.org/edx/blockstore
 
-.. |Codecov| image:: http://codecov.io/github/edx/blockstore/coverage.svg?branch=master
-.. _Codecov: http://codecov.io/github/edx/blockstore?branch=master
+Blockstore is a system for authoring, discovering, and reusing educational content for Open edX.
+It is meant to be a lower-level service than the modulestore, and is designed around the concept of storing small, reusable pieces of content, rather than large, fixed content structures such as courses.
+For Open edX, Blockstore is designed to facilitate a much greater level of content re-use than is currently possible, enable new adaptive learning features, and enable delivery of learning content in new ways (not just large traditional courses).
 
-The ``README.rst`` file should start with a brief description of the repository, which sets it in the context of other repositories under the ``edx`` organization. It should make clear where this fits in to the overall edX codebase. You may also want to provide a brief overview of the code in this repository, including the main components and useful entry points for starting to understand the code in more detail, or link to a comparable description in your repo's docs.
+See DESIGN_ for more details.
+
+.. _DESIGN: https://openedx.atlassian.net/wiki/spaces/AC/pages/737149430/Blockstore+Design
 
 Documentation
 -------------
@@ -31,6 +32,48 @@ Reporting Security Issues
 -------------------------
 
 Please do not report security issues in public. Please email security@edx.org.
+
+Using with Docker Devstack
+--------------------------
+
+Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ properly installed.
+
+#. Clone this repo and ``cd`` into it.
+
+#. Start the service.
+
+   .. code::
+
+       make dev.up
+
+
+#. Run the provision command to install dependencies, migrate databases etc.
+
+   .. code::
+
+       make dev.provision
+
+#. Run a shell on the container
+
+   .. code::
+
+       make blockstore-shell
+
+#. To start the django developement server, from the shell on the container run:
+
+   .. code::
+
+       make runserver
+
+#. The blockstore container is also added to the ``devstack_default`` docker network.
+   This allows it to be accessed from any of the devstack containers as ``edx.devstack.blockstore``.
+   Test this by running the following command from any devstack container shell:
+
+   .. code::
+
+       curl edx.devstack.blockstore:18250/api/v1/ -v
+
+#. Run ``make`` to get a list of all available commands.
 
 Get Help
 --------
