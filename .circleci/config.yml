@@ -1,0 +1,61 @@
+version: 2
+
+workflows:
+  version: 2
+  validate:
+    jobs:
+      - tests
+      - quality
+
+jobs:
+  tests:
+
+    working_directory: /blockstore/app/
+
+    docker:
+      - image: python:3.6-alpine
+
+    steps:
+
+      - checkout
+
+      - run:
+          name: Install requirements
+          command: |
+            apk update && apk upgrade
+            apk add bash bash-completion build-base git perl
+            python3.6 -m venv /blockstore/venv
+            source /blockstore/venv/bin/activate
+            make requirements
+
+      - run:
+          name: Run tests
+          command: |
+            source /blockstore/venv/bin/activate
+            make test
+
+  quality:
+
+    working_directory: /blockstore/app/
+
+    docker:
+      - image: python:3.6-alpine
+
+    steps:
+
+      - checkout
+
+      - run:
+          name: Install requirements
+          command: |
+            apk update && apk upgrade
+            apk add bash bash-completion build-base git perl
+            python3.6 -m venv /blockstore/venv
+            source /blockstore/venv/bin/activate
+            make requirements
+
+      - run:
+          name: Run quality
+          command: |
+            source /blockstore/venv/bin/activate
+            make quality
