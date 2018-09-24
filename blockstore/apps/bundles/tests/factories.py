@@ -1,3 +1,5 @@
+""" Factories for bundle models. """
+
 import factory
 
 from ..store import FileInfo

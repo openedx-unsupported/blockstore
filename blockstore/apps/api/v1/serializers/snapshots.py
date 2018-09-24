@@ -13,7 +13,7 @@ class FileHyperlinkedIdentityField(relations.HyperlinkedIdentityField):
     A HyperlinkedIdentityField for a nested FileInfo resource.
     """
 
-    def get_url(self, obj, view_name, request, format):
+    def get_url(self, obj, view_name, request, format):  # pylint: disable=redefined-builtin
         request = self.context['request']
         return self.reverse(
             self.context.get('detail_view_name', view_name),
@@ -31,13 +31,13 @@ class FileDataField(serializers.FileField):
     A FileField for FileInfo data field whose representation is a link to the file.
     """
 
-    def get_attribute(self, obj):
+    def get_attribute(self, instance):
         # We pass the object instance onto `to_representation`, not just the field attribute.
-        return obj
+        return instance
 
-    def to_representation(self, obj):
+    def to_representation(self, value):
         request = self.context['request']
-        data_location = "{}/data/{}".format(request.parser_context['kwargs']['bundle_uuid'], obj.hash_digest.hex())
+        data_location = "{}/data/{}".format(request.parser_context['kwargs']['bundle_uuid'], value.hash_digest.hex())
         return self.context['request'].build_absolute_uri(default_storage.url(data_location))
 
 
@@ -45,6 +45,7 @@ class FileInfoSerializer(serializers.Serializer):
     """
     Serializer for a FileInfo object.
     """
+    # pylint: disable=abstract-method
 
     data = FileDataField()
     path = serializers.CharField()

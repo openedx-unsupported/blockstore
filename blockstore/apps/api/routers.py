@@ -26,7 +26,7 @@ class DefaultRouter(routers.DefaultRouter):
         # drf-nested-routers assumes that lookup will have length > 0 and so
         # always appends "_" to it to create the lookup_prefix. If lookup_prefix
         # is only "_" we reset it to "".
-        if lookup_prefix is '_':
+        if lookup_prefix == '_':
             lookup_prefix = ''
 
         lookup_fields = getattr(viewset, 'lookup_fields', None)

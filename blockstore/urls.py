@@ -39,5 +39,5 @@ urlpatterns = auth_urlpatterns + [
 if settings.DEBUG:  # pragma: no cover
     urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
     if os.environ.get('ENABLE_DJANGO_TOOLBAR', False):
-        import debug_toolbar  # pylint: disable=wrong-import-order,wrong-import-position,import-error
+        import debug_toolbar
         urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))

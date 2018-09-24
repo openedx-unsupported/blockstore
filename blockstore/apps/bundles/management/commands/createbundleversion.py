@@ -1,17 +1,16 @@
-import os
-import os.path
+""" Command to create a bundle version. """
+
 import pathlib
 import uuid
 
-from django.core.files import File
-from django.core.files.storage import default_storage
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
-from ...models import Bundle
 from ...store import BundleDataStore, files_from_disk
 
 
 class Command(BaseCommand):
+    """ Command to create a bundle version. """
+
     help = 'Creates a Bundle Version'
 
     def add_arguments(self, parser):
@@ -29,6 +28,3 @@ class Command(BaseCommand):
         store = BundleDataStore()
         with files_from_disk(bundle_data_path) as bundle_version_files:
             store.create_snapshot(bundle_uuid, bundle_version_files)
-
-
-

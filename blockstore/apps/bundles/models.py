@@ -52,12 +52,10 @@ using 180 as a reasonable sounding number below the limit.
 need to be (Bundles are unlikely to grow to that size, for instance), because
 it's not *that* expensive, and migrating data once it gets that large is a pain.
 """
-import codecs
 import uuid
 
 from django.db import models
 from django.dispatch import receiver
-import attr
 
 from .store import BundleDataStore, snapshot_created
 

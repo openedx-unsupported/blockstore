@@ -2,7 +2,6 @@
 Test BundleStore functionality (where we actually persist Bundle file data).
 """
 from unittest import mock, TestCase
-import codecs
 import hashlib
 import uuid
 
@@ -46,13 +45,17 @@ class TestBundleSnapshots(TestCase):
                     path='test.html',
                     public=False,
                     size=25,
-                    hash_digest=hashlib.blake2b(HTML_CONTENT_BYTES, digest_size=20).digest(),
+                    hash_digest=hashlib.blake2b(  # pylint: disable=no-member
+                        HTML_CONTENT_BYTES, digest_size=20
+                    ).digest(),
                 ),
                 'test.txt': FileInfo(
                     path='test.txt',
                     public=False,
                     size=17,
-                    hash_digest=hashlib.blake2b(TEXT_CONTENT_BYTES, digest_size=20).digest(),
+                    hash_digest=hashlib.blake2b(  # pylint: disable=no-member
+                        TEXT_CONTENT_BYTES, digest_size=20
+                    ).digest(),
                 ),
             }
         )
@@ -87,6 +90,6 @@ class TestBundleSnapshots(TestCase):
         self.assertNotEqual(snapshot_1, snapshot_2)
         self.assertNotEqual(snapshot_1.hash_digest, snapshot_2.hash_digest)
         self.assertEqual(
-            snapshot_1.files['test.txt'].hash_digest,
-            snapshot_2.files['renamed.txt'].hash_digest,
+            snapshot_1.files['test.txt'].hash_digest,  # pylint: disable=unsubscriptable-object
+            snapshot_2.files['renamed.txt'].hash_digest,  # pylint: disable=unsubscriptable-object
         )

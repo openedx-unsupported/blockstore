@@ -7,17 +7,18 @@ from django.core.files.base import ContentFile
 from django.test import TestCase
 
 from ..store import BundleDataStore
-from ..models import Bundle, BundleVersion
+from ..models import Bundle
 from .factories import CollectionFactory
 
+
 class TestBundleVersionCreation(TestCase):
+    """ Tests for BundleVersion model. """
 
     def setUp(self):
 
         super().setUp()
 
         self.collection = CollectionFactory(title="Collection 1")
-
 
     def test_auto_creation(self):
         """Creating a Snapshot should trigger creation of a BundleVersion."""

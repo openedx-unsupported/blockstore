@@ -34,6 +34,7 @@ class BundleFileReadOnlyViewSet(viewsets.ViewSet):
         }
 
     def get_bundle_version(self, bundle_uuid, version_num=None):
+        """ Get the bundle version. """
 
         filter_kwargs = {
             'bundle__uuid': bundle_uuid
@@ -54,6 +55,7 @@ class BundleFileReadOnlyViewSet(viewsets.ViewSet):
         raise http.Http404
 
     def list(self, _request, bundle_uuid, version_num=None):
+        """ Retrieve all files in a bundle. """
         snapshot = self.get_bundle_version_or_404(bundle_uuid, version_num).snapshot()
         file_info_serializer = FileInfoSerializer(
             snapshot.files.values(),
@@ -63,6 +65,7 @@ class BundleFileReadOnlyViewSet(viewsets.ViewSet):
         return Response(file_info_serializer.data)
 
     def retrieve(self, _request, bundle_uuid, path, version_num=None):
+        """ Retrieve details for a file in a bundle. """
         snapshot = self.get_bundle_version_or_404(bundle_uuid, version_num).snapshot()
         file = snapshot.files.get(path, None)
         if file:
@@ -82,6 +85,7 @@ class BundleFileViewSet(BundleFileReadOnlyViewSet):
     detail_view_name = 'api:v1:bundlefile-detail'
 
     def create(self, request, bundle_uuid, version_num=None):
+        """ Add file to a bundle. """
         serializer = FileInfoSerializer(data=request.data)
         if serializer.is_valid():
             bundle_version = self.get_bundle_version(bundle_uuid, version_num)
@@ -95,7 +99,7 @@ class BundleFileViewSet(BundleFileReadOnlyViewSet):
             snapshot = store.snapshot_by_adding_path(snapshot, **serializer.validated_data)
 
             response_serializer = FileInfoSerializer(
-                snapshot.files[serializer.validated_data['path']],
+                snapshot.files[serializer.validated_data['path']],  # pylint: disable=unsubscriptable-object
                 context=self.get_serializer_context(),
             )
             return Response(response_serializer.data, status=status.HTTP_201_CREATED)
@@ -103,6 +107,7 @@ class BundleFileViewSet(BundleFileReadOnlyViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, _request, bundle_uuid, version_num=None, path=None):
+        """ Delete files from a bundle. """
         snapshot = self.get_bundle_version_or_404(bundle_uuid, version_num).snapshot()
         store = BundleDataStore()
         store.snapshot_by_removing_path(snapshot, path)
