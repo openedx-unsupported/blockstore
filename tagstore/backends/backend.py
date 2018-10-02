@@ -3,10 +3,7 @@ A backend is a wrapper around a database that stores tags
 """
 from typing import AsyncIterator, List, Optional
 
-from ..models.entity import EntityId
-from ..models.tag import Tag, TagSet
-from ..models.user import UserId
-from ..models.taxonomy import TaxonomyMetadata
+from ..models import EntityId, Tag, TagSet, TaxonomyMetadata, UserId
 
 
 class TagstoreBackend:
@@ -23,11 +20,14 @@ class TagstoreBackend:
     async def get_taxonomy(self, uid: int) -> TaxonomyMetadata:
         raise NotImplementedError()
 
-    async def add_tag_to_taxonomy(self, tag: Tag) -> None:
+    async def add_tag_to_taxonomy(self, taxonomy_uid: int, tag: str, parent_tag: Optional[str] = None) -> None:
         """
-        Add the specified tag to the taxonomy it references
+        Add the specified tag to the given taxonomy
 
-        Will be a no-op if the tag already exists in the taxonomy
+        Will be a no-op if the tag already exists in the taxonomy.
+        Will raise a ValueError if the specified taxonomy or parent doesn't exist.
+        Will raise a ValueError if trying to add a child tag that
+        already exists anywhere in the taxonomy.
         """
         raise NotImplementedError()
 
@@ -36,6 +36,20 @@ class TagstoreBackend:
         TBD
         """
         raise NotImplementedError()
+
+    async def list_tags_in_taxonomy(self, uid: int) -> AsyncIterator[Tag]:
+        """
+        Get a (flattened) list of all tags in the given taxonomy, in alphabetical order.
+        """
+        raise NotImplementedError()
+
+    async def list_tags_in_taxonomy_containing(self, uid: int, text: str) -> AsyncIterator[Tag]:
+        """
+        Get a (flattened) list of all tags in the given taxonomy that contain the given string
+        """
+        # OPTIONAL: Backends do not have to implement this, but it's recommended.
+        raise NotImplementedError()
+        yield None  # Required to make this non-implementation also a generator. pylint: disable=unreachable
 
     # Tagging Entities ##########################
 
@@ -49,7 +63,7 @@ class TagstoreBackend:
 
     async def remove_tag_from(self, tag: Tag, *entity_ids: EntityId) -> None:
         """
-        Add the specified tag to the specified entity/entities
+        Remove the specified tag from the specified entity/entities
 
         Will be a no-op if the entities do not have that tag.
         """
@@ -61,16 +75,17 @@ class TagstoreBackend:
 
     # Searching Entities ##########################
 
-    async def get_entities_matching(
+    async def get_entities_tagged_with_all(
         self,
+        tags: TagSet,
+        entity_types: Optional[List[str]] = None,
+        external_id_prefix: Optional[str] = None,
         entity_ids: Optional[List[EntityId]] = None,  # use this to filter a list of entity IDs by tag
-        entity_id_prefix: Optional[str] = None,
-        has_all_of: Optional[TagSet] = None,
-        has_any_of: Optional[TagSet] = None,
-        include_child_tags=True,  # For hiararchical taxonomies, include child tags
+        include_child_tags=True,  # For hierarchical taxonomies, include child tags
                                   # (e.g. search for "Animal" will return results tagged only with "Dog")
     ) -> AsyncIterator[EntityId]:
         """
-        Method for searching/filtering for entities that match the specified conditions.
+        Method for searching/filtering for entities that have all the specified tags
+        and match all of the specified conditions
         """
         raise NotImplementedError()
