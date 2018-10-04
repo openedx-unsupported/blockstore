@@ -9,6 +9,7 @@ import asynctest
 
 from .. import Tagstore, TagstoreBackend
 from ..models import EntityId, TaxonomyMetadata
+from .django import DjangoTagstoreBackend
 from .neo4j import Neo4jTagstoreBackend
 
 
@@ -55,6 +56,50 @@ class AbstractBackendTest:
         tags = [t async for t in self.tagstore.list_tags_in_taxonomy(tax.uid)]
         self.assertEqual(len(tags), 1)
         self.assertEqual(tags[0], tag)
+
+    async def test_case_sensitive_tags(self):
+        """ add_tag_to_taxonomy will add a tag to the given taxonomy """
+        tax = await self.tagstore.create_taxonomy("TestTax", owner_id=1)
+        self.assertEqual(len([t async for t in self.tagstore.list_tags_in_taxonomy(tax.uid)]), 0)
+        tag1 = await self.tagstore.add_tag_to_taxonomy('testing', tax)
+        tag2 = await self.tagstore.add_tag_to_taxonomy('Testing', tax)
+        tags = set([t async for t in self.tagstore.list_tags_in_taxonomy(tax.uid)])
+        self.assertEqual(len(tags), 2)
+        self.assertEqual(tags, {tag1, tag2})
+
+    async def test_allowed_tag_names(self):
+        """ add_tag_to_taxonomy will allow these tags """
+        valid_tags = [
+            'lower',
+            'UPPER',
+            'spaces between words',
+            '@handle',
+            'Αλφα',
+            '🔥',
+        ]
+        tax = await self.tagstore.create_taxonomy("TestTax", owner_id=1)
+        for tag in valid_tags:
+            await self.tagstore.add_tag_to_taxonomy(tag, tax)
+        tags_created = set([t.tag async for t in self.tagstore.list_tags_in_taxonomy(tax.uid)])
+        self.assertEqual(tags_created, set(valid_tags))
+
+    async def test_forbidden_tag_names(self):
+        """ add_tag_to_taxonomy will reject certain tags """
+        invalid_tags = [
+            '',
+            'misleading    ',
+            ' misleading',
+            'one, two',
+            'one/two',
+            'foo:bar',
+            'foo;bar',
+            'new\nline',
+            'new\rline',
+        ]
+        tax = await self.tagstore.create_taxonomy("TestTax", owner_id=1)
+        for tag in invalid_tags:
+            with self.assertRaises(ValueError):
+                await self.tagstore.add_tag_to_taxonomy(tag, tax)
 
     async def test_add_tag_to_taxonomy_idempotent(self):
         """ add_tag_to_taxonomy will add a tag to the given taxonomy only once """
@@ -110,6 +155,26 @@ class AbstractBackendTest:
         self.assertEqual(await self.tagstore.get_tags_applied_to(entity_id), set())
         await self.tagstore.add_tag_to(tag, entity_id)
         self.assertEqual(await self.tagstore.get_tags_applied_to(entity_id), {tag})
+
+    async def test_entity_ids(self):
+        """ Test that entities are always identified by their type AND external_id together """
+        tax = await self.tagstore.create_taxonomy("TestTax", owner_id=1)
+        tag1 = await self.tagstore.add_tag_to_taxonomy('t1', tax)
+        tag2 = await self.tagstore.add_tag_to_taxonomy('t2', tax)
+        tag3 = await self.tagstore.add_tag_to_taxonomy('t3', tax)
+        tag4 = await self.tagstore.add_tag_to_taxonomy('t4', tax)
+        entity1 = EntityId(entity_type='typeA', external_id='alpha')
+        entity2 = EntityId(entity_type='typeA', external_id='beta')
+        entity3 = EntityId(entity_type='typeB', external_id='alpha')  # Differs from entity1 only by type
+        entity4 = EntityId(entity_type='typeB', external_id='beta')
+        await self.tagstore.add_tag_to(tag1, entity1)
+        await self.tagstore.add_tag_to(tag2, entity2)
+        await self.tagstore.add_tag_to(tag3, entity3)
+        await self.tagstore.add_tag_to(tag4, entity4)
+        self.assertEqual(await self.tagstore.get_tags_applied_to(entity1), {tag1})
+        self.assertEqual(await self.tagstore.get_tags_applied_to(entity2), {tag2})
+        self.assertEqual(await self.tagstore.get_tags_applied_to(entity3), {tag3})
+        self.assertEqual(await self.tagstore.get_tags_applied_to(entity4), {tag4})
 
     # Searching entities
 
@@ -227,3 +292,10 @@ class Neo4jBackendTest(AbstractBackendTest, asynctest.TestCase):
             MATCH (n)
             DETACH DELETE n
         ''')
+
+
+class DjangoBackendTest(AbstractBackendTest, asynctest.TestCase):
+    """ Test the Django backend implementation """
+
+    def get_backend(self) -> TagstoreBackend:
+        return DjangoTagstoreBackend()

@@ -41,6 +41,12 @@ class Tagstore:
         if not isinstance(tag, str) or len(tag) < 1:
             raise ValueError("Tag value must be a (non-empty) string.")
 
+        if tag != tag.strip():
+            raise ValueError("Tag cannot start or end with whitespace.")
+
+        if any(char in tag for char in '/:,;\n\r\\'):
+            raise ValueError("Tag contains an invalid character.")
+
         if isinstance(taxonomy, TaxonomyMetadata):
             taxonomy_uid = taxonomy.uid
         else:
