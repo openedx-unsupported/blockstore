@@ -6,7 +6,7 @@ import pathlib
 from django.core.management.base import BaseCommand
 
 from ...models import Bundle, Collection
-from ...store import BundleDataStore, files_from_disk
+from ...store import SnapshotRepo, files_from_disk
 
 
 class Command(BaseCommand):
@@ -34,7 +34,7 @@ class Command(BaseCommand):
 
         # Fetch Bundle data from source directory
         bundle_data_path = pathlib.Path(bundle_src)
-        store = BundleDataStore()
+        store = SnapshotRepo()
 
         with files_from_disk(bundle_data_path) as bundle_version_files:
-            store.create_snapshot(bundle.uuid, bundle_version_files)
+            store.create(bundle.uuid, bundle_version_files)

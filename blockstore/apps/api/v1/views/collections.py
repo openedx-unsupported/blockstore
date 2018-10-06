@@ -14,7 +14,6 @@ class CollectionViewSet(viewsets.ModelViewSet):
     """
     ViewSet for Collection model.
     """
-
     lookup_field = 'uuid'
     lookup_url_kwarg = 'uuid'
     lookup_value_regex = UUID4_REGEX

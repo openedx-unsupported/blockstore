@@ -3,9 +3,9 @@
 from django.db import DatabaseError
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.utils import override_settings
+from django.urls import reverse
 import mock
 
 from blockstore.apps.core.constants import Status
@@ -23,7 +23,7 @@ class HealthTests(TestCase):
 
     def test_database_outage(self):
         """Test that the endpoint reports when the database is unavailable."""
-        with mock.patch('django.db.backends.base.base.BaseDatabaseWrapper.cursor', side_effect=DatabaseError):
+        with mock.patch('django.db.connection.cursor', side_effect=DatabaseError):
             self._assert_health(503, Status.UNAVAILABLE, Status.UNAVAILABLE)
 
     def _assert_health(self, status_code, overall_status, database_status):

@@ -1,5 +1,4 @@
-import os
-
+from blockstore.apps.bundles.tests.storage_utils import create_timestamped_path
 from blockstore.settings.base import *
 
 # Docker does not support the syslog socket at /dev/log. Rely on the console.
@@ -27,5 +26,5 @@ DATABASES = {
 }
 # END MYSQL TEST DATABASE
 
-# So we don't leave mix Bundle files from test runs with our local dev server.
-DEFAULT_FILE_STORAGE = 'inmemorystorage.InMemoryStorage'
+# Give each test run a separate storage space.
+MEDIA_ROOT = create_timestamped_path("test_storage")

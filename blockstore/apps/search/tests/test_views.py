@@ -33,7 +33,6 @@ class BlockDocumentsViewSetTestCase(ViewsBaseTestCase):
         self.assertSetEqual(titles, {document['summary']['title'] for document in response.data['results']})
 
     def test_get(self):
-
         document = BlockDocument(summary=SummaryFieldSet.Document(title='Block to get'))
         document.save(refresh=True)
 
@@ -47,7 +46,7 @@ class BlockDocumentsViewSetTestCase(ViewsBaseTestCase):
             'ownership': {'org_id': None},
             'summary': {'title': 'Block to get', 'description': None, 'image': None},
             'tags': {'paths': []},
-            'url': 'http://testserver/api/v1/index/blocks/{}/'.format(document.uuid),
+            'url': 'http://testserver/api/v1/index/blocks/{}'.format(document.uuid),
             'uuid': str(document.uuid),
         })
 
@@ -112,7 +111,7 @@ class BlockDocumentsViewSetTestCase(ViewsBaseTestCase):
                 'image': 'https://storage.com/block.png',
             },
             'tags': {'paths': []},
-            'url': 'http://testserver/api/v1/index/blocks/{}/'.format(document.uuid),
+            'url': 'http://testserver/api/v1/index/blocks/{}'.format(document.uuid),
             'uuid': str(document.uuid),
         })
 
@@ -142,7 +141,7 @@ class BlockDocumentsViewSetTestCase(ViewsBaseTestCase):
                 'image': 'https://storage.com/block.png',
             },
             'tags': {'paths': ['tag1', 'tag2', 'tag3']},
-            'url': 'http://testserver/api/v1/index/blocks/{}/'.format(document.uuid),
+            'url': 'http://testserver/api/v1/index/blocks/{}'.format(document.uuid),
             'uuid': str(document.uuid),
         })
 
@@ -170,7 +169,7 @@ class BlockDocumentsViewSetTestCase(ViewsBaseTestCase):
                 'image': 'https://storage.com/block.png',
             },
             'tags': {'paths': ['tag1', 'tag2', 'tag3']},
-            'url': 'http://testserver/api/v1/index/blocks/{}/'.format(document.uuid),
+            'url': 'http://testserver/api/v1/index/blocks/{}'.format(document.uuid),
             'uuid': str(document.uuid),
         })
 
@@ -198,7 +197,7 @@ class BlockDocumentsViewSetTestCase(ViewsBaseTestCase):
                 'image': 'https://storage.com/block2.png',
             },
             'tags': {'paths': ['tag1', 'tag2', 'tag3']},
-            'url': 'http://testserver/api/v1/index/blocks/{}/'.format(document.uuid),
+            'url': 'http://testserver/api/v1/index/blocks/{}'.format(document.uuid),
             'uuid': str(document.uuid),
         })
 

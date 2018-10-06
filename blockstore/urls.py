@@ -12,7 +12,6 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-
 import os
 
 from auth_backends.urls import auth_urlpatterns
@@ -23,6 +22,7 @@ from django.contrib import admin
 from rest_framework_swagger.views import get_swagger_view
 
 from blockstore.apps.core import views as core_views
+from blockstore.apps.bundles.tests.storage_utils import url_for_test_media
 
 admin.autodiscover()
 
@@ -38,7 +38,8 @@ urlpatterns = auth_urlpatterns + [
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:  # pragma: no cover
-    urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
-    if os.environ.get('ENABLE_DJANGO_TOOLBAR', False):
-        import debug_toolbar
-        urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
+    import debug_toolbar
+    urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
+
+if settings.DEBUG or os.environ['DJANGO_SETTINGS_MODULE'] == 'blockstore.settings.test':
+    urlpatterns.append(url_for_test_media())

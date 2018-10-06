@@ -33,7 +33,6 @@ def health(_):
         >>> response.content
         '{"overall_status": "OK", "detailed_status": {"database_status": "OK", "lms_status": "OK"}}'
     """
-
     try:
         cursor = connection.cursor()
         cursor.execute("SELECT 1")
