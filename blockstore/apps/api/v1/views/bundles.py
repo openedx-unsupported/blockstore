@@ -2,6 +2,7 @@
 Views for Bundles and BundleVersions.
 """
 
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins
 from rest_framework.generics import get_object_or_404
 
@@ -20,6 +21,9 @@ class BundleViewSet(viewsets.ModelViewSet):
     lookup_url_kwarg = 'bundle_uuid'
     lookup_value_regex = UUID4_REGEX
 
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('collection__uuid',)
+
     queryset = Bundle.objects.all()
     serializer_class = BundleSerializer
 
@@ -32,6 +36,9 @@ class BundleVersionViewSet(mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewSe
     lookup_fields = ('bundle__uuid', 'version_num')
     lookup_url_kwargs = ('bundle_uuid', 'version_num')
     lookup_value_regexes = (UUID4_REGEX, VERSION_NUM_REGEX)
+
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('bundle__uuid',)
 
     queryset = BundleVersion.objects.all()
     serializer_class = BundleVersionSerializer
