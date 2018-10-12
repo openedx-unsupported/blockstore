@@ -44,6 +44,9 @@ clean: ## Remove all generated files
 requirements: ## Install requirements for development
 	${VENV_BIN}/pip install -qr requirements/local.txt --exists-action w
 
+requirements-test: ## Install requirements for testing
+	${VENV_BIN}/pip install -qr requirements/test.txt --exists-action w
+
 migrate:  ## Apply database migrations
 	${VENV_BIN}/python manage.py migrate --no-input
 
