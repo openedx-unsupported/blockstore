@@ -49,7 +49,7 @@ class FileInfoSerializer(serializers.Serializer):
 
     data = FileDataField()
     path = serializers.CharField()
-    public = serializers.BooleanField()
+    public = serializers.BooleanField(default=False)
     size = serializers.IntegerField(read_only=True)
 
     url = FileHyperlinkedIdentityField(

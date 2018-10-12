@@ -372,6 +372,100 @@ class BundleFileViewSetTestCase(ViewsBaseTestCase):
             ).data
         )
 
+    def test_create_new(self):
+
+        files_count = 0
+        new_bundle = BundleFactory(
+            collection=self.collection,
+            description='Bundle description 2.',
+            slug='bundle-2',
+            title='Bundle 2',
+        )
+
+        url = reverse('api:v1:bundlefile-list', kwargs={
+            'bundle_uuid': new_bundle.uuid,
+        })
+        response = self.client.post(url, data={
+            'path': 'c/file-3.txt', 'data': ContentFile(TEXT_CONTENT_BYTES)
+        }, format='multipart')
+
+        # response.wsgi_request is the Django Request object and not the DRF Request object.
+        response.wsgi_request.parser_context = {
+            'kwargs': {
+                'bundle_uuid': new_bundle.uuid,
+            }
+        }
+
+        new_bundle_version = new_bundle.versions.order_by('-version_num').first()
+        self.assertEqual(len(new_bundle_version.snapshot().files), files_count + 1)
+
+        file_info = list(new_bundle_version.snapshot().files.values())[0]
+
+        self.assertEqual(response.status_code, 201)
+        self.assertDictEqual(
+            response.data,
+            FileInfoSerializer(
+                file_info,
+                context={
+                    'detail_view_name': BundleFileViewSet.detail_view_name,
+                    'request': response.wsgi_request,
+                },
+            ).data
+        )
+
+    def test_create_error(self):
+
+        files_count = len(self.bundle.versions.order_by('-version_num').first().snapshot().files)
+
+        url = reverse('api:v1:bundlefile-list', kwargs={
+            'bundle_uuid': self.bundle_version.bundle.uuid,
+        })
+        response = self.client.post(url, data={
+            'path': 'c/file-3.txt',
+        }, format='multipart')
+        self.assertContains(response, 'No file was submitted', status_code=400)
+
+        new_bundle_version = self.bundle.versions.order_by('-version_num').first()
+        self.assertEqual(len(new_bundle_version.snapshot().files), files_count)
+
+    def test_create_multiple_files(self):
+
+        files_count = len(self.bundle.versions.order_by('-version_num').first().snapshot().files)
+
+        url = reverse('api:v1:bundlefile-list', kwargs={
+            'bundle_uuid': self.bundle_version.bundle.uuid,
+        })
+        data = {
+            'data': [ContentFile(TEXT_CONTENT_BYTES), ContentFile(HTML_CONTENT_BYTES)],
+            'path': ['c/file-4.txt', 'c/file-5.html'],
+            'public': [True, False]
+        }
+        response = self.client.post(url, data=data, format='multipart')
+
+        # response.wsgi_request is the Django Request object and not the DRF Request object.
+        response.wsgi_request.parser_context = {
+            'kwargs': {
+                'bundle_uuid': self.bundle_version.bundle.uuid,
+            }
+        }
+        self.assertEqual(response.status_code, 201)
+
+        new_bundle_version = self.bundle.versions.order_by('-version_num').first()
+        self.assertEqual(len(new_bundle_version.snapshot().files), files_count + 2)
+
+        file_infos = list(new_bundle_version.snapshot().files.values())[-2:]
+        self.assertEqual(
+            response.data,
+            FileInfoSerializer(
+                file_infos,
+                context={
+                    'detail_view_name': BundleFileViewSet.detail_view_name,
+                    'request': response.wsgi_request,
+                },
+                many=True,
+            ).data
+        )
+
     def test_delete(self):
 
         files_count = len(self.bundle.versions.order_by('-version_num').first().snapshot().files)
