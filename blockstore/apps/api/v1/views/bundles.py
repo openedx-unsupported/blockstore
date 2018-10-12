@@ -2,7 +2,7 @@
 Views for Bundles and BundleVersions.
 """
 
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.generics import get_object_or_404
 
 from blockstore.apps.bundles.models import Bundle, BundleVersion
@@ -24,7 +24,7 @@ class BundleViewSet(viewsets.ModelViewSet):
     serializer_class = BundleSerializer
 
 
-class BundleVersionViewSet(viewsets.ReadOnlyModelViewSet):
+class BundleVersionViewSet(mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewSet):
     """
     ViewSet for BundleVersion model.
     """
