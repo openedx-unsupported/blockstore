@@ -12,3 +12,4 @@ pycodestyle
 pytest
 pytest-cov
 pytest-django
+mysqlclient

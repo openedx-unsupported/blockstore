@@ -1,8 +1,9 @@
 language: python
+sudo: false
 python:
     - 3.6
-sudo: false
-
+services:
+    - mysql
 cache: pip
 before_install:
     - "export DISPLAY=:99.0"

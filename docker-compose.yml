@@ -18,6 +18,22 @@ services:
       - "18250:18250"
     volumes:
       - ./:/blockstore/app/:cached
+    depends_on:
+      - "datastore"
+
+  datastore:
+    container_name: datastore
+    image: mysql:8.0
+    ports:
+        - "3306:3306"
+    volumes:
+      - ./datastore_volume:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=blockstore_test
+      - MYSQL_USER=blockstore_user
+      - MYSQL_PASSWORD=blockstore_password
+      - VIRTUAL_HOST=datastore_host
 
 networks:
   devstack:
