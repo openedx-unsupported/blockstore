@@ -1,8 +1,11 @@
 """ Tests for api v1 views. """
+from future.moves.urllib.parse import urlencode
+
 from django.test import TestCase
 from django.core.files.base import ContentFile
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient, APIRequestFactory
+from rest_framework.serializers import Hyperlink, ReturnList
 
 from blockstore.apps.bundles.models import Bundle, BundleVersion, Collection
 from blockstore.apps.bundles.store import BundleDataStore
@@ -52,13 +55,18 @@ class ViewsBaseTestCase(TestCase):
 
         self.bundle_version = self.bundle.versions.first()
 
-    def response(self, view_name, kwargs=None, method='get', **method_kwargs):
+    def response(self, view_name, kwargs=None, method='get', query_params=None, **method_kwargs):
         """
         Returns a response with the wsgi_request containing any given query params.
         """
         url = reverse(view_name, kwargs=kwargs)
+        if query_params:
+            url = '{}?{}'.format(url, urlencode(query_params))
+        else:
+            query_params = {}
+
         response = getattr(self.client, method)(url, **method_kwargs)
-        response.wsgi_request.query_params = {}
+        response.wsgi_request.query_params = query_params
         if kwargs:
             response.wsgi_request.parser_context = {'kwargs': kwargs}
         return response
@@ -84,12 +92,21 @@ class BundleViewSetTestCase(ViewsBaseTestCase):
             response.data,
             BundleSerializer(self.bundle, context={'request': response.wsgi_request}).data
         )
+        self.assertTrue(isinstance(response.data['files'], Hyperlink))
 
+    def test_get_expand_files(self):
+        response = self.response(
+            'api:v1:bundle-detail',
+            kwargs={'bundle_uuid': self.bundle.uuid},
+            query_params={'expand': 'files'},
+        )
         self.assertEqual(response.status_code, 200)
+
         self.assertDictEqual(
             response.data,
             BundleSerializer(self.bundle, context={'request': response.wsgi_request}).data
         )
+        self.assertTrue(isinstance(response.data['files'], ReturnList))
 
     def test_create(self):
 
@@ -171,14 +188,26 @@ class BundleVersionViewSetTestCase(ViewsBaseTestCase):
                 self.bundle_version, context={'request': response.wsgi_request}
             ).data
         )
+        self.assertTrue(isinstance(response.data['files'], Hyperlink))
 
+    def test_get_expand_files(self):
+        response = self.response(
+            'api:v1:bundleversion-detail',
+            kwargs={
+                'bundle_uuid': self.bundle_version.bundle.uuid,
+                'version_num': self.bundle_version.version_num,
+            },
+            query_params={'expand': 'files'},
+        )
         self.assertEqual(response.status_code, 200)
+
         self.assertDictEqual(
             response.data,
             BundleVersionSerializer(
                 self.bundle_version, context={'request': response.wsgi_request}
             ).data
         )
+        self.assertTrue(isinstance(response.data['files'], ReturnList))
 
 
 class CollectionViewSetTestCase(ViewsBaseTestCase):

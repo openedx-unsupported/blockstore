@@ -3,11 +3,14 @@ Serializers for Bundles and BundleVersions.
 """
 
 from rest_framework import serializers
+from expander import ExpanderSerializerMixin
+
 from blockstore.apps.bundles.models import Bundle, BundleVersion, Collection
 from ... import relations
+from .snapshots import ExpandedFileInfoField
 
 
-class BundleSerializer(serializers.ModelSerializer):
+class BundleSerializer(ExpanderSerializerMixin, serializers.ModelSerializer):
     """
     Serializer for the Bundle model.
     """
@@ -26,6 +29,11 @@ class BundleSerializer(serializers.ModelSerializer):
             'uuid',
             'versions',
         )
+        expandable_fields = {
+            'files': (ExpandedFileInfoField, (), dict(
+                view_name='api:v1:bundlefile-detail',
+            ))
+        }
 
     collection = relations.HyperlinkedRelatedField(
         lookup_field='uuid',
@@ -55,7 +63,7 @@ class BundleSerializer(serializers.ModelSerializer):
     )
 
 
-class BundleVersionSerializer(serializers.ModelSerializer):
+class BundleVersionSerializer(ExpanderSerializerMixin, serializers.ModelSerializer):
     """
     Serializer for the BundleVersion model.
     """
@@ -71,6 +79,11 @@ class BundleVersionSerializer(serializers.ModelSerializer):
             'url',
             'version_num',
         )
+        expandable_fields = {
+            'files': (ExpandedFileInfoField, (), dict(
+                view_name='api:v1:bundleversionfile-detail',
+            ))
+        }
 
     bundle = relations.HyperlinkedRelatedField(
         lookup_field='uuid',
