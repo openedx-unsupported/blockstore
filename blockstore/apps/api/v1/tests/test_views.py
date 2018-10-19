@@ -1,5 +1,4 @@
 """ Tests for api v1 views. """
-
 from django.test import TestCase
 from django.core.files.base import ContentFile
 from rest_framework.reverse import reverse
@@ -53,15 +52,24 @@ class ViewsBaseTestCase(TestCase):
 
         self.bundle_version = self.bundle.versions.first()
 
+    def response(self, view_name, kwargs=None, method='get', **method_kwargs):
+        """
+        Returns a response with the wsgi_request containing any given query params.
+        """
+        url = reverse(view_name, kwargs=kwargs)
+        response = getattr(self.client, method)(url, **method_kwargs)
+        response.wsgi_request.query_params = {}
+        if kwargs:
+            response.wsgi_request.parser_context = {'kwargs': kwargs}
+        return response
+
 
 class BundleViewSetTestCase(ViewsBaseTestCase):
     """ Tests for BundleViewSet. """
 
     def test_list(self):
 
-        url = reverse('api:v1:bundle-list')
-        response = self.client.get(url)
-
+        response = self.response('api:v1:bundle-list')
         self.assertEqual(response.status_code, 200)
         self.assertListEqual(
             response.data,
@@ -70,8 +78,12 @@ class BundleViewSetTestCase(ViewsBaseTestCase):
 
     def test_get(self):
 
-        url = reverse('api:v1:bundle-detail', kwargs={'bundle_uuid': self.bundle.uuid})
-        response = self.client.get(url)
+        response = self.response('api:v1:bundle-detail', kwargs={'bundle_uuid': self.bundle.uuid})
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(
+            response.data,
+            BundleSerializer(self.bundle, context={'request': response.wsgi_request}).data
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(
@@ -83,13 +95,17 @@ class BundleViewSetTestCase(ViewsBaseTestCase):
 
         bundles_count = Bundle.objects.all().count()
 
-        url = reverse('api:v1:bundle-list')
-        response = self.client.post(url, data={
-            'collection': reverse('api:v1:collection-detail', kwargs={'uuid': self.collection.uuid}),
-            'description': 'Bundle description 2.',
-            'slug': 'bundle-2',
-            'title': 'Bundle 2',
-        }, format='json')
+        response = self.response(
+            'api:v1:bundle-list',
+            method='post',
+            data={
+                'collection': reverse('api:v1:collection-detail', kwargs={'uuid': self.collection.uuid}),
+                'description': 'Bundle description 2.',
+                'slug': 'bundle-2',
+                'title': 'Bundle 2',
+            },
+            format='json',
+        )
 
         self.assertEqual(response.status_code, 201)
         self.assertDictEqual(
@@ -104,12 +120,19 @@ class BundleViewSetTestCase(ViewsBaseTestCase):
 
         bundles_count = Bundle.objects.all().count()
 
-        url = reverse('api:v1:bundle-detail', kwargs={'bundle_uuid': self.bundle.uuid})
-        response = self.client.patch(url, data={
-            'description': 'Bundle description 2.1.',
-            'slug': 'bundle-2-1',
-            'title': 'Bundle 2.1',
-        }, format='json')
+        response = self.response(
+            'api:v1:bundle-detail',
+            kwargs={
+                'bundle_uuid': self.bundle.uuid,
+            },
+            method='patch',
+            data={
+                'description': 'Bundle description 2.1.',
+                'slug': 'bundle-2-1',
+                'title': 'Bundle 2.1',
+            },
+            format='json',
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(
@@ -126,9 +149,7 @@ class BundleVersionViewSetTestCase(ViewsBaseTestCase):
 
     def test_list(self):
 
-        url = reverse('api:v1:bundleversion-list')
-        response = self.client.get(url)
-
+        response = self.response('api:v1:bundleversion-list')
         self.assertEqual(response.status_code, 200)
         self.assertListEqual(
             response.data,
@@ -139,10 +160,17 @@ class BundleVersionViewSetTestCase(ViewsBaseTestCase):
 
     def test_get(self):
 
-        url = reverse('api:v1:bundleversion-detail', kwargs={
-            'bundle_uuid': self.bundle_version.bundle.uuid, 'version_num': self.bundle_version.version_num
+        response = self.response('api:v1:bundleversion-detail', kwargs={
+            'bundle_uuid': self.bundle_version.bundle.uuid,
+            'version_num': self.bundle_version.version_num,
         })
-        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(
+            response.data,
+            BundleVersionSerializer(
+                self.bundle_version, context={'request': response.wsgi_request}
+            ).data
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(
@@ -158,9 +186,7 @@ class CollectionViewSetTestCase(ViewsBaseTestCase):
 
     def test_list(self):
 
-        url = reverse('api:v1:collection-list')
-        response = self.client.get(url)
-
+        response = self.response('api:v1:collection-list')
         self.assertEqual(response.status_code, 200)
         self.assertListEqual(
             response.data,
@@ -171,9 +197,7 @@ class CollectionViewSetTestCase(ViewsBaseTestCase):
 
     def test_get(self):
 
-        url = reverse('api:v1:collection-detail', kwargs={'uuid': self.collection.uuid})
-        response = self.client.get(url)
-
+        response = self.response('api:v1:collection-detail', kwargs={'uuid': self.collection.uuid})
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(
             response.data,
@@ -186,8 +210,12 @@ class CollectionViewSetTestCase(ViewsBaseTestCase):
 
         collections_count = Collection.objects.all().count()
 
-        url = reverse('api:v1:collection-list')
-        response = self.client.post(url, data={'title': 'Collection 2'}, format='json')
+        response = self.response(
+            'api:v1:collection-list',
+            method='post',
+            data={'title': 'Collection 2'},
+            format='json',
+        )
 
         self.assertEqual(response.status_code, 201)
         self.assertDictEqual(
@@ -202,9 +230,13 @@ class CollectionViewSetTestCase(ViewsBaseTestCase):
 
         collections_count = Collection.objects.all().count()
 
-        url = reverse('api:v1:collection-detail', kwargs={'uuid': self.collection.uuid})
-        response = self.client.patch(url, data={'title': 'Collection 1.1'}, format='json')
-
+        response = self.response(
+            'api:v1:collection-detail',
+            kwargs={'uuid': self.collection.uuid},
+            method='patch',
+            data={'title': 'Collection 1.1'},
+            format='json',
+        )
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(
             response.data,
@@ -220,19 +252,10 @@ class BundleFileReadOnlyViewSetTestCase(ViewsBaseTestCase):
 
     def test_list(self):
 
-        url = reverse('api:v1:bundleversionfile-list', kwargs={
-            'bundle_uuid': self.bundle_version.bundle.uuid, 'version_num': self.bundle_version.version_num
+        response = self.response('api:v1:bundleversionfile-list', kwargs={
+            'bundle_uuid': self.bundle_version.bundle.uuid,
+            'version_num': self.bundle_version.version_num,
         })
-        response = self.client.get(url)
-
-        # response.wsgi_request is the Django Request object and not the DRF Request object.
-        response.wsgi_request.parser_context = {
-            'kwargs': {
-                'bundle_uuid': self.bundle_version.bundle.uuid,
-                'version_num': self.bundle_version.version_num,
-            }
-        }
-
         self.assertEqual(response.status_code, 200)
         self.assertListEqual(
             response.data,
@@ -250,20 +273,11 @@ class BundleFileReadOnlyViewSetTestCase(ViewsBaseTestCase):
 
         file_info = list(self.bundle_version.snapshot().files.values())[0]
 
-        url = reverse('api:v1:bundleversionfile-detail', kwargs={
+        response = self.response('api:v1:bundleversionfile-detail', kwargs={
             'bundle_uuid': self.bundle_version.bundle.uuid,
             'version_num': self.bundle_version.version_num,
             'path': file_info.path,
         })
-        response = self.client.get(url)
-
-        # response.wsgi_request is the Django Request object and not the DRF Request object.
-        response.wsgi_request.parser_context = {
-            'kwargs': {
-                'bundle_uuid': self.bundle_version.bundle.uuid,
-                'version_num': self.bundle_version.version_num,
-            }
-        }
 
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(
@@ -281,20 +295,28 @@ class BundleFileReadOnlyViewSetTestCase(ViewsBaseTestCase):
 class BundleFileViewSetTestCase(ViewsBaseTestCase):
     """ Tests for BundleFileViewSet. """
 
+    def test_version_not_found(self):
+        bundle = BundleFactory(
+            collection=self.collection,
+            description='Bundle description 2.',
+            slug='bundle-2',
+            title='Bundle 2',
+        )
+        response = self.response('api:v1:bundlefile-list', kwargs={'bundle_uuid': bundle.uuid})
+        self.assertEqual(response.status_code, 404)
+
+    def test_file_not_found(self):
+        response = self.response('api:v1:bundlefile-detail', kwargs={
+            'bundle_uuid': self.bundle_version.bundle.uuid,
+            'path': 'notapath.txt'
+        })
+        self.assertEqual(response.status_code, 404)
+
     def test_list(self):
 
-        url = reverse('api:v1:bundlefile-list', kwargs={
+        response = self.response('api:v1:bundlefile-list', kwargs={
             'bundle_uuid': self.bundle_version.bundle.uuid
         })
-        response = self.client.get(url)
-
-        # response.wsgi_request is the Django Request object and not the DRF Request object.
-        response.wsgi_request.parser_context = {
-            'kwargs': {
-                'bundle_uuid': self.bundle_version.bundle.uuid
-            }
-        }
-
         self.assertEqual(response.status_code, 200)
         self.assertListEqual(
             response.data,
@@ -312,19 +334,10 @@ class BundleFileViewSetTestCase(ViewsBaseTestCase):
 
         file_info = list(self.bundle_version.snapshot().files.values())[0]
 
-        url = reverse('api:v1:bundlefile-detail', kwargs={
+        response = self.response('api:v1:bundlefile-detail', kwargs={
             'bundle_uuid': self.bundle_version.bundle.uuid,
             'path': file_info.path,
         })
-        response = self.client.get(url)
-
-        # response.wsgi_request is the Django Request object and not the DRF Request object.
-        response.wsgi_request.parser_context = {
-            'kwargs': {
-                'bundle_uuid': self.bundle_version.bundle.uuid,
-            }
-        }
-
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(
             response.data,
@@ -341,19 +354,17 @@ class BundleFileViewSetTestCase(ViewsBaseTestCase):
 
         files_count = len(self.bundle.versions.order_by('-version_num').first().snapshot().files)
 
-        url = reverse('api:v1:bundlefile-list', kwargs={
-            'bundle_uuid': self.bundle_version.bundle.uuid,
-        })
-        response = self.client.post(url, data={
-            'path': 'c/file-3.txt', 'data': ContentFile(TEXT_CONTENT_BYTES)
-        }, format='multipart')
-
-        # response.wsgi_request is the Django Request object and not the DRF Request object.
-        response.wsgi_request.parser_context = {
-            'kwargs': {
+        response = self.response(
+            'api:v1:bundlefile-list',
+            kwargs={
                 'bundle_uuid': self.bundle_version.bundle.uuid,
-            }
-        }
+            },
+            method='post',
+            data={
+                'path': 'c/file-3.txt', 'data': ContentFile(TEXT_CONTENT_BYTES)
+            },
+            format='multipart',
+        )
 
         new_bundle_version = self.bundle.versions.order_by('-version_num').first()
         self.assertEqual(len(new_bundle_version.snapshot().files), files_count + 1)
@@ -382,19 +393,17 @@ class BundleFileViewSetTestCase(ViewsBaseTestCase):
             title='Bundle 2',
         )
 
-        url = reverse('api:v1:bundlefile-list', kwargs={
-            'bundle_uuid': new_bundle.uuid,
-        })
-        response = self.client.post(url, data={
-            'path': 'c/file-3.txt', 'data': ContentFile(TEXT_CONTENT_BYTES)
-        }, format='multipart')
-
-        # response.wsgi_request is the Django Request object and not the DRF Request object.
-        response.wsgi_request.parser_context = {
-            'kwargs': {
+        response = self.response(
+            'api:v1:bundlefile-list',
+            kwargs={
                 'bundle_uuid': new_bundle.uuid,
-            }
-        }
+            },
+            method='post',
+            data={
+                'path': 'c/file-3.txt', 'data': ContentFile(TEXT_CONTENT_BYTES)
+            },
+            format='multipart',
+        )
 
         new_bundle_version = new_bundle.versions.order_by('-version_num').first()
         self.assertEqual(len(new_bundle_version.snapshot().files), files_count + 1)
@@ -417,12 +426,17 @@ class BundleFileViewSetTestCase(ViewsBaseTestCase):
 
         files_count = len(self.bundle.versions.order_by('-version_num').first().snapshot().files)
 
-        url = reverse('api:v1:bundlefile-list', kwargs={
-            'bundle_uuid': self.bundle_version.bundle.uuid,
-        })
-        response = self.client.post(url, data={
-            'path': 'c/file-3.txt',
-        }, format='multipart')
+        response = self.response(
+            'api:v1:bundlefile-list',
+            kwargs={
+                'bundle_uuid': self.bundle_version.bundle.uuid,
+            },
+            method='post',
+            data={
+                'path': 'c/file-3.txt',
+            },
+            format='multipart',
+        )
         self.assertContains(response, 'No file was submitted', status_code=400)
 
         new_bundle_version = self.bundle.versions.order_by('-version_num').first()
@@ -432,22 +446,19 @@ class BundleFileViewSetTestCase(ViewsBaseTestCase):
 
         files_count = len(self.bundle.versions.order_by('-version_num').first().snapshot().files)
 
-        url = reverse('api:v1:bundlefile-list', kwargs={
-            'bundle_uuid': self.bundle_version.bundle.uuid,
-        })
-        data = {
-            'data': [ContentFile(TEXT_CONTENT_BYTES), ContentFile(HTML_CONTENT_BYTES)],
-            'path': ['c/file-4.txt', 'c/file-5.html'],
-            'public': [True, False]
-        }
-        response = self.client.post(url, data=data, format='multipart')
-
-        # response.wsgi_request is the Django Request object and not the DRF Request object.
-        response.wsgi_request.parser_context = {
-            'kwargs': {
+        response = self.response(
+            'api:v1:bundlefile-list',
+            kwargs={
                 'bundle_uuid': self.bundle_version.bundle.uuid,
-            }
-        }
+            },
+            method='post',
+            data={
+                'data': [ContentFile(TEXT_CONTENT_BYTES), ContentFile(HTML_CONTENT_BYTES)],
+                'path': ['c/file-4.txt', 'c/file-5.html'],
+                'public': [True, False]
+            },
+            format='multipart',
+        )
         self.assertEqual(response.status_code, 201)
 
         new_bundle_version = self.bundle.versions.order_by('-version_num').first()

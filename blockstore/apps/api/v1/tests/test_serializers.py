@@ -13,12 +13,13 @@ from ..serializers.snapshots import FileInfoSerializer
 
 
 class SerializerBaseTestCase(TestCase):
+    """
+    Base class for serializer tests.
+    """
 
     def setUp(self):
 
         super().setUp()
-
-        self.request_factory = APIRequestFactory()
 
         self.collection = CollectionFactory(title="Collection 1")
 
@@ -36,13 +37,22 @@ class SerializerBaseTestCase(TestCase):
             version_num=1,
         )
 
+        self.request = APIRequestFactory().get('/')
+        self.request.query_params = {}
+        self.context = {
+            'request': self.request
+        }
+
 
 class BundleSerializerTestCase(SerializerBaseTestCase):
+    """
+    Tests for the BundleSerializer
+    """
 
     def test_bundle_serializer_data(self):
 
         bundle_serializer = BundleSerializer(
-            self.bundle, context={'request': self.request_factory.get('/')}
+            self.bundle, context=self.context,
         )
 
         self.assertSequenceEqual(list(bundle_serializer.data.keys()), [
@@ -60,11 +70,13 @@ class BundleSerializerTestCase(SerializerBaseTestCase):
 
 
 class BundleVersionSerializerTestCase(SerializerBaseTestCase):
-
+    """
+    Tests for the BundleVersionSerializer
+    """
     def test_bundle_version_serializer_data(self):
 
         bundle_version_serializer = BundleVersionSerializer(
-            self.bundle_version, context={'request': self.request_factory.get('/')}
+            self.bundle_version, context=self.context,
         )
 
         self.assertSequenceEqual(list(bundle_version_serializer.data.keys()), [
@@ -86,11 +98,14 @@ class BundleVersionSerializerTestCase(SerializerBaseTestCase):
 
 
 class CollectionSerializerTestCase(SerializerBaseTestCase):
+    """
+    Tests for the CollectionSerializer
+    """
 
     def test_collection_serializer_data(self):
 
         collection_serializer = CollectionSerializer(
-            self.collection, context={'request': self.request_factory.get('/')}
+            self.collection, context=self.context,
         )
 
         self.assertSequenceEqual(list(collection_serializer.data.keys()), [
@@ -104,23 +119,28 @@ class CollectionSerializerTestCase(SerializerBaseTestCase):
 
 
 class FileInfoSerializerTestCase(SerializerBaseTestCase):
+    """
+    Tests for the FileInfoSerializer
+    """
+    def setUp(self):
 
-    def test_file_info_serializer_data(self):
-        # pylint: disable=unsubscriptable-object
+        super().setUp()
 
-        request = self.request_factory.get('/')
-        request.parser_context = {
+        self.request.parser_context = {
             'kwargs': {
                 'bundle_uuid': self.bundle.uuid,
             }
         }
+
+    def test_file_info_serializer_data(self):
+        # pylint: disable=unsubscriptable-object
 
         file_info = FileInfoFactory(
             path='a/file.txt', public=False, size=100, hash_digest=bytes('hash_digest', 'utf-8')
         )
 
         file_info_serializer = FileInfoSerializer(
-            file_info, context={'request': request}
+            file_info, context=self.context,
         )
 
         self.assertSequenceEqual(list(file_info_serializer.data.keys()), [  # pylint: disable=no-member
