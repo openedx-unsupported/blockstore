@@ -34,23 +34,8 @@ class BundleFileReadOnlyViewSet(viewsets.ViewSet):
             'request': self.request,
         }
 
-    def get_bundle_version(self, bundle_uuid, version_num=None):
-        """ Get the bundle version. """
-
-        filter_kwargs = {
-            'bundle__uuid': bundle_uuid
-        }
-        if version_num:
-            filter_kwargs['version_num'] = version_num
-
-        try:
-            return BundleVersion.objects.filter(**filter_kwargs).order_by('-version_num').first()
-        except BundleVersion.DoesNotExist:
-            pass
-        return None
-
     def get_bundle_version_or_404(self, bundle_uuid, version_num=None):
-        bundle_version = self.get_bundle_version(bundle_uuid, version_num)
+        bundle_version = BundleVersion.get_bundle_version(bundle_uuid, version_num)
         if bundle_version:
             return bundle_version
         raise http.Http404
@@ -100,7 +85,7 @@ class BundleFileViewSet(BundleFileReadOnlyViewSet):
         if errors or not serializer_data:
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
-        bundle_version = self.get_bundle_version(bundle_uuid, version_num)
+        bundle_version = BundleVersion.get_bundle_version(bundle_uuid, version_num)
         if bundle_version:
             snapshot = bundle_version.snapshot()
         else:
