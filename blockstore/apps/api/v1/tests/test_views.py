@@ -1,6 +1,7 @@
 """ Tests for api v1 views. """
 from future.moves.urllib.parse import urlencode
 
+import ddt
 from django.test import TestCase
 from django.core.files.base import ContentFile
 from rest_framework.reverse import reverse
@@ -64,12 +65,18 @@ class ViewsBaseTestCase(TestCase):
         return response
 
 
+@ddt.ddt
 class BundleViewSetTestCase(ViewsBaseTestCase):
     """ Tests for BundleViewSet. """
 
-    def test_list(self):
-
-        response = self.response('api:v1:bundle-list')
+    @ddt.data(
+        {}, {'expand': 'files'},
+    )
+    def test_list(self, query_params):
+        """
+        The bundle-list view displays a list of all bundles, and ignores the ?expand=files query param.
+        """
+        response = self.response('api:v1:bundle-list', query_params=query_params)
         self.assertListEqual(response.data, [{
             'collection': 'http://testserver/api/v1/collections/{}/'.format(self.collection.uuid),
             'description': 'Bundle description 1.',
@@ -83,10 +90,21 @@ class BundleViewSetTestCase(ViewsBaseTestCase):
             ]
         }])
 
-    def test_get(self):
+    @ddt.data(
+        {}, {'expand': 'files'},
+    )
+    def test_get(self, query_params):
+        """
+        The bundle-detail view displays a single bundle.
 
-        response = self.response('api:v1:bundle-detail', kwargs={'bundle_uuid': self.bundle.uuid})
-        self.assertDictEqual(response.data, {
+        Shows the expanded files data if ?expand=files query param is provided.
+        """
+        response = self.response(
+            'api:v1:bundle-detail',
+            kwargs={'bundle_uuid': self.bundle.uuid},
+            query_params=query_params,
+        )
+        expected_data = {
             'collection': 'http://testserver/api/v1/collections/{}/'.format(self.collection.uuid),
             'description': 'Bundle description 1.',
             'files': 'http://testserver/api/v1/bundles/{}/files/'.format(self.bundle.uuid),
@@ -97,19 +115,9 @@ class BundleViewSetTestCase(ViewsBaseTestCase):
             'versions': [
                 'http://testserver/api/v1/bundle_versions/{},1/'.format(self.bundle.uuid),
             ]
-        })
-
-    def test_get_expand_files(self):
-
-        response = self.response(
-            'api:v1:bundle-detail',
-            kwargs={'bundle_uuid': self.bundle.uuid},
-            query_params={'expand': 'files'},
-        )
-        self.assertDictEqual(response.data, {
-            'collection': 'http://testserver/api/v1/collections/{}/'.format(self.collection.uuid),
-            'description': 'Bundle description 1.',
-            'files': [
+        }
+        if query_params.get('expand', '') == 'files':
+            expected_data['files'] = [
                 {
                     'data': 'http://testserver/media/{}/data/{}'.format(self.bundle.uuid, HTML_CONTENT_HASH),
                     'path': 'a/file-1.html',
@@ -123,15 +131,8 @@ class BundleViewSetTestCase(ViewsBaseTestCase):
                     'size': 17,
                     'url': 'http://testserver/api/v1/bundles/{}/files/b/file-2.txt/'.format(self.bundle.uuid),
                 },
-            ],
-            'slug': 'bundle-1',
-            'title': 'Bundle 1',
-            'url': 'http://testserver/api/v1/bundles/{}/'.format(self.bundle.uuid),
-            'uuid': '{}'.format(self.bundle.uuid),
-            'versions': [
-                'http://testserver/api/v1/bundle_versions/{},1/'.format(self.bundle.uuid),
             ]
-        })
+        self.assertDictEqual(response.data, expected_data)
 
     def test_create(self):
 
@@ -193,12 +194,18 @@ class BundleViewSetTestCase(ViewsBaseTestCase):
         self.assertEqual(Bundle.objects.all().count(), bundles_count)
 
 
+@ddt.ddt
 class BundleVersionViewSetTestCase(ViewsBaseTestCase):
     """ Tests for BundleVersionViewSet. """
 
-    def test_list(self):
-
-        response = self.response('api:v1:bundleversion-list')
+    @ddt.data(
+        {}, {'expand': 'files'},
+    )
+    def test_list(self, query_params):
+        """
+        The bundleversion-list view displays a list of all bundles, and ignores the ?expand=files query param.
+        """
+        response = self.response('api:v1:bundleversion-list', query_params=query_params)
         self.assertListEqual(response.data, [{
             'bundle': 'http://testserver/api/v1/bundles/{}/'.format(self.bundle.uuid),
             'change_description': '',
@@ -207,34 +214,32 @@ class BundleVersionViewSetTestCase(ViewsBaseTestCase):
             'version_num': 1,
         }])
 
-    def test_get(self):
+    @ddt.data(
+        {}, {'expand': 'files'},
+    )
+    def test_get(self, query_params):
+        """
+        The bundleversion-detail view displays a single bundle.
 
-        response = self.response('api:v1:bundleversion-detail', kwargs={
-            'bundle_uuid': self.bundle_version.bundle.uuid,
-            'version_num': self.bundle_version.version_num,
-        })
-        self.assertDictEqual(response.data, {
-            'bundle': 'http://testserver/api/v1/bundles/{}/'.format(self.bundle.uuid),
-            'change_description': '',
-            'files': 'http://testserver/api/v1/bundle_versions/{},1/files/'.format(self.bundle.uuid),
-            'url': 'http://testserver/api/v1/bundle_versions/{},1/'.format(self.bundle.uuid),
-            'version_num': 1,
-        })
-
-    def test_get_expand_files(self):
+        Shows the expanded files data if ?expand=files query param is provided.
+        """
         response = self.response(
             'api:v1:bundleversion-detail',
             kwargs={
                 'bundle_uuid': self.bundle_version.bundle.uuid,
                 'version_num': self.bundle_version.version_num,
             },
-            query_params={'expand': 'files'},
+            query_params=query_params,
         )
-
-        self.assertDictEqual(response.data, {
+        expected_data = {
             'bundle': 'http://testserver/api/v1/bundles/{}/'.format(self.bundle.uuid),
             'change_description': '',
-            'files': [{
+            'files': 'http://testserver/api/v1/bundle_versions/{},1/files/'.format(self.bundle.uuid),
+            'url': 'http://testserver/api/v1/bundle_versions/{},1/'.format(self.bundle.uuid),
+            'version_num': 1,
+        }
+        if query_params.get('expand', '') == 'files':
+            expected_data['files'] = [{
                 'data': 'http://testserver/media/{}/data/{}'.format(self.bundle.uuid, HTML_CONTENT_HASH),
                 'path': 'a/file-1.html',
                 'public': False,
@@ -246,10 +251,8 @@ class BundleVersionViewSetTestCase(ViewsBaseTestCase):
                 'public': False,
                 'size': 17,
                 'url': 'http://testserver/api/v1/bundle_versions/{},1/files/b/file-2.txt/'.format(self.bundle.uuid),
-            }],
-            'url': 'http://testserver/api/v1/bundle_versions/{},1/'.format(self.bundle.uuid),
-            'version_num': 1,
-        })
+            }]
+        self.assertDictEqual(response.data, expected_data)
 
 
 class CollectionViewSetTestCase(ViewsBaseTestCase):

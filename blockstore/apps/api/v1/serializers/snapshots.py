@@ -4,6 +4,7 @@ Serializers for Snapshots.
 
 from django.core.files.storage import default_storage
 from rest_framework import serializers
+from expander import ExpanderSerializerMixin
 
 from blockstore.apps.bundles.models import BundleVersion
 from ... import relations
@@ -68,7 +69,7 @@ class ExpandedFileInfoField(serializers.SerializerMethodField):
 
     def __init__(self, view_name, *args, **kwargs):
         """
-        Initialize the ExpandedFileInfoSerializer.
+        Initialize the ExpandedFileInfoField.
         """
         assert view_name is not None, 'The `view_name` argument is required.'
         self.view_name = view_name
@@ -114,3 +115,17 @@ class ExpandedFileInfoField(serializers.SerializerMethodField):
             bundle_version = instance.get_bundle_version()
 
         return bundle_version.snapshot().files.values()
+
+
+class SingleExpanderSerializerMixin(ExpanderSerializerMixin):
+    """
+    Allows configured fields to be expanded only if serializing a single object.
+    """
+
+    @classmethod
+    def many_init(cls, *args, **kwargs):
+        """
+        Disable requests for expanded fields when serializing a list of objects.
+        """
+        kwargs['expanded_fields'] = 'none'
+        return super().many_init(*args, **kwargs)

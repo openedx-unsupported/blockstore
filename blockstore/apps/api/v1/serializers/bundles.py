@@ -3,14 +3,13 @@ Serializers for Bundles and BundleVersions.
 """
 
 from rest_framework import serializers
-from expander import ExpanderSerializerMixin
 
 from blockstore.apps.bundles.models import Bundle, BundleVersion, Collection
 from ... import relations
-from .snapshots import ExpandedFileInfoField
+from .snapshots import ExpandedFileInfoField, SingleExpanderSerializerMixin
 
 
-class BundleSerializer(ExpanderSerializerMixin, serializers.ModelSerializer):
+class BundleSerializer(SingleExpanderSerializerMixin, serializers.ModelSerializer):
     """
     Serializer for the Bundle model.
     """
@@ -63,7 +62,7 @@ class BundleSerializer(ExpanderSerializerMixin, serializers.ModelSerializer):
     )
 
 
-class BundleVersionSerializer(ExpanderSerializerMixin, serializers.ModelSerializer):
+class BundleVersionSerializer(SingleExpanderSerializerMixin, serializers.ModelSerializer):
     """
     Serializer for the BundleVersion model.
     """
