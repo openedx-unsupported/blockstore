@@ -5,27 +5,22 @@ from django.test import TestCase
 from django.core.files.base import ContentFile
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient, APIRequestFactory
-from rest_framework.serializers import Hyperlink, ReturnList
 
-from blockstore.apps.bundles.models import Bundle, BundleVersion, Collection
+from blockstore.apps.bundles.models import Bundle, Collection
 from blockstore.apps.bundles.store import BundleDataStore
 
 from blockstore.apps.bundles.tests.factories import (
     BundleFactory, CollectionFactory
 )
 
-from ..serializers.bundles import BundleSerializer, BundleVersionSerializer
-from ..serializers.collections import CollectionSerializer
-from ..serializers.snapshots import FileInfoSerializer
-
-from ..views.snapshots import BundleFileReadOnlyViewSet, BundleFileViewSet
-
-
 HTML_CONTENT_BYTES = b"<p>I am an HTML file!</p>"
 TEXT_CONTENT_BYTES = b"I am a text file!"
 
 HTML_FILE = ContentFile(HTML_CONTENT_BYTES)
 TEXT_FILE = ContentFile(TEXT_CONTENT_BYTES)
+
+HTML_CONTENT_HASH = 'c0c0940e4b3151908b60cecd1ef5e2aa19904676'
+TEXT_CONTENT_HASH = 'f51746fee3835cd0d6342d28c2be86105134b2f4'
 
 
 class ViewsBaseTestCase(TestCase):
@@ -63,15 +58,9 @@ class ViewsBaseTestCase(TestCase):
         url = reverse(view_name, kwargs=kwargs)
         if query_params:
             url = '{}?{}'.format(url, urlencode(query_params))
-        else:
-            query_params = {}
 
         response = getattr(self.client, method)(url, **method_kwargs)
         self.assertEqual(response.status_code, expected_response_code)
-
-        response.wsgi_request.query_params = query_params
-        if kwargs:
-            response.wsgi_request.parser_context = {'kwargs': kwargs}
         return response
 
 
@@ -81,37 +70,72 @@ class BundleViewSetTestCase(ViewsBaseTestCase):
     def test_list(self):
 
         response = self.response('api:v1:bundle-list')
-        self.assertListEqual(
-            response.data,
-            BundleSerializer(Bundle.objects.all(), context={'request': response.wsgi_request}, many=True).data
-        )
+        self.assertListEqual(response.data, [{
+            'collection': 'http://testserver/api/v1/collections/{}/'.format(self.collection.uuid),
+            'description': 'Bundle description 1.',
+            'files': 'http://testserver/api/v1/bundles/{}/files/'.format(self.bundle.uuid),
+            'slug': 'bundle-1',
+            'title': 'Bundle 1',
+            'url': 'http://testserver/api/v1/bundles/{}/'.format(self.bundle.uuid),
+            'uuid': '{}'.format(self.bundle.uuid),
+            'versions': [
+                'http://testserver/api/v1/bundle_versions/{},1/'.format(self.bundle.uuid),
+            ]
+        }])
 
     def test_get(self):
 
         response = self.response('api:v1:bundle-detail', kwargs={'bundle_uuid': self.bundle.uuid})
-        self.assertDictEqual(
-            response.data,
-            BundleSerializer(self.bundle, context={'request': response.wsgi_request}).data
-        )
-        self.assertTrue(isinstance(response.data['files'], Hyperlink))
+        self.assertDictEqual(response.data, {
+            'collection': 'http://testserver/api/v1/collections/{}/'.format(self.collection.uuid),
+            'description': 'Bundle description 1.',
+            'files': 'http://testserver/api/v1/bundles/{}/files/'.format(self.bundle.uuid),
+            'slug': 'bundle-1',
+            'title': 'Bundle 1',
+            'url': 'http://testserver/api/v1/bundles/{}/'.format(self.bundle.uuid),
+            'uuid': '{}'.format(self.bundle.uuid),
+            'versions': [
+                'http://testserver/api/v1/bundle_versions/{},1/'.format(self.bundle.uuid),
+            ]
+        })
 
     def test_get_expand_files(self):
+
         response = self.response(
             'api:v1:bundle-detail',
             kwargs={'bundle_uuid': self.bundle.uuid},
             query_params={'expand': 'files'},
         )
-
-        self.assertDictEqual(
-            response.data,
-            BundleSerializer(self.bundle, context={'request': response.wsgi_request}).data
-        )
-        self.assertTrue(isinstance(response.data['files'], ReturnList))
+        self.assertDictEqual(response.data, {
+            'collection': 'http://testserver/api/v1/collections/{}/'.format(self.collection.uuid),
+            'description': 'Bundle description 1.',
+            'files': [
+                {
+                    'data': 'http://testserver/media/{}/data/{}'.format(self.bundle.uuid, HTML_CONTENT_HASH),
+                    'path': 'a/file-1.html',
+                    'public': False,
+                    'size': 25,
+                    'url': 'http://testserver/api/v1/bundles/{}/files/a/file-1.html/'.format(self.bundle.uuid),
+                }, {
+                    'data': 'http://testserver/media/{}/data/{}'.format(self.bundle.uuid, TEXT_CONTENT_HASH),
+                    'path': 'b/file-2.txt',
+                    'public': False,
+                    'size': 17,
+                    'url': 'http://testserver/api/v1/bundles/{}/files/b/file-2.txt/'.format(self.bundle.uuid),
+                },
+            ],
+            'slug': 'bundle-1',
+            'title': 'Bundle 1',
+            'url': 'http://testserver/api/v1/bundles/{}/'.format(self.bundle.uuid),
+            'uuid': '{}'.format(self.bundle.uuid),
+            'versions': [
+                'http://testserver/api/v1/bundle_versions/{},1/'.format(self.bundle.uuid),
+            ]
+        })
 
     def test_create(self):
 
         bundles_count = Bundle.objects.all().count()
-
         response = self.response(
             'api:v1:bundle-list',
             method='post',
@@ -124,19 +148,23 @@ class BundleViewSetTestCase(ViewsBaseTestCase):
             format='json',
             expected_response_code=201,
         )
-
-        self.assertDictEqual(
-            response.data,
-            BundleSerializer(
-                Bundle.objects.all().order_by('-id').first(), context={'request': response.wsgi_request}
-            ).data
+        new_bundle_uuid = response.data.get('uuid')
+        self.assertDictEqual(response.data, {
+                'collection': 'http://testserver/api/v1/collections/{}/'.format(self.collection.uuid),
+                'description': 'Bundle description 2.',
+                'files': 'http://testserver/api/v1/bundles/{}/files/'.format(new_bundle_uuid),
+                'slug': 'bundle-2',
+                'title': 'Bundle 2',
+                'url': 'http://testserver/api/v1/bundles/{}/'.format(new_bundle_uuid),
+                'uuid': new_bundle_uuid,
+                'versions': [],
+            }
         )
         self.assertEqual(Bundle.objects.all().count(), bundles_count + 1)
 
     def test_update(self):
 
         bundles_count = Bundle.objects.all().count()
-
         response = self.response(
             'api:v1:bundle-detail',
             kwargs={
@@ -150,13 +178,18 @@ class BundleViewSetTestCase(ViewsBaseTestCase):
             },
             format='json',
         )
-
-        self.assertDictEqual(
-            response.data,
-            BundleSerializer(
-                Bundle.objects.get(uuid=self.bundle.uuid), context={'request': response.wsgi_request}
-            ).data
-        )
+        self.assertDictEqual(response.data, {
+            'collection': 'http://testserver/api/v1/collections/{}/'.format(self.collection.uuid),
+            'description': 'Bundle description 2.1.',
+            'files': 'http://testserver/api/v1/bundles/{}/files/'.format(self.bundle.uuid),
+            'slug': 'bundle-2-1',
+            'title': 'Bundle 2.1',
+            'url': 'http://testserver/api/v1/bundles/{}/'.format(self.bundle.uuid),
+            'uuid': '{}'.format(self.bundle.uuid),
+            'versions': [
+                'http://testserver/api/v1/bundle_versions/{},1/'.format(self.bundle.uuid),
+            ]
+        })
         self.assertEqual(Bundle.objects.all().count(), bundles_count)
 
 
@@ -166,12 +199,13 @@ class BundleVersionViewSetTestCase(ViewsBaseTestCase):
     def test_list(self):
 
         response = self.response('api:v1:bundleversion-list')
-        self.assertListEqual(
-            response.data,
-            BundleVersionSerializer(
-                BundleVersion.objects.all(), context={'request': response.wsgi_request}, many=True
-            ).data
-        )
+        self.assertListEqual(response.data, [{
+            'bundle': 'http://testserver/api/v1/bundles/{}/'.format(self.bundle.uuid),
+            'change_description': '',
+            'files': 'http://testserver/api/v1/bundle_versions/{},1/files/'.format(self.bundle.uuid),
+            'url': 'http://testserver/api/v1/bundle_versions/{},1/'.format(self.bundle.uuid),
+            'version_num': 1,
+        }])
 
     def test_get(self):
 
@@ -179,13 +213,13 @@ class BundleVersionViewSetTestCase(ViewsBaseTestCase):
             'bundle_uuid': self.bundle_version.bundle.uuid,
             'version_num': self.bundle_version.version_num,
         })
-        self.assertDictEqual(
-            response.data,
-            BundleVersionSerializer(
-                self.bundle_version, context={'request': response.wsgi_request}
-            ).data
-        )
-        self.assertTrue(isinstance(response.data['files'], Hyperlink))
+        self.assertDictEqual(response.data, {
+            'bundle': 'http://testserver/api/v1/bundles/{}/'.format(self.bundle.uuid),
+            'change_description': '',
+            'files': 'http://testserver/api/v1/bundle_versions/{},1/files/'.format(self.bundle.uuid),
+            'url': 'http://testserver/api/v1/bundle_versions/{},1/'.format(self.bundle.uuid),
+            'version_num': 1,
+        })
 
     def test_get_expand_files(self):
         response = self.response(
@@ -197,13 +231,25 @@ class BundleVersionViewSetTestCase(ViewsBaseTestCase):
             query_params={'expand': 'files'},
         )
 
-        self.assertDictEqual(
-            response.data,
-            BundleVersionSerializer(
-                self.bundle_version, context={'request': response.wsgi_request}
-            ).data
-        )
-        self.assertTrue(isinstance(response.data['files'], ReturnList))
+        self.assertDictEqual(response.data, {
+            'bundle': 'http://testserver/api/v1/bundles/{}/'.format(self.bundle.uuid),
+            'change_description': '',
+            'files': [{
+                'data': 'http://testserver/media/{}/data/{}'.format(self.bundle.uuid, HTML_CONTENT_HASH),
+                'path': 'a/file-1.html',
+                'public': False,
+                'size': 25,
+                'url': 'http://testserver/api/v1/bundle_versions/{},1/files/a/file-1.html/'.format(self.bundle.uuid),
+            }, {
+                'data': 'http://testserver/media/{}/data/{}'.format(self.bundle.uuid, TEXT_CONTENT_HASH),
+                'path': 'b/file-2.txt',
+                'public': False,
+                'size': 17,
+                'url': 'http://testserver/api/v1/bundle_versions/{},1/files/b/file-2.txt/'.format(self.bundle.uuid),
+            }],
+            'url': 'http://testserver/api/v1/bundle_versions/{},1/'.format(self.bundle.uuid),
+            'version_num': 1,
+        })
 
 
 class CollectionViewSetTestCase(ViewsBaseTestCase):
@@ -212,27 +258,24 @@ class CollectionViewSetTestCase(ViewsBaseTestCase):
     def test_list(self):
 
         response = self.response('api:v1:collection-list')
-        self.assertListEqual(
-            response.data,
-            CollectionSerializer(
-                Collection.objects.all(), context={'request': response.wsgi_request}, many=True
-            ).data
-        )
+        self.assertListEqual(response.data, [{
+            'title': 'Collection 1',
+            'url': 'http://testserver/api/v1/collections/{}/'.format(self.collection.uuid),
+            'uuid': '{}'.format(self.collection.uuid),
+        }])
 
     def test_get(self):
 
         response = self.response('api:v1:collection-detail', kwargs={'uuid': self.collection.uuid})
-        self.assertDictEqual(
-            response.data,
-            CollectionSerializer(
-                self.collection, context={'request': response.wsgi_request}
-            ).data
-        )
+        self.assertDictEqual(response.data, {
+            'title': 'Collection 1',
+            'url': 'http://testserver/api/v1/collections/{}/'.format(self.collection.uuid),
+            'uuid': '{}'.format(self.collection.uuid),
+        })
 
     def test_create(self):
 
         collections_count = Collection.objects.all().count()
-
         response = self.response(
             'api:v1:collection-list',
             method='post',
@@ -240,19 +283,17 @@ class CollectionViewSetTestCase(ViewsBaseTestCase):
             format='json',
             expected_response_code=201,
         )
-
-        self.assertDictEqual(
-            response.data,
-            CollectionSerializer(
-                Collection.objects.all().order_by('-id').first(), context={'request': response.wsgi_request}
-            ).data
-        )
+        new_collection_uuid = response.data.get('uuid')
+        self.assertDictEqual(response.data, {
+            'title': 'Collection 2',
+            'url': 'http://testserver/api/v1/collections/{}/'.format(new_collection_uuid),
+            'uuid': new_collection_uuid,
+        })
         self.assertEqual(Collection.objects.all().count(), collections_count + 1)
 
     def test_update(self):
 
         collections_count = Collection.objects.all().count()
-
         response = self.response(
             'api:v1:collection-detail',
             kwargs={'uuid': self.collection.uuid},
@@ -260,12 +301,11 @@ class CollectionViewSetTestCase(ViewsBaseTestCase):
             data={'title': 'Collection 1.1'},
             format='json',
         )
-        self.assertDictEqual(
-            response.data,
-            CollectionSerializer(
-                Collection.objects.get(uuid=self.collection.uuid), context={'request': response.wsgi_request}
-            ).data
-        )
+        self.assertDictEqual(response.data, {
+            'title': 'Collection 1.1',
+            'url': 'http://testserver/api/v1/collections/{}/'.format(self.collection.uuid),
+            'uuid': '{}'.format(self.collection.uuid),
+        })
         self.assertEqual(Collection.objects.all().count(), collections_count)
 
 
@@ -278,38 +318,37 @@ class BundleFileReadOnlyViewSetTestCase(ViewsBaseTestCase):
             'bundle_uuid': self.bundle_version.bundle.uuid,
             'version_num': self.bundle_version.version_num,
         })
-        self.assertListEqual(
-            response.data,
-            FileInfoSerializer(
-                self.bundle_version.snapshot().files.values(),
-                context={
-                    'detail_view_name': BundleFileReadOnlyViewSet.detail_view_name,
-                    'request': response.wsgi_request,
-                },
-                many=True
-            ).data
-        )
+        self.assertListEqual(response.data, [
+            {
+                'data': 'http://testserver/media/{}/data/{}'.format(self.bundle.uuid, HTML_CONTENT_HASH),
+                'path': 'a/file-1.html',
+                'public': False,
+                'size': 25,
+                'url': 'http://testserver/api/v1/bundle_versions/{},1/files/a/file-1.html/'.format(self.bundle.uuid),
+            }, {
+                'data': 'http://testserver/media/{}/data/{}'.format(self.bundle.uuid, TEXT_CONTENT_HASH),
+                'path': 'b/file-2.txt',
+                'public': False,
+                'size': 17,
+                'url': 'http://testserver/api/v1/bundle_versions/{},1/files/b/file-2.txt/'.format(self.bundle.uuid),
+            },
+        ])
 
     def test_get(self):
 
         file_info = list(self.bundle_version.snapshot().files.values())[0]
-
         response = self.response('api:v1:bundleversionfile-detail', kwargs={
             'bundle_uuid': self.bundle_version.bundle.uuid,
             'version_num': self.bundle_version.version_num,
             'path': file_info.path,
         })
-
-        self.assertDictEqual(
-            response.data,
-            FileInfoSerializer(
-                file_info,
-                context={
-                    'detail_view_name': BundleFileReadOnlyViewSet.detail_view_name,
-                    'request': response.wsgi_request,
-                },
-            ).data
-        )
+        self.assertDictEqual(response.data, {
+            'data': 'http://testserver/media/{}/data/{}'.format(self.bundle.uuid, HTML_CONTENT_HASH),
+            'path': 'a/file-1.html',
+            'public': False,
+            'size': 25,
+            'url': 'http://testserver/api/v1/bundle_versions/{},1/files/a/file-1.html/'.format(self.bundle.uuid),
+        })
 
 
 class BundleFileViewSetTestCase(ViewsBaseTestCase):
@@ -343,41 +382,40 @@ class BundleFileViewSetTestCase(ViewsBaseTestCase):
         response = self.response('api:v1:bundlefile-list', kwargs={
             'bundle_uuid': self.bundle_version.bundle.uuid
         })
-        self.assertListEqual(
-            response.data,
-            FileInfoSerializer(
-                self.bundle_version.snapshot().files.values(),
-                context={
-                    'detail_view_name': BundleFileViewSet.detail_view_name,
-                    'request': response.wsgi_request,
-                },
-                many=True
-            ).data
-        )
+        self.assertListEqual(response.data, [
+            {
+                'data': 'http://testserver/media/{}/data/{}'.format(self.bundle.uuid, HTML_CONTENT_HASH),
+                'path': 'a/file-1.html',
+                'public': False,
+                'size': 25,
+                'url': 'http://testserver/api/v1/bundles/{}/files/a/file-1.html/'.format(self.bundle.uuid),
+            }, {
+                'data': 'http://testserver/media/{}/data/{}'.format(self.bundle.uuid, TEXT_CONTENT_HASH),
+                'path': 'b/file-2.txt',
+                'public': False,
+                'size': 17,
+                'url': 'http://testserver/api/v1/bundles/{}/files/b/file-2.txt/'.format(self.bundle.uuid),
+            },
+        ])
 
     def test_get(self):
 
         file_info = list(self.bundle_version.snapshot().files.values())[0]
-
         response = self.response('api:v1:bundlefile-detail', kwargs={
             'bundle_uuid': self.bundle_version.bundle.uuid,
             'path': file_info.path,
         })
-        self.assertDictEqual(
-            response.data,
-            FileInfoSerializer(
-                file_info,
-                context={
-                    'detail_view_name': BundleFileViewSet.detail_view_name,
-                    'request': response.wsgi_request,
-                },
-            ).data
-        )
+        self.assertDictEqual(response.data, {
+            'data': 'http://testserver/media/{}/data/{}'.format(self.bundle.uuid, HTML_CONTENT_HASH),
+            'path': 'a/file-1.html',
+            'public': False,
+            'size': 25,
+            'url': 'http://testserver/api/v1/bundles/{}/files/a/file-1.html/'.format(self.bundle.uuid),
+        })
 
     def test_create(self):
 
         files_count = len(self.bundle.versions.order_by('-version_num').first().snapshot().files)
-
         response = self.response(
             'api:v1:bundlefile-list',
             kwargs={
@@ -394,18 +432,13 @@ class BundleFileViewSetTestCase(ViewsBaseTestCase):
         new_bundle_version = self.bundle.versions.order_by('-version_num').first()
         self.assertEqual(len(new_bundle_version.snapshot().files), files_count + 1)
 
-        file_info = list(new_bundle_version.snapshot().files.values())[2]
-
-        self.assertDictEqual(
-            response.data,
-            FileInfoSerializer(
-                file_info,
-                context={
-                    'detail_view_name': BundleFileViewSet.detail_view_name,
-                    'request': response.wsgi_request,
-                },
-            ).data
-        )
+        self.assertDictEqual(response.data, {
+            'data': 'http://testserver/media/{}/data/{}'.format(new_bundle_version.bundle.uuid, TEXT_CONTENT_HASH),
+            'path': 'c/file-3.txt',
+            'public': False,
+            'size': 17,
+            'url': 'http://testserver/api/v1/bundles/{}/files/c/file-3.txt/'.format(new_bundle_version.bundle.uuid),
+        })
 
     def test_create_new(self):
 
@@ -433,18 +466,13 @@ class BundleFileViewSetTestCase(ViewsBaseTestCase):
         new_bundle_version = new_bundle.versions.order_by('-version_num').first()
         self.assertEqual(len(new_bundle_version.snapshot().files), files_count + 1)
 
-        file_info = list(new_bundle_version.snapshot().files.values())[0]
-
-        self.assertDictEqual(
-            response.data,
-            FileInfoSerializer(
-                file_info,
-                context={
-                    'detail_view_name': BundleFileViewSet.detail_view_name,
-                    'request': response.wsgi_request,
-                },
-            ).data
-        )
+        self.assertDictEqual(response.data, {
+            'data': 'http://testserver/media/{}/data/{}'.format(new_bundle_version.bundle.uuid, TEXT_CONTENT_HASH),
+            'path': 'c/file-3.txt',
+            'public': False,
+            'size': 17,
+            'url': 'http://testserver/api/v1/bundles/{}/files/c/file-3.txt/'.format(new_bundle_version.bundle.uuid),
+        })
 
     def test_create_error(self):
 
@@ -489,32 +517,35 @@ class BundleFileViewSetTestCase(ViewsBaseTestCase):
         new_bundle_version = self.bundle.versions.order_by('-version_num').first()
         self.assertEqual(len(new_bundle_version.snapshot().files), files_count + 2)
 
-        file_infos = list(new_bundle_version.snapshot().files.values())[-2:]
-        self.assertEqual(
-            response.data,
-            FileInfoSerializer(
-                file_infos,
-                context={
-                    'detail_view_name': BundleFileViewSet.detail_view_name,
-                    'request': response.wsgi_request,
-                },
-                many=True,
-            ).data
-        )
+        self.assertListEqual(response.data, [{
+            'data': 'http://testserver/media/{}/data/{}'.format(new_bundle_version.bundle.uuid, TEXT_CONTENT_HASH),
+            'path': 'c/file-4.txt',
+            'public': True,
+            'size': 17,
+            'url': 'http://testserver/api/v1/bundles/{}/files/c/file-4.txt/'.format(new_bundle_version.bundle.uuid),
+        }, {
+            'data': 'http://testserver/media/{}/data/{}'.format(new_bundle_version.bundle.uuid, HTML_CONTENT_HASH),
+            'path': 'c/file-5.html',
+            'public': False,
+            'size': 25,
+            'url': 'http://testserver/api/v1/bundles/{}/files/c/file-5.html/'.format(new_bundle_version.bundle.uuid),
+        }])
 
     def test_delete(self):
 
         files_count = len(self.bundle.versions.order_by('-version_num').first().snapshot().files)
-
         file_info = list(self.bundle_version.snapshot().files.values())[0]
 
-        url = reverse('api:v1:bundlefile-detail', kwargs={
-            'bundle_uuid': self.bundle_version.bundle.uuid,
-            'path': file_info.path,
-        })
-        response = self.client.delete(url)
+        response = self.response(
+            'api:v1:bundlefile-detail',
+            method='delete',
+            kwargs={
+                'bundle_uuid': self.bundle_version.bundle.uuid,
+                'path': file_info.path,
+            },
+            expected_response_code=204,
+        )
+        self.assertIsNone(response.data)
 
         new_bundle_version = self.bundle.versions.order_by('-version_num').first()
         self.assertEqual(len(new_bundle_version.snapshot().files.keys()), files_count - 1)
-
-        self.assertEqual(response.status_code, 204)
