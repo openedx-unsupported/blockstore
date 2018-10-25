@@ -96,7 +96,7 @@ class Bundle(models.Model):
         Collection, related_name="bundles", related_query_name="bundle", editable=False
     )
 
-    slug = models.SlugField(allow_unicode=True)  # For pretty URLs
+    slug = models.SlugField(allow_unicode=True, unique=True)  # For pretty URLs
     description = models.TextField(max_length=10_000)
 
     def __str__(self):
