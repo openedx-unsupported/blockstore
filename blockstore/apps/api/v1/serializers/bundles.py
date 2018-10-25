@@ -29,26 +29,25 @@ class BundleSerializer(serializers.ModelSerializer):
 
     collection = relations.HyperlinkedRelatedField(
         lookup_field='uuid',
-        lookup_url_kwarg='uuid',
         queryset=Collection.objects.all(),
         view_name='api:v1:collection-detail',
     )
 
     files = relations.HyperlinkedIdentityField(
-        lookup_field='uuid',
-        lookup_url_kwarg='bundle_uuid',
+        lookup_field='slug',
+        lookup_url_kwarg='bundle_slug',
         view_name='api:v1:bundlefile-list',
     )
 
     url = relations.HyperlinkedIdentityField(
-        lookup_field='uuid',
-        lookup_url_kwarg='bundle_uuid',
+        lookup_field='slug',
+        lookup_url_kwarg='bundle_slug',
         view_name='api:v1:bundle-detail',
     )
 
     versions = relations.HyperlinkedRelatedField(
-        lookup_fields=['bundle__uuid', 'version_num'],
-        lookup_url_kwargs=['bundle_uuid', 'version_num'],
+        lookup_fields=['bundle__slug', 'version_num'],
+        lookup_url_kwargs=['bundle_slug', 'version_num'],
         many=True,
         read_only=True,
         view_name='api:v1:bundleversion-detail',
@@ -73,20 +72,20 @@ class BundleVersionSerializer(serializers.ModelSerializer):
         )
 
     bundle = relations.HyperlinkedRelatedField(
-        lookup_field='uuid',
-        lookup_url_kwarg='bundle_uuid',
+        lookup_field='slug',
+        lookup_url_kwarg='bundle_slug',
         read_only=True,
         view_name='api:v1:bundle-detail',
     )
 
     files = relations.HyperlinkedIdentityField(
-        lookup_fields=['bundle__uuid', 'version_num'],
-        lookup_url_kwargs=['bundle_uuid', 'version_num'],
+        lookup_fields=['bundle__slug', 'version_num'],
+        lookup_url_kwargs=['bundle_slug', 'version_num'],
         view_name='api:v1:bundleversionfile-list',
     )
 
     url = relations.HyperlinkedIdentityField(
-        lookup_fields=['bundle__uuid', 'version_num'],
-        lookup_url_kwargs=['bundle_uuid', 'version_num'],
+        lookup_fields=['bundle__slug', 'version_num'],
+        lookup_url_kwargs=['bundle_slug', 'version_num'],
         view_name='api:v1:bundleversion-detail',
     )

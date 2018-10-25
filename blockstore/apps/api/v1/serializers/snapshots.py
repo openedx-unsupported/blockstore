@@ -37,7 +37,7 @@ class FileDataField(serializers.FileField):
 
     def to_representation(self, value):
         request = self.context['request']
-        data_location = "{}/data/{}".format(request.parser_context['kwargs']['bundle_uuid'], value.hash_digest.hex())
+        data_location = "{}/data/{}".format(request.parser_context['kwargs']['bundle_slug'], value.hash_digest.hex())
         return self.context['request'].build_absolute_uri(default_storage.url(data_location))
 
 
