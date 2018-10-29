@@ -38,7 +38,7 @@ class BundleVersionViewSet(mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewSe
     lookup_value_regexes = (UUID4_REGEX, VERSION_NUM_REGEX)
 
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('bundle__uuid',)
+    filterset_fields = ('bundle__uuid', 'bundle__collection__uuid')
 
     queryset = BundleVersion.objects.all()
     serializer_class = BundleVersionSerializer
