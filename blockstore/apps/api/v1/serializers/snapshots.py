@@ -74,7 +74,8 @@ class ExpandedFileInfoField(serializers.SerializerMethodField):
         assert view_name is not None, 'The `view_name` argument is required.'
         self.view_name = view_name
 
-        # Ignore the context argument if passed from the ExpanderSerializerMixin
+        # Ignore the context argument if passed from the ExpanderSerializerMixin, to prevent
+        # TypeError on super __init__: got an unexpected keyword argument 'context'
         kwargs.pop('context', None)
 
         super().__init__(*args, **kwargs)
@@ -112,6 +113,7 @@ class ExpandedFileInfoField(serializers.SerializerMethodField):
         if isinstance(instance, BundleVersion):
             bundle_version = instance
         else:
+            # instance is a Bundle: use its most recent BundleVersion
             bundle_version = instance.get_bundle_version()
 
         return bundle_version.snapshot().files.values()
