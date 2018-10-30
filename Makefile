@@ -18,8 +18,8 @@ help:
 	@perl -nle'print $& if m{^[\.a-zA-Z_-]+:.*?## .*$$}' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m  %-25s\033[0m %s\n", $$1, $$2}'
 	@echo ""
 
-VENV_PATH?=$(or ${VIRTUAL_ENV},${VIRTUAL_ENV},/blockstore/venv)
-VENV_BIN=${VENV_PATH}/bin
+VIRTUAL_ENV?=/blockstore/venv
+VENV_BIN=${VIRTUAL_ENV}/bin
 
 dev.up:
 	docker-compose --project-name blockstore -f docker-compose.yml up -d
