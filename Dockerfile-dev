@@ -2,12 +2,12 @@
 
 FROM python:3.6-alpine
 
-ENV VENV_PATH=/blockstore/venv
+ENV VIRTUAL_ENV=/blockstore/venv
 
 RUN apk update && apk upgrade
 RUN apk add bash bash-completion build-base git perl
 
-RUN python3.6 -m venv $VENV_PATH
+RUN python3.6 -m venv $VIRTUAL_ENV
 
 RUN echo 'cd /blockstore/app/' >> ~/.bashrc
-RUN echo 'export PATH=$VENV_PATH/bin:$PATH' >> ~/.bashrc
+RUN echo 'export PATH=$VIRTUAL_ENV/bin:$PATH' >> ~/.bashrc

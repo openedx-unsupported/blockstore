@@ -1,9 +1,11 @@
 attrs<19.0.0
-django==1.11.14
+django>=1.11,<1.12
 django-extensions
 django-rest-swagger
 django-waffle
 djangorestframework
+djangorestframework-expander
+django-filter==2.0.0
 git+https://github.com/alanjds/drf-nested-routers.git
 edx-auth-backends
 pytz

@@ -4,7 +4,9 @@ Serializers for Snapshots.
 
 from django.core.files.storage import default_storage
 from rest_framework import serializers
+from expander import ExpanderSerializerMixin
 
+from blockstore.apps.bundles.models import BundleVersion
 from ... import relations
 
 
@@ -49,7 +51,7 @@ class FileInfoSerializer(serializers.Serializer):
 
     data = FileDataField()
     path = serializers.CharField()
-    public = serializers.BooleanField()
+    public = serializers.BooleanField(default=False)
     size = serializers.IntegerField(read_only=True)
 
     url = FileHyperlinkedIdentityField(
@@ -57,3 +59,75 @@ class FileInfoSerializer(serializers.Serializer):
         lookup_url_kwarg='path',
         view_name='api:v1:bundlefile-detail',
     )
+
+
+class ExpandedFileInfoField(serializers.SerializerMethodField):
+    """
+    Serializer field which expands the related BundleVersion files into a list of FileInfoSerializers.
+    """
+    # pylint: disable=abstract-method
+
+    def __init__(self, view_name, *args, **kwargs):
+        """
+        Initialize the ExpandedFileInfoField.
+        """
+        assert view_name is not None, 'The `view_name` argument is required.'
+        self.view_name = view_name
+
+        # Ignore the context argument if passed from the ExpanderSerializerMixin, to prevent
+        # TypeError on super __init__: got an unexpected keyword argument 'context'
+        kwargs.pop('context', None)
+
+        super().__init__(*args, **kwargs)
+
+    def bind(self, field_name, parent):
+        """
+        Bind our `expand_files` method to the parent serializer's `get_<field>` attribute.
+
+        This way, our method is called when the field is serialized.
+        """
+        super().bind(field_name, parent)
+        setattr(self.parent, self.method_name, self.expand_files)
+
+    def expand_files(self, instance):
+        """
+        Returns the expanded list of BundleVersion files.
+        """
+        view = self.context.get('view')
+        request = self.context.get('request')
+        file_info_serializer = FileInfoSerializer(
+            self._get_files(instance),
+            context={
+                'detail_view_name': self.view_name,
+                'request': request,
+                'format': getattr(view, 'format_kwarg', None),
+            },
+            many=True
+        )
+        return file_info_serializer.data
+
+    def _get_files(self, instance):
+        """
+        Returns the BundleVersion files associated with the given instance.
+        """
+        if isinstance(instance, BundleVersion):
+            bundle_version = instance
+        else:
+            # instance is a Bundle: use its most recent BundleVersion
+            bundle_version = instance.get_bundle_version()
+
+        return bundle_version.snapshot().files.values()
+
+
+class SingleExpanderSerializerMixin(ExpanderSerializerMixin):
+    """
+    Allows configured fields to be expanded only if serializing a single object.
+    """
+
+    @classmethod
+    def many_init(cls, *args, **kwargs):
+        """
+        Disable requests for expanded fields when serializing a list of objects.
+        """
+        kwargs['expanded_fields'] = 'none'
+        return super().many_init(*args, **kwargs)

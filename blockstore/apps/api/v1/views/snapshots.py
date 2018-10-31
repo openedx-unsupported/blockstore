@@ -11,6 +11,7 @@ from blockstore.apps.bundles.store import BundleDataStore, BundleSnapshot
 from blockstore.apps.bundles.models import BundleVersion
 
 from ...constants import FILE_PATH_REGEX
+from ...utils import ZippableMultiValueDict
 from ..serializers.snapshots import FileInfoSerializer
 
 
@@ -33,23 +34,8 @@ class BundleFileReadOnlyViewSet(viewsets.ViewSet):
             'request': self.request,
         }
 
-    def get_bundle_version(self, bundle_uuid, version_num=None):
-        """ Get the bundle version. """
-
-        filter_kwargs = {
-            'bundle__uuid': bundle_uuid
-        }
-        if version_num:
-            filter_kwargs['version_num'] = version_num
-
-        try:
-            return BundleVersion.objects.filter(**filter_kwargs).order_by('-version_num').first()
-        except BundleVersion.DoesNotExist:
-            pass
-        return None
-
     def get_bundle_version_or_404(self, bundle_uuid, version_num=None):
-        bundle_version = self.get_bundle_version(bundle_uuid, version_num)
+        bundle_version = BundleVersion.get_bundle_version(bundle_uuid, version_num)
         if bundle_version:
             return bundle_version
         raise http.Http404
@@ -85,26 +71,47 @@ class BundleFileViewSet(BundleFileReadOnlyViewSet):
     detail_view_name = 'api:v1:bundlefile-detail'
 
     def create(self, request, bundle_uuid, version_num=None):
-        """ Add file to a bundle. """
-        serializer = FileInfoSerializer(data=request.data)
-        if serializer.is_valid():
-            bundle_version = self.get_bundle_version(bundle_uuid, version_num)
-
-            if bundle_version:
-                snapshot = bundle_version.snapshot()
+        """ Add file(s) to a bundle. """
+        serializer_data = []
+        errors = []
+        request_data = ZippableMultiValueDict(request.data)
+        for fileinfo in request_data.zip():
+            serializer = FileInfoSerializer(data=fileinfo)
+            if serializer.is_valid():
+                serializer_data.append(serializer.validated_data)
             else:
-                snapshot = BundleSnapshot.create(bundle_uuid, {})
+                errors.append(serializer.errors)
 
-            store = BundleDataStore()
-            snapshot = store.snapshot_by_adding_path(snapshot, **serializer.validated_data)
+        if errors or not serializer_data:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
+        bundle_version = BundleVersion.get_bundle_version(bundle_uuid, version_num)
+        if bundle_version:
+            snapshot = bundle_version.snapshot()
+        else:
+            snapshot = BundleSnapshot.create(bundle_uuid, {})
+
+        store = BundleDataStore()
+        snapshot = store.snapshot_by_adding_paths(
+            snapshot,
+            paths_to_files=serializer_data,
+        )
+
+        if len(serializer_data) == 1:
+            # Just return a single snapshot file if only one was added
+            validated_data = serializer_data[0]
             response_serializer = FileInfoSerializer(
-                snapshot.files[serializer.validated_data['path']],  # pylint: disable=unsubscriptable-object
+                snapshot.files[validated_data['path']],
                 context=self.get_serializer_context(),
             )
-            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            response_serializer = FileInfoSerializer(
+                [snapshot.files[validated_data['path']]
+                    for validated_data in serializer_data],
+                context=self.get_serializer_context(),
+                many=True
+            )
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
     def destroy(self, _request, bundle_uuid, version_num=None, path=None):
         """ Delete files from a bundle. """

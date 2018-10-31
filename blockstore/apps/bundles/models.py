@@ -102,6 +102,12 @@ class Bundle(models.Model):
     def __str__(self):
         return "Bundle {} - {}".format(self.uuid, self.slug)
 
+    def get_bundle_version(self, version_num=None):
+        """
+        Returns the given bundle version, or the most recent if no version_num specified.
+        """
+        return BundleVersion.get_bundle_version(self.uuid, version_num)
+
 
 class BundleVersion(models.Model):
     """
@@ -151,7 +157,22 @@ class BundleVersion(models.Model):
         return store.snapshot(self.bundle.uuid, self.snapshot_digest)
 
     def __str__(self):
-        return f"{self.bundle.uuid}@{self.version_num}"
+        return "{self.bundle.uuid}@{self.version_num}".format(self=self)
+
+    @classmethod
+    def get_bundle_version(cls, bundle_uuid=None, version_num=None):
+        """
+        Returns the requested bundle version, or the most recent if no version_num specified.
+
+        Will return None if there are no BundleVersions associated with the Bundle.
+        """
+        filter_kwargs = {
+            'bundle__uuid': bundle_uuid
+        }
+        if version_num:
+            filter_kwargs['version_num'] = version_num
+
+        return cls.objects.filter(**filter_kwargs).order_by('-version_num').first()
 
 
 class BundleLink(models.Model):
