@@ -16,14 +16,11 @@ class BundleVersionInline(admin.StackedInline):
     model = BundleVersion
     readonly_fields = (
         'version_num',
-        'snapshot_digest_hex',
+        'snapshot_digest',
         'change_description',
         'snapshot_data',
         'raw_summary',
     )
-
-    def snapshot_digest_hex(self, obj):
-        return obj.snapshot_digest.hex()
 
     def snapshot_data(self, obj):
         """

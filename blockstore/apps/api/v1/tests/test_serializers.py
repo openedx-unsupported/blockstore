@@ -32,7 +32,7 @@ class SerializerBaseTestCase(TestCase):
         self.bundle_version = BundleVersionFactory(
             bundle=self.bundle,
             change_description='Update description.',
-            snapshot_digest=bytes('snapshot_digest', 'utf-8'),
+            snapshot_digest='snapshot_digest',
             version_num=1,
         )
 

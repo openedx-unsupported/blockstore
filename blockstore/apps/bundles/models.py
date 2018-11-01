@@ -118,7 +118,7 @@ class BundleVersion(models.Model):
         Bundle, related_name="versions", related_query_name="version", editable=False
     )
     version_num = models.PositiveIntegerField(editable=False)
-    snapshot_digest = models.BinaryField(max_length=20, db_index=True, editable=False)
+    snapshot_digest = models.CharField(max_length=40, db_index=True, editable=False)
     change_description = models.TextField(max_length=1_000, blank=True)
 
     class Meta:

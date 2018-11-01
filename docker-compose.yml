@@ -18,6 +18,11 @@ services:
       - "18250:18250"
     volumes:
       - ./:/blockstore/app/:cached
+    environment:
+      - MYSQL_DATABASE=blockstore_db
+      - MYSQL_USER=root
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
 
 networks:
   devstack:

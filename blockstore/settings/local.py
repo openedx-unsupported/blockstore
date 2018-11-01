@@ -17,12 +17,12 @@ CACHES = {
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': root('default.db'),
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('MYSQL_DATABASE', 'blockstore_db'),
+        'USER': os.environ.get('MYSQL_USER', 'root'),
+        'PASSWORD': os.environ.get('MYSQL_ROOT_PASSWORD', ''),
+        'HOST': os.environ.get('MYSQL_HOST', 'mysql'),
+        'PORT': int(os.environ.get('MYSQL_PORT', '3306')),
     }
 }
 # END DATABASE CONFIGURATION
