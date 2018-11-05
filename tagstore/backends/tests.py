@@ -10,7 +10,6 @@ import asynctest
 from .. import Tagstore, TagstoreBackend
 from ..models import EntityId, TaxonomyMetadata
 from .django import DjangoTagstoreBackend
-from .neo4j import Neo4jTagstoreBackend
 
 
 class AbstractBackendTest:
@@ -262,36 +261,6 @@ class AbstractBackendTest:
         # large mammals:
         result = set([e async for e in self.tagstore.get_entities_tagged_with_all({large, mammal})])
         self.assertEqual(result, {elephant})
-
-
-class Neo4jBackendTest(AbstractBackendTest, asynctest.TestCase):
-    """ Test the Neo4j backend implementation """
-
-    def get_backend(self) -> TagstoreBackend:
-        # Run Neo4j with:
-        #   docker run --publish=7474:7474 --publish=7687:7687 neo4j:3.4
-        # Then go to http://localhost:7474/browser/ login (neo4j/neo4j)
-        # and change the password to 'edx'
-        import socket
-        try:
-            docker_host = 'host.docker.internal'
-            socket.gethostbyaddr(docker_host)
-            neo4j_host = docker_host
-        except socket.gaierror:
-            neo4j_host = 'localhost'
-        return Neo4jTagstoreBackend({
-            'url': f'bolt://{neo4j_host}:7687',
-            'user': 'neo4j',
-            'pass': 'edx',
-        }, self.loop)
-
-    async def setUp(self):
-        super().setUp()
-        # Reset Neo4j before each test case:
-        await self.tagstore.backend.async_wrapper.aexec('''
-            MATCH (n)
-            DETACH DELETE n
-        ''')
 
 
 class DjangoBackendTest(AbstractBackendTest, asynctest.TestCase):

@@ -19,9 +19,6 @@ jobs:
         environment:
           MYSQL_ROOT_PASSWORD: ""
           MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      - image: neo4j:3.4
-        environment:
-          NEO4J_AUTH: neo4j/edx
 
     environment:
       MYSQL_DATABASE: "blockstore_db"
