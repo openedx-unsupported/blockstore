@@ -1,7 +1,7 @@
 """
 Django ORM tag storage backend.
 """
-from typing import AsyncIterator, List, Optional
+from typing import Iterator, List, Optional
 from django.db.models import Q, Subquery
 
 from .tagstore_django.models import Entity as EntityModel, Tag as TagModel, Taxonomy as TaxonomyModel
@@ -22,19 +22,19 @@ class DjangoTagstoreBackend(TagstoreBackend):
     Django tag storage backend.
     """
 
-    async def create_taxonomy(self, name: str, owner_id: UserId) -> TaxonomyMetadata:
+    def create_taxonomy(self, name: str, owner_id: UserId) -> TaxonomyMetadata:
         """ Create a new taxonomy with the specified name and owner. """
         obj = TaxonomyModel.objects.create(name=name, owner_id=owner_id)
         return TaxonomyMetadata(uid=obj.id, name=name, owner_id=owner_id)
 
-    async def get_taxonomy(self, uid: int) -> TaxonomyMetadata:
+    def get_taxonomy(self, uid: int) -> TaxonomyMetadata:
         try:
             tax = TaxonomyModel.objects.get(pk=uid)
         except TaxonomyModel.DoesNotExist:
             return None
         return TaxonomyMetadata(uid=tax.id, name=tax.name, owner_id=tax.owner_id)
 
-    async def add_tag_to_taxonomy(self, taxonomy_uid: int, tag: str, parent_tag: Optional[str] = None) -> None:
+    def add_tag_to_taxonomy(self, taxonomy_uid: int, tag: str, parent_tag: Optional[str] = None) -> None:
         if parent_tag:
             if TagModel.objects.filter(taxonomy_id=taxonomy_uid, tag=tag).exists():
                 raise ValueError("Child tag already exists.")
@@ -51,17 +51,17 @@ class DjangoTagstoreBackend(TagstoreBackend):
             defaults={'path': path},
         )
 
-    async def list_tags_in_taxonomy(self, uid: int) -> AsyncIterator[Tag]:
+    def list_tags_in_taxonomy(self, uid: int) -> Iterator[Tag]:
         for tag in TagModel.objects.filter(taxonomy_id=uid).order_by('tag'):
             yield Tag(taxonomy_uid=uid, tag=tag.tag)
 
-    async def list_tags_in_taxonomy_containing(self, uid: int, text: str) -> AsyncIterator[Tag]:
+    def list_tags_in_taxonomy_containing(self, uid: int, text: str) -> Iterator[Tag]:
         for tag in TagModel.objects.filter(taxonomy_id=uid, tag__icontains=text).order_by('tag'):
             yield Tag(taxonomy_uid=uid, tag=tag.tag)
 
     # Tagging Entities ##########################
 
-    async def add_tag_to(self, tag: Tag, *entity_ids: EntityId) -> None:
+    def add_tag_to(self, tag: Tag, *entity_ids: EntityId) -> None:
         """
         Add the specified tag to the specified entity/entities.
 
@@ -76,7 +76,7 @@ class DjangoTagstoreBackend(TagstoreBackend):
             )
             em.tags.add(tag_model)
 
-    async def get_tags_applied_to(self, *entity_ids: EntityId) -> TagSet:
+    def get_tags_applied_to(self, *entity_ids: EntityId) -> TagSet:
         """ Get the set of unique tags applied to any of the specified entity IDs """
         entity_filter = None
         for eid in entity_ids:
@@ -94,7 +94,7 @@ class DjangoTagstoreBackend(TagstoreBackend):
 
     # Searching Entities ##########################
 
-    async def get_entities_tagged_with_all(
+    def get_entities_tagged_with_all(
         self,
         tags: TagSet,
         entity_types: Optional[List[str]] = None,
@@ -102,7 +102,7 @@ class DjangoTagstoreBackend(TagstoreBackend):
         entity_ids: Optional[List[EntityId]] = None,  # use this to filter a list of entity IDs by tag
         include_child_tags=True,  # For hierarchical taxonomies, include child tags
                                   # (e.g. search for "Animal" will return results tagged only with "Dog")
-    ) -> AsyncIterator[EntityId]:
+    ) -> Iterator[EntityId]:
 
         if not tags:
             raise ValueError("tags must contain at least one Tag")

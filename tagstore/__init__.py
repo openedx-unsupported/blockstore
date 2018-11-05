@@ -4,7 +4,7 @@ A system for storing and retrieving tags related to Blockstore entities
 Backed by a graph database (a pluggable backend)
 """
 
-from typing import AsyncIterator, Optional, Union
+from typing import Iterator, Optional, Union
 
 from .backends.backend import TagstoreBackend
 from .models.entity import EntityId
@@ -21,13 +21,13 @@ class Tagstore:
     def __init__(self, backend: TagstoreBackend) -> None:
         self.backend = backend
 
-    async def create_taxonomy(self, name: str, owner_id: UserId) -> TaxonomyMetadata:
-        return await self.backend.create_taxonomy(name, owner_id)
+    def create_taxonomy(self, name: str, owner_id: UserId) -> TaxonomyMetadata:
+        return self.backend.create_taxonomy(name, owner_id)
 
-    async def get_taxonomy(self, uid: int) -> TaxonomyMetadata:
-        return await self.backend.get_taxonomy(uid)
+    def get_taxonomy(self, uid: int) -> TaxonomyMetadata:
+        return self.backend.get_taxonomy(uid)
 
-    async def add_tag_to_taxonomy(
+    def add_tag_to_taxonomy(
         self, tag: str, taxonomy: Union[TaxonomyId, TaxonomyMetadata], parent_tag: Optional[Tag] = None
     ) -> Tag:
         """
@@ -59,36 +59,36 @@ class Tagstore:
         else:
             parent_tag_str = None
 
-        await self.backend.add_tag_to_taxonomy(taxonomy_uid=taxonomy_uid, tag=tag, parent_tag=parent_tag_str)
+        self.backend.add_tag_to_taxonomy(taxonomy_uid=taxonomy_uid, tag=tag, parent_tag=parent_tag_str)
         return Tag(taxonomy_uid=taxonomy_uid, tag=tag)
 
-    async def list_tags_in_taxonomy(self, uid: int) -> AsyncIterator[Tag]:
-        async for tag in self.backend.list_tags_in_taxonomy(uid):
+    def list_tags_in_taxonomy(self, uid: int) -> Iterator[Tag]:
+        for tag in self.backend.list_tags_in_taxonomy(uid):
             yield tag
 
-    async def list_tags_in_taxonomy_containing(self, uid: int, text: str) -> AsyncIterator[Tag]:
+    def list_tags_in_taxonomy_containing(self, uid: int, text: str) -> Iterator[Tag]:
         try:
-            async for tag in self.backend.list_tags_in_taxonomy_containing(uid, text):
+            for tag in self.backend.list_tags_in_taxonomy_containing(uid, text):
                 yield tag
         except NotImplementedError:
             text = text.lower()
-            async for tag in self.backend.list_tags_in_taxonomy(uid):
+            for tag in self.backend.list_tags_in_taxonomy(uid):
                 if tag.tag.lower().find(text) != -1:
                     yield tag
 
-    async def add_tag_to(self, tag: Tag, *entity_ids: EntityId) -> None:
-        await self.backend.add_tag_to(tag, *entity_ids)
+    def add_tag_to(self, tag: Tag, *entity_ids: EntityId) -> None:
+        self.backend.add_tag_to(tag, *entity_ids)
 
-    async def remove_tag_from(self, tag: Tag, *entity_ids: EntityId) -> None:
-        await self.backend.remove_tag_from(tag, *entity_ids)
+    def remove_tag_from(self, tag: Tag, *entity_ids: EntityId) -> None:
+        self.backend.remove_tag_from(tag, *entity_ids)
 
-    async def get_tags_applied_to(self, *entity_ids: EntityId) -> TagSet:
-        return await self.backend.get_tags_applied_to(*entity_ids)
+    def get_tags_applied_to(self, *entity_ids: EntityId) -> TagSet:
+        return self.backend.get_tags_applied_to(*entity_ids)
 
-    async def get_entities_tagged_with(self, tag: Tag, **kwargs) -> AsyncIterator[EntityId]:
-        async for entity_id in self.backend.get_entities_tagged_with_all({tag}, **kwargs):
+    def get_entities_tagged_with(self, tag: Tag, **kwargs) -> Iterator[EntityId]:
+        for entity_id in self.backend.get_entities_tagged_with_all({tag}, **kwargs):
             yield entity_id
 
-    async def get_entities_tagged_with_all(self, tags: TagSet, **kwargs) -> AsyncIterator[EntityId]:
-        async for entity_id in self.backend.get_entities_tagged_with_all(tags, **kwargs):
+    def get_entities_tagged_with_all(self, tags: TagSet, **kwargs) -> Iterator[EntityId]:
+        for entity_id in self.backend.get_entities_tagged_with_all(tags, **kwargs):
             yield entity_id
