@@ -25,6 +25,7 @@ dev.up:
 	docker-compose --project-name blockstore -f docker-compose.yml up -d
 
 dev.provision:
+	docker exec -t edx.devstack.mysql /bin/bash -c 'mysql -uroot <<< "create database if not exists blockstore_db;"'
 	docker exec -t edx.devstack.blockstore /bin/bash -c 'source ~/.bashrc && make requirements && make migrate'
 
 stop:

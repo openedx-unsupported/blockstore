@@ -113,7 +113,7 @@ class BundleSnapshot():
         )
         hash_digest = hashlib.blake2b(  # pylint: disable=no-member
             str_to_be_hashed.encode('utf-8'), digest_size=20
-        ).digest()
+        ).hexdigest()
         return cls(
             bundle_uuid=bundle_uuid,
             files=files,
@@ -166,7 +166,7 @@ class BundleJSONEncoder(json.JSONEncoder):
         elif isinstance(o, BundleSnapshot):
             return {
                 'bundle_uuid': o.bundle_uuid,
-                'hash_digest': o.hash_digest.hex(),
+                'hash_digest': o.hash_digest,
                 'files': o.files,
                 'created_at': o.created_at,
                 '_version': 1,
@@ -216,7 +216,7 @@ class BundleDataStore():
     """
     def snapshot(self, bundle_uuid, snapshot_digest):
         """ Return a snapshot. """
-        storage_path = "{}/snapshots/{}.json".format(bundle_uuid, snapshot_digest.hex())
+        storage_path = "{}/snapshots/{}.json".format(bundle_uuid, snapshot_digest)
         with default_storage.open(storage_path) as snapshot_file:
             snapshot_json = json.load(snapshot_file)
 
@@ -224,7 +224,7 @@ class BundleDataStore():
             pathname: FileInfo(pathname, file_info[0], file_info[1], codecs.decode(file_info[2], 'hex'))
             for pathname, file_info in snapshot_json['files'].items()
         }
-        hash_digest = codecs.decode(snapshot_json['hash_digest'], 'hex')
+        hash_digest = snapshot_json['hash_digest']
 
         # Python's datetime module is incapable of parsing the ISO 8601
         # timestamps that it itself produces (it can't do timezones with ":"
@@ -262,7 +262,7 @@ class BundleDataStore():
         snapshot = BundleSnapshot.create(bundle_uuid=bundle_uuid, files=files)
         summary_json_str = json.dumps(snapshot, cls=BundleJSONEncoder, indent=2, sort_keys=True)
         summary_write_location = "{}/snapshots/{}.json".format(
-            bundle_uuid, snapshot.hash_digest.hex()  # pylint: disable=no-member
+            bundle_uuid, snapshot.hash_digest
         )
 
         if not default_storage.exists(summary_write_location):
@@ -274,7 +274,7 @@ class BundleDataStore():
             hash_digest=snapshot.hash_digest,
         )
         logger.info(
-            "Created Snapshot %s for Bundle %s", snapshot.hash_digest.hex(), bundle_uuid  # pylint: disable=no-member
+            "Created Snapshot %s for Bundle %s", snapshot.hash_digest, bundle_uuid
         )
 
         return snapshot

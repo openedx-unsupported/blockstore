@@ -14,6 +14,17 @@ jobs:
 
     docker:
       - image: python:3.6-alpine
+      - image: mysql:5.6
+        command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
+        environment:
+          MYSQL_ROOT_PASSWORD: ""
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+
+    environment:
+      MYSQL_DATABASE: "blockstore_db"
+      MYSQL_USER: "root"
+      MYSQL_HOST: "127.0.0.1"
+      MYSQL_PORT: 3306
 
     steps:
 
@@ -23,7 +34,7 @@ jobs:
           name: Install requirements
           command: |
             apk update && apk upgrade
-            apk add bash bash-completion build-base git perl
+            apk add bash bash-completion build-base git perl mariadb-dev
             python3.6 -m venv /blockstore/venv
             source /blockstore/venv/bin/activate
             make requirements
@@ -49,7 +60,7 @@ jobs:
           name: Install requirements
           command: |
             apk update && apk upgrade
-            apk add bash bash-completion build-base git perl
+            apk add bash bash-completion build-base git perl mariadb-dev
             python3.6 -m venv /blockstore/venv
             source /blockstore/venv/bin/activate
             make requirements

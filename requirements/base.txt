@@ -8,4 +8,5 @@ djangorestframework-expander
 django-filter==2.0.0
 git+https://github.com/alanjds/drf-nested-routers.git
 edx-auth-backends
+mysqlclient
 pytz
