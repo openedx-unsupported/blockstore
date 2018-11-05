@@ -1,23 +1,16 @@
 """
 Django ORM tag storage backend.
 """
-from typing import Iterator, List, Optional
+from typing import Iterator, List, Optional, Tuple
 from django.db.models import Q, Subquery
 
 from .tagstore_django.models import Entity as EntityModel, Tag as TagModel, Taxonomy as TaxonomyModel
 
-from .backend import (
-    EntityId,
-    Tag,
-    TagSet,
-    TagstoreBackend,
-    TaxonomyMetadata,
-    UserId,
-)
+from .. import Tagstore
+from ..models import EntityId, Tag, TagSet, TaxonomyMetadata, UserId
 
 
-# pylint: disable=abstract-method
-class DjangoTagstoreBackend(TagstoreBackend):
+class DjangoTagstore(Tagstore):
     """
     Django tag storage backend.
     """
@@ -34,10 +27,9 @@ class DjangoTagstoreBackend(TagstoreBackend):
             return None
         return TaxonomyMetadata(uid=tax.id, name=tax.name, owner_id=tax.owner_id)
 
-    def add_tag_to_taxonomy(self, taxonomy_uid: int, tag: str, parent_tag: Optional[str] = None) -> None:
+    def _add_tag_to_taxonomy(self, taxonomy_uid: int, tag: str, parent_tag: Optional[str] = None) -> None:
         if parent_tag:
-            if TagModel.objects.filter(taxonomy_id=taxonomy_uid, tag=tag).exists():
-                raise ValueError("Child tag already exists.")
+            # Check the parent tag:
             try:
                 pt = TagModel.objects.get(taxonomy_id=taxonomy_uid, tag=parent_tag)
             except TagModel.DoesNotExist:
@@ -45,15 +37,29 @@ class DjangoTagstoreBackend(TagstoreBackend):
             path = TagModel.make_path(taxonomy_uid, tag, pt.path)
         else:
             path = TagModel.make_path(taxonomy_uid, tag)
-        TagModel.objects.get_or_create(
+        db_tag, created = TagModel.objects.get_or_create(
             taxonomy_id=taxonomy_uid,
             tag=tag,
             defaults={'path': path},
         )
+        if not created:
+            if db_tag.path != path:
+                raise ValueError("That tag already exists with a different parent tag.")
 
     def list_tags_in_taxonomy(self, uid: int) -> Iterator[Tag]:
         for tag in TagModel.objects.filter(taxonomy_id=uid).order_by('tag'):
             yield Tag(taxonomy_uid=uid, tag=tag.tag)
+
+    def list_tags_in_taxonomy_hierarchically(self, uid: int) -> Iterator[Tuple[Tag, str]]:
+        """
+        Get a list of all tags in the given taxonomy, in hierarchical and alphabetical order.
+
+        Returns tuples of (Tag, parent_tag) where parent_tag is the 'tag' string which uniquely
+        identifies the parent tag. This method guarantees that parent tags will be returned
+        before their child tags.
+        """
+        for tag in TagModel.objects.filter(taxonomy_id=uid).order_by('path'):
+            yield (Tag(taxonomy_uid=uid, tag=tag.tag), tag.parent_tag)
 
     def list_tags_in_taxonomy_containing(self, uid: int, text: str) -> Iterator[Tag]:
         for tag in TagModel.objects.filter(taxonomy_id=uid, tag__icontains=text).order_by('tag'):
@@ -65,8 +71,7 @@ class DjangoTagstoreBackend(TagstoreBackend):
         """
         Add the specified tag to the specified entity/entities.
 
-        Will be a no-op if the tag is already applied or does not exist
-        in the given taxonomy.
+        Will be a no-op if the tag is already applied.
         """
         tag_model = TagModel.objects.get(taxonomy_id=tag.taxonomy_uid, tag=tag.tag)
         for entity in entity_ids:
@@ -75,6 +80,20 @@ class DjangoTagstoreBackend(TagstoreBackend):
                 external_id=entity.external_id,
             )
             em.tags.add(tag_model)
+
+    def remove_tag_from(self, tag: Tag, *entity_ids: EntityId) -> None:
+        """
+        Remove the specified tag from the specified entity/entities
+
+        Will be a no-op if the entities do not have that tag.
+        """
+        tag = TagModel.objects.get(taxonomy_id=tag.taxonomy_uid, tag=tag.tag)
+        # This could be optimized to a single DB query, but that's probably not necessary
+        for eid in entity_ids:
+            try:
+                EntityModel.objects.get(entity_type=eid.entity_type, external_id=eid.external_id).tags.remove(tag)
+            except EntityModel.DoesNotExist:
+                pass
 
     def get_tags_applied_to(self, *entity_ids: EntityId) -> TagSet:
         """ Get the set of unique tags applied to any of the specified entity IDs """
@@ -107,7 +126,7 @@ class DjangoTagstoreBackend(TagstoreBackend):
         if not tags:
             raise ValueError("tags must contain at least one Tag")
 
-        entities = EntityModel.objects
+        entities = EntityModel.objects.all()  # We start with the all() queryset, and filter it down.
 
         if include_child_tags:
             # Convert the set of tags to a set of materialized paths:

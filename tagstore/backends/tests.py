@@ -2,25 +2,24 @@
 Tests for all included backends
 """
 # pylint: disable=no-member, too-many-statements
-import unittest
 from typing import Iterable
 
+from django.test import TestCase
 
-from .. import Tagstore, TagstoreBackend
+from .. import Tagstore
 from ..models import EntityId, TaxonomyMetadata
-from .django import DjangoTagstoreBackend
+from .django import DjangoTagstore
 
 
 class AbstractBackendTest:
     """ Abstract test that tests any backend implementation """
     tagstore: Tagstore
 
-    def get_backend(self) -> TagstoreBackend:
+    def get_tagstore(self) -> Tagstore:
         raise NotImplementedError()
 
     def setUp(self):
-        backend = self.get_backend()
-        self.tagstore = Tagstore(backend)
+        self.tagstore = self.get_tagstore()
 
     # Taxonomy CRUD
 
@@ -71,6 +70,7 @@ class AbstractBackendTest:
             'lower',
             'UPPER',
             'spaces between words',
+            'true/correct',
             '@handle',
             'Αλφα',
             '🔥',
@@ -88,7 +88,6 @@ class AbstractBackendTest:
             'misleading    ',
             ' misleading',
             'one, two',
-            'one/two',
             'foo:bar',
             'foo;bar',
             'new\nline',
@@ -102,10 +101,35 @@ class AbstractBackendTest:
     def test_add_tag_to_taxonomy_idempotent(self):
         """ add_tag_to_taxonomy will add a tag to the given taxonomy only once """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=1)
-        self.tagstore.add_tag_to_taxonomy('testing', tax)
-        self.tagstore.add_tag_to_taxonomy('testing', tax)
+        tag1 = self.tagstore.add_tag_to_taxonomy('testing', tax)
+        tag2 = self.tagstore.add_tag_to_taxonomy('testing', tax)
+        self.assertEqual(tag1, tag2)
         tags = [t for t in self.tagstore.list_tags_in_taxonomy(tax.uid)]
-        self.assertEqual(len(tags), 1)
+        self.assertEqual(tags, [tag1])
+
+    def test_add_tag_to_taxonomy_idempotent_parent(self):
+        """
+        add_tag_to_taxonomy will add a tag to the given taxonomy only once,
+        including when it's a child tag with a parent
+        """
+        tax = self.tagstore.create_taxonomy("TestTax", owner_id=1)
+        parent = self.tagstore.add_tag_to_taxonomy('parent', tax)
+        child1 = self.tagstore.add_tag_to_taxonomy('child', tax, parent_tag=parent)
+        child2 = self.tagstore.add_tag_to_taxonomy('child', tax, parent_tag=parent)
+        self.assertEqual(child1, child2)
+        tags = [t for t in self.tagstore.list_tags_in_taxonomy(tax.uid)]
+        self.assertEqual(len(tags), 2)  # the 2 tags are 'parent' and 'child'
+
+    def test_add_tag_to_taxonomy_exists_elsewhere(self):
+        """ add_tag_to_taxonomy will not allow a child that exists elsewhere """
+        tax = self.tagstore.create_taxonomy("TestTax", owner_id=1)
+        parent = self.tagstore.add_tag_to_taxonomy('parent', tax)
+        other = self.tagstore.add_tag_to_taxonomy('other', tax)
+        self.tagstore.add_tag_to_taxonomy('child', tax, parent_tag=parent)
+        with self.assertRaises(ValueError):
+            self.tagstore.add_tag_to_taxonomy('child', tax, parent_tag=other)
+        with self.assertRaises(ValueError):
+            self.tagstore.add_tag_to_taxonomy('child', tax)
 
     def test_add_tag_to_taxonomy_circular(self):
         """ add_tag_to_taxonomy will not allow circular tags """
@@ -128,6 +152,25 @@ class AbstractBackendTest:
         tax = self._create_taxonomy_with_tags(tags_in)
         tags_out = [t.tag for t in self.tagstore.list_tags_in_taxonomy(tax.uid)]
         self.assertEqual(tags_out, tags_out_expected)
+
+    def test_list_tags_in_taxonomy_hierarchically(self):
+        """ Test that tags get returned with hierarchy information """
+        biology = self.tagstore.create_taxonomy("Biology", owner_id=1)
+        plant = self.tagstore.add_tag_to_taxonomy('plant', biology)
+        conifer = self.tagstore.add_tag_to_taxonomy('conifer', biology, parent_tag=plant)
+        cypress = self.tagstore.add_tag_to_taxonomy('cypress', biology, parent_tag=conifer)
+        pine = self.tagstore.add_tag_to_taxonomy('pine', biology, parent_tag=conifer)
+        aster = self.tagstore.add_tag_to_taxonomy('aster', biology, parent_tag=plant)
+
+        tags_out = list(self.tagstore.list_tags_in_taxonomy_hierarchically(biology.uid))
+
+        self.assertEqual(tags_out, [
+            (plant, None),
+            (aster, 'plant'),
+            (conifer, 'plant'),
+            (cypress, 'conifer'),
+            (pine, 'conifer'),
+        ])
 
     def test_list_tags_in_taxonomy_containing(self):
         """ Test filtering tags """
@@ -154,6 +197,22 @@ class AbstractBackendTest:
         self.assertEqual(self.tagstore.get_tags_applied_to(entity_id), set())
         self.tagstore.add_tag_to(tag, entity_id)
         self.assertEqual(self.tagstore.get_tags_applied_to(entity_id), {tag})
+
+    def test_remove_tag_from(self):
+        """ Test remove_tag_from """
+        tax = self.tagstore.create_taxonomy("TestTax", owner_id=1)
+        tag1 = self.tagstore.add_tag_to_taxonomy('tag1', tax)
+        tag2 = self.tagstore.add_tag_to_taxonomy('tag2', tax)
+        entity_id = EntityId(entity_type='content', external_id='block-v1:b1')
+        untagged_entity_id = EntityId(entity_type='content', external_id='block-v1:b2')
+
+        self.tagstore.add_tag_to(tag1, entity_id)
+        self.tagstore.add_tag_to(tag2, entity_id)
+        self.assertEqual(self.tagstore.get_tags_applied_to(entity_id), {tag1, tag2})
+        self.tagstore.remove_tag_from(tag1, entity_id)
+        self.assertEqual(self.tagstore.get_tags_applied_to(entity_id), {tag2})
+        self.tagstore.remove_tag_from(tag2, entity_id, untagged_entity_id)
+        self.assertEqual(self.tagstore.get_tags_applied_to(entity_id), set())
 
     def test_entity_ids(self):
         """ Test that entities are always identified by their type AND external_id together """
@@ -263,8 +322,8 @@ class AbstractBackendTest:
         self.assertEqual(result, {elephant})
 
 
-class DjangoBackendTest(AbstractBackendTest, unittest.TestCase):
+class DjangoBackendTest(AbstractBackendTest, TestCase):
     """ Test the Django backend implementation """
 
-    def get_backend(self) -> TagstoreBackend:
-        return DjangoTagstoreBackend()
+    def get_tagstore(self) -> Tagstore:
+        return DjangoTagstore()

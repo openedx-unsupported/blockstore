@@ -29,12 +29,14 @@ class Tag(models.Model):
     # The migration creates an uppercase index on this field for
     # case-insensitive searches
     tag = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH)
-    # Materialized path. Always ends with "/".
-    # A simple tag like "good-problem" would have a path of "good-problem/"
+    # Materialized path. Always ends with ":".
+    # A simple tag like "good-problem" would have a path of "good-problem:"
     # A tag like "mammal" that is a child of "animal" would have a path of
-    # "animal/mammal/". Tags are not allowed to contain the "/" character
+    # "animal:mammal:". Tags are not allowed to contain the ":" character
     # so no escaping is necessary.
     path = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_index=True)
+
+    PATH_SEP = ':'  # Character used to separate tags
 
     class Meta:
         db_table = 'tagstore_tag'
@@ -45,20 +47,33 @@ class Tag(models.Model):
             # with an index for that.
         )
 
-    @staticmethod
-    def make_path(taxonomy_id: int, tag: str, parent_path: str = '') -> str:
+    @classmethod
+    def make_path(cls, taxonomy_id: int, tag: str, parent_path: str = '') -> str:
         """
         Return the full 'materialized path' for use in the path field.
 
-        make_path(15, 'easy') -> '15/easy/'
-        make_path(200, 'lion', 'animal/mammal/') -> '200/animal/mammal/lion/'
+        make_path(15, 'easy') -> '15:easy:'
+        make_path(200, 'lion', 'animal:mammal:') -> '200:animal:mammal:lion:'
         """
-        prefix = str(taxonomy_id) + '/'
+        prefix = str(taxonomy_id) + cls.PATH_SEP
         if parent_path:
             assert parent_path.startswith(prefix)
-            return parent_path + tag + '/'
+            return parent_path + tag + cls.PATH_SEP
         else:
-            return prefix + tag + '/'
+            return prefix + tag + cls.PATH_SEP
+
+    @property
+    def parent_tag(self):
+        """
+        Get the 'tag' value of this tag's parent, or None if it has no parent
+
+        This model's 'path' field might look like '200:animal:mammal:lion:'
+        in which case parent_tag will return 'mammal'
+        """
+        parts = self.path.split(self.PATH_SEP)
+        if len(parts) <= 3:
+            return None
+        return parts[-3]
 
 
 class Entity(models.Model):
