@@ -1,0 +1,79 @@
+Tagstore
+========
+
+Tagstore is a system for tagging entities. For example, a common use case would be applying difficulty tags like "easy", "medium", or "hard" to XBlocks (learnable content components) that are stored in Blockstore.
+
+Tagstore holds collections of tags called Taxonomies. The simplest taxonomy is a set of tags; the set {"easy", "medium", "hard"} is an example of a taxonomy for content difficulty levels. The tags in a taxonomy can optionally be hierarchical, so that they exist in a tree with parent-child relationships (e.g. all dogs are mammals, all mammals are animals). This is designed to support learning outcome hierarchies in particular.
+
+Tagstore is part of Blockstore but has been designed to be easily separable should the need arise.
+
+Features
+--------
+
+* Python 3 API with type hints
+* Allows any "entity" to be tagged, where an entity could be a user, a block, a collection, etc.
+* Allows rich searching for entities by tags. e.g. "Find all large animals" will return an entity that was tagged with "large" and "dog", since it knows that the "dog" tag is a type of "animal" tag.
+* Designed to support multiple tag storage backends, although the current version of Tagstore only includes a Django ORM backend, which stores tags in MySQL/PostgeSQL/SQLite. (A reasonably complete Neo4j backend implementation also existed in an early version and can found at https://github.com/open-craft/blockstore/pull/7/commits/05503ade0d29296119578837fe059a04e57209e0)
+
+Non-features
+------------
+
+* Does not allow any tag to be in two different places in the same taxonomy (i.e. a tag cannot have two parents, nor can the same child tag appear in two different places in the hierarchy)
+* Does not allow other types of relationships between tags other than organizing them into a hierarchy (no support for arbitrary relationships like "dog is similar to wolf"; such advanced graph relationships - which enable other types of taxonomies and fuzzy searches - could be added later but would mean we can't use SQL backends)
+* Does not implement "private tags" (user A applies tag T to entity E, but only user A sees that tag). However, applications that use Tagstore may add an authorization/permissions layer to allow for private or hidden taxonomies.
+* Does not allow manipulating tag hierarchies once they are created, other than by adding new tags to the tree. i.e. you cannot remove tags from a hierarchy, nor change their position in the tree etc. We assume that hierarchical tags will usually be created via import/export of externally developed taxonomies.
+
+API Example
+-----------
+
+Here is an example of using the Tagstore API::
+
+    from tagstore.backends.django import DjangoTagstore
+    tagstore = DjangoTagstore()
+
+    biology = tagstore.create_taxonomy("Biology", owner_id=1)
+    plant = tagstore.add_tag_to_taxonomy('plant', biology)
+    conifer = tagstore.add_tag_to_taxonomy('conifer', biology, parent_tag=plant)
+    cypress = tagstore.add_tag_to_taxonomy('cypress', biology, parent_tag=conifer)
+    pine = tagstore.add_tag_to_taxonomy('pine', biology, parent_tag=conifer)
+    aster = tagstore.add_tag_to_taxonomy('aster', biology, parent_tag=plant)
+
+    # Tag some entities:
+    dandelion = EntityId(entity_type='thing', external_id='dandelion')
+    tagstore.add_tag_to(small, dandelion)
+    tagstore.add_tag_to(aster, dandelion)
+    redwood = EntityId(entity_type='thing', external_id='redwood')
+    tagstore.add_tag_to(large, redwood)
+    tagstore.add_tag_to(cypress, redwood)
+
+    # Find all asters
+    set([e for e in tagstore.get_entities_tagged_with(aster)])
+    # result: {dandelion}
+
+    # plants
+    set([e for e in tagstore.get_entities_tagged_with(plant)])
+    # result: {dandelion, redwood}
+
+    # plants, with no tag inheritance
+    set([e for e in tagstore.get_entities_tagged_with(plant, include_child_tags=False)])
+    # result: set()
+
+    # conifers
+    set([e for e in tagstore.get_entities_tagged_with(conifer)])
+    # result: {redwood}
+
+    # cypress, with no tag inheritance
+    set([e for e in tagstore.get_entities_tagged_with(cypress, include_child_tags=False)])
+    # result: {redwood}
+
+    # small things starting with "d"
+    set([e for e in tagstore.get_entities_tagged_with(
+        small, entity_types=['thing'], external_id_prefix='d'
+    )])
+    # result: {dandelion}
+
+
+Future Features
+---------------
+
+* REST API?
