@@ -66,5 +66,6 @@ html_coverage: ## Generate HTML coverage report
 quality: ## Run quality checks
 	${VENV_BIN}/pycodestyle --config=pycodestyle blockstore tagstore *.py
 	${VENV_BIN}/pylint --rcfile=pylintrc blockstore tagstore *.py
+	${VENV_BIN}/mypy --config-file tagstore/mypy.ini tagstore
 
 validate: test quality ## Run tests and quality checks

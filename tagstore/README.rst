@@ -29,14 +29,22 @@ API Example
 Here is an example of using the Tagstore API::
 
     from tagstore.backends.django import DjangoTagstore
+    from tagstore.models import EntityId
     tagstore = DjangoTagstore()
 
-    biology = tagstore.create_taxonomy("Biology", owner_id=1)
+    # Create a biology taxonomy:
+    biology = tagstore.create_taxonomy("Biology", owner_id=None)
     plant = tagstore.add_tag_to_taxonomy('plant', biology)
     conifer = tagstore.add_tag_to_taxonomy('conifer', biology, parent_tag=plant)
     cypress = tagstore.add_tag_to_taxonomy('cypress', biology, parent_tag=conifer)
     pine = tagstore.add_tag_to_taxonomy('pine', biology, parent_tag=conifer)
     aster = tagstore.add_tag_to_taxonomy('aster', biology, parent_tag=plant)
+
+    # Create a "sizes" taxonomy:
+    sizes = tagstore.create_taxonomy("sizes", owner_id=None)
+    small = tagstore.add_tag_to_taxonomy('small', sizes)
+    med = tagstore.add_tag_to_taxonomy('med', sizes)
+    large = tagstore.add_tag_to_taxonomy('large', sizes)
 
     # Tag some entities:
     dandelion = EntityId(entity_type='thing', external_id='dandelion')
@@ -54,16 +62,16 @@ Here is an example of using the Tagstore API::
     set([e for e in tagstore.get_entities_tagged_with(plant)])
     # result: {dandelion, redwood}
 
+    # small plants
+    set([e for e in tagstore.get_entities_tagged_with_all({plant, small})])
+    # result: {dandelion}
+
     # plants, with no tag inheritance
     set([e for e in tagstore.get_entities_tagged_with(plant, include_child_tags=False)])
     # result: set()
 
     # conifers
     set([e for e in tagstore.get_entities_tagged_with(conifer)])
-    # result: {redwood}
-
-    # cypress, with no tag inheritance
-    set([e for e in tagstore.get_entities_tagged_with(cypress, include_child_tags=False)])
     # result: {redwood}
 
     # small things starting with "d"

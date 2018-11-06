@@ -2,10 +2,10 @@
 A system for storing and retrieving tags related to Blockstore entities
 """
 
-from typing import Iterator, List, Optional, Tuple, Union
+from typing import Iterator, List, Optional, Set, Tuple, Union
 
 from .models.entity import EntityId
-from .models.tag import Tag, TagSet
+from .models.tag import Tag
 from .models.taxonomy import TaxonomyId, TaxonomyMetadata
 from .models.user import UserId
 
@@ -20,11 +20,12 @@ class Tagstore:
 
     # Taxonomy CRUD ##########################
 
-    def create_taxonomy(self, name: str, owner_id: UserId) -> TaxonomyMetadata:
+    def create_taxonomy(self, name: str, owner_id: Optional[UserId]) -> TaxonomyMetadata:
         """ Create a new taxonomy with the specified name and owner. """
         raise NotImplementedError()
 
-    def get_taxonomy(self, uid: int) -> TaxonomyMetadata:
+    def get_taxonomy(self, uid: int) -> Optional[TaxonomyMetadata]:
+        """ Get metadata about the given taxonomy """
         raise NotImplementedError()
 
     def add_tag_to_taxonomy(
@@ -37,6 +38,8 @@ class Tagstore:
         Will raise a ValueError if the specified taxonomy or parent doesn't exist.
         Will raise a ValueError if trying to add a child tag that
         already exists anywhere in the taxonomy.
+
+        Subclasses should implement this by overriding _add_tag_to_taxonomy()
         """
         if not isinstance(tag, str) or len(tag) < 1:
             raise ValueError("Tag value must be a (non-empty) string.")
@@ -52,17 +55,19 @@ class Tagstore:
         else:
             taxonomy_uid = taxonomy
 
+        parent_tag_str: Optional[str] = None
         if parent_tag is not None:
             if parent_tag.taxonomy_uid != taxonomy_uid:
                 raise ValueError("A tag cannot have a parent from another taxonomy")
             parent_tag_str = parent_tag.tag
-        else:
-            parent_tag_str = None
 
         self._add_tag_to_taxonomy(taxonomy_uid=taxonomy_uid, tag=tag, parent_tag=parent_tag_str)
         return Tag(taxonomy_uid=taxonomy_uid, tag=tag)
 
     def _add_tag_to_taxonomy(self, taxonomy_uid: int, tag: str, parent_tag: Optional[str] = None) -> None:
+        """
+        Subclasses should override this method to implement adding tags to a taxonomy.
+        """
         raise NotImplementedError()
 
     def list_tags_in_taxonomy(self, uid: int) -> Iterator[Tag]:
@@ -72,7 +77,7 @@ class Tagstore:
         raise NotImplementedError()
         yield None  # Required to make this non-implementation also a generator. pylint: disable=unreachable
 
-    def list_tags_in_taxonomy_hierarchically(self, uid: int) -> Iterator[Tuple[Tag, str]]:
+    def list_tags_in_taxonomy_hierarchically(self, uid: int) -> Iterator[Tuple[Tag, Tag]]:
         """
         Get a list of all tags in the given taxonomy, in hierarchical and alphabetical order.
 
@@ -86,12 +91,11 @@ class Tagstore:
     def list_tags_in_taxonomy_containing(self, uid: int, text: str) -> Iterator[Tag]:
         """
         Get a (flattened) list of all tags in the given taxonomy that contain the given string
+        (case insensitive). This is intended to be used for auto-complete when users tag content
+        by typing tags into a text field, for example.
         """
-        # Subclasses can optionally override this method to provide a more efficient implementation.
-        text = text.lower()
-        for tag in self.list_tags_in_taxonomy(uid):
-            if tag.tag.lower().find(text) != -1:
-                yield tag
+        raise NotImplementedError()
+        yield None  # Required to make this non-implementation also a generator. pylint: disable=unreachable
 
     # Tagging Entities ##########################
 
@@ -111,7 +115,7 @@ class Tagstore:
         """
         raise NotImplementedError()
 
-    def get_tags_applied_to(self, *entity_ids: EntityId) -> TagSet:
+    def get_tags_applied_to(self, *entity_ids: EntityId) -> Set[Tag]:
         """ Get the set of unique tags applied to any of the specified entity IDs """
         raise NotImplementedError()
 
@@ -130,7 +134,7 @@ class Tagstore:
 
     def get_entities_tagged_with_all(
         self,
-        tags: TagSet,
+        tags: Set[Tag],
         entity_types: Optional[List[str]] = None,
         external_id_prefix: Optional[str] = None,
         entity_ids: Optional[List[EntityId]] = None,  # use this to filter a list of entity IDs by tag

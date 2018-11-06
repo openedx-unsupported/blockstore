@@ -4,4 +4,6 @@ User-related types
 
 from typing import NewType
 
-UserId = NewType('UserId', int)
+from .entity import EntityId
+
+UserId = NewType('UserId', EntityId)

@@ -1,7 +1,7 @@
 # Packages required for testing
 -r base.txt
 
-asynctest
+mypy
 coverage
 ddt
 diff-cover

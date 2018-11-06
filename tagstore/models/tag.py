@@ -1,7 +1,7 @@
 """
 Data models for tags
 """
-from typing import NamedTuple, NewType, Set
+from typing import NamedTuple
 
 
 class Tag(NamedTuple):
@@ -10,6 +10,3 @@ class Tag(NamedTuple):
     """
     taxonomy_uid: int  # The Unique ID of the taxonomy which owns this tag
     tag: str  # The text of this tag, which also serves as its identifier. Unique within this taxonomy.
-
-
-TagSet = NewType('TagSet', Set[Tag])

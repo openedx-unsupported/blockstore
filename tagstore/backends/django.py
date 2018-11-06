@@ -1,13 +1,13 @@
 """
 Django ORM tag storage backend.
 """
-from typing import Iterator, List, Optional, Tuple
+from typing import Iterator, List, Optional, Set, Tuple
 from django.db.models import Q, Subquery
 
 from .tagstore_django.models import Entity as EntityModel, Tag as TagModel, Taxonomy as TaxonomyModel
 
 from .. import Tagstore
-from ..models import EntityId, Tag, TagSet, TaxonomyMetadata, UserId
+from ..models import EntityId, Tag, TaxonomyMetadata, UserId
 
 
 class DjangoTagstore(Tagstore):
@@ -15,17 +15,23 @@ class DjangoTagstore(Tagstore):
     Django tag storage backend.
     """
 
-    def create_taxonomy(self, name: str, owner_id: UserId) -> TaxonomyMetadata:
+    def create_taxonomy(self, name: str, owner_id: Optional[UserId]) -> TaxonomyMetadata:
         """ Create a new taxonomy with the specified name and owner. """
-        obj = TaxonomyModel.objects.create(name=name, owner_id=owner_id)
+        owner_obj: Optional[UserId] = None
+        if owner_id is not None:
+            (owner_obj, _created) = EntityModel.objects.get_or_create(
+                entity_type=owner_id.entity_type,
+                external_id=owner_id.external_id,
+            )
+        obj = TaxonomyModel.objects.create(name=name, owner=owner_obj)
         return TaxonomyMetadata(uid=obj.id, name=name, owner_id=owner_id)
 
-    def get_taxonomy(self, uid: int) -> TaxonomyMetadata:
+    def get_taxonomy(self, uid: int) -> Optional[TaxonomyMetadata]:
         try:
             tax = TaxonomyModel.objects.get(pk=uid)
         except TaxonomyModel.DoesNotExist:
             return None
-        return TaxonomyMetadata(uid=tax.id, name=tax.name, owner_id=tax.owner_id)
+        return tax.as_tuple
 
     def _add_tag_to_taxonomy(self, taxonomy_uid: int, tag: str, parent_tag: Optional[str] = None) -> None:
         if parent_tag:
@@ -50,16 +56,15 @@ class DjangoTagstore(Tagstore):
         for tag in TagModel.objects.filter(taxonomy_id=uid).order_by('tag'):
             yield Tag(taxonomy_uid=uid, tag=tag.tag)
 
-    def list_tags_in_taxonomy_hierarchically(self, uid: int) -> Iterator[Tuple[Tag, str]]:
+    def list_tags_in_taxonomy_hierarchically(self, uid: int) -> Iterator[Tuple[Tag, Tag]]:
         """
         Get a list of all tags in the given taxonomy, in hierarchical and alphabetical order.
 
-        Returns tuples of (Tag, parent_tag) where parent_tag is the 'tag' string which uniquely
-        identifies the parent tag. This method guarantees that parent tags will be returned
-        before their child tags.
+        Returns tuples of (Tag, parent_tag) where parent_tag is the parent tag. This method
+        guarantees that parent tags will be returned before their child tags.
         """
         for tag in TagModel.objects.filter(taxonomy_id=uid).order_by('path'):
-            yield (Tag(taxonomy_uid=uid, tag=tag.tag), tag.parent_tag)
+            yield (Tag(taxonomy_uid=uid, tag=tag.tag), tag.parent_tag_tuple)
 
     def list_tags_in_taxonomy_containing(self, uid: int, text: str) -> Iterator[Tag]:
         for tag in TagModel.objects.filter(taxonomy_id=uid, tag__icontains=text).order_by('tag'):
@@ -95,15 +100,12 @@ class DjangoTagstore(Tagstore):
             except EntityModel.DoesNotExist:
                 pass
 
-    def get_tags_applied_to(self, *entity_ids: EntityId) -> TagSet:
+    def get_tags_applied_to(self, *entity_ids: EntityId) -> Set[Tag]:
         """ Get the set of unique tags applied to any of the specified entity IDs """
-        entity_filter = None
+        entity_filter = Q()
         for eid in entity_ids:
             q = Q(entity_type=eid.entity_type) & Q(external_id=eid.external_id)
-            if entity_filter is None:
-                entity_filter = q
-            else:
-                entity_filter = entity_filter | q
+            entity_filter = entity_filter | q
         entities = EntityModel.objects.filter(entity_filter)
         tags = TagModel.objects.filter(entity__id__in=Subquery(entities.values('id')))
         tags_found = set()
@@ -115,7 +117,7 @@ class DjangoTagstore(Tagstore):
 
     def get_entities_tagged_with_all(
         self,
-        tags: TagSet,
+        tags: Set[Tag],
         entity_types: Optional[List[str]] = None,
         external_id_prefix: Optional[str] = None,
         entity_ids: Optional[List[EntityId]] = None,  # use this to filter a list of entity IDs by tag

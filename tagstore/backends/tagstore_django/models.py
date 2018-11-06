@@ -1,9 +1,34 @@
 """
 Tagstore backend that uses the django ORM
 """
+from typing import Optional
+
 from django.db import models
 
+from tagstore.models import EntityId, TaxonomyMetadata, UserId, Tag as TagTuple
+
 MAX_CHAR_FIELD_LENGTH = 180
+
+
+class Entity(models.Model):
+    """
+    An entity that can be tagged.
+    """
+    id = models.BigAutoField(primary_key=True)
+    entity_type = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH)
+    external_id = models.CharField(max_length=255)
+
+    tags = models.ManyToManyField('Tag')
+
+    class Meta:
+        unique_together = (
+            ('entity_type', 'external_id'),
+        )
+        db_table = 'tagstore_entity'
+
+    @property
+    def as_tuple(self) -> EntityId:
+        return EntityId(entity_type=self.entity_type, external_id=self.external_id)
 
 
 class Taxonomy(models.Model):
@@ -13,10 +38,15 @@ class Taxonomy(models.Model):
     """
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH)
-    owner_id = models.BigIntegerField(null=False)
+    owner = models.ForeignKey(Entity, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         db_table = 'tagstore_taxonomy'
+
+    @property
+    def as_tuple(self) -> TaxonomyMetadata:
+        owner_id = UserId(self.owner.as_tuple) if self.owner is not None else None
+        return TaxonomyMetadata(uid=self.id, name=self.name, owner_id=owner_id)
 
 
 class Tag(models.Model):
@@ -63,9 +93,9 @@ class Tag(models.Model):
             return prefix + tag + cls.PATH_SEP
 
     @property
-    def parent_tag(self):
+    def parent_tag_tuple(self) -> Optional[TagTuple]:
         """
-        Get the 'tag' value of this tag's parent, or None if it has no parent
+        Get the Tag tuple of this tag's parent, or None if it has no parent
 
         This model's 'path' field might look like '200:animal:mammal:lion:'
         in which case parent_tag will return 'mammal'
@@ -73,21 +103,4 @@ class Tag(models.Model):
         parts = self.path.split(self.PATH_SEP)
         if len(parts) <= 3:
             return None
-        return parts[-3]
-
-
-class Entity(models.Model):
-    """
-    An entity that can be tagged.
-    """
-    id = models.BigAutoField(primary_key=True)
-    entity_type = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH)
-    external_id = models.CharField(max_length=255)
-
-    tags = models.ManyToManyField(Tag)
-
-    class Meta:
-        unique_together = (
-            ('entity_type', 'external_id'),
-        )
-        db_table = 'tagstore_entity'
+        return TagTuple(taxonomy_uid=self.taxonomy_id, tag=parts[-3])
