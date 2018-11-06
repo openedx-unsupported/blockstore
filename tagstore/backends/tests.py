@@ -68,8 +68,9 @@ class AbstractBackendTest:
         self.assertEqual(len([t for t in self.tagstore.list_tags_in_taxonomy(tax.uid)]), 0)
         tag1 = self.tagstore.add_tag_to_taxonomy('testing', tax)
         tag2 = self.tagstore.add_tag_to_taxonomy('Testing', tax)
+        self.assertEqual(tag2.tag, 'testing')  # It should have returned the existing tag's case
         tags = set([t for t in self.tagstore.list_tags_in_taxonomy(tax.uid)])
-        self.assertEqual(len(tags), 2)
+        self.assertEqual(len(tags), 1)
         self.assertEqual(tags, {tag1, tag2})
 
     def test_allowed_tag_names(self):

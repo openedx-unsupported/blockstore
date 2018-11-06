@@ -32,9 +32,10 @@ class Tagstore:
         self, tag: str, taxonomy: Union[TaxonomyId, TaxonomyMetadata], parent_tag: Optional[Tag] = None
     ) -> Tag:
         """
-        Add the specified tag to the given taxonomy
+        Add the specified tag to the given taxonomy, and retuns it.
 
-        Will be a no-op if the tag already exists in the taxonomy.
+        Will be a no-op if the tag already exists in the taxonomy (case-insensitive),
+        however the returned (existing) Tag may differ in case.
         Will raise a ValueError if the specified taxonomy or parent doesn't exist.
         Will raise a ValueError if trying to add a child tag that
         already exists anywhere in the taxonomy.
@@ -61,12 +62,15 @@ class Tagstore:
                 raise ValueError("A tag cannot have a parent from another taxonomy")
             parent_tag_str = parent_tag.tag
 
-        self._add_tag_to_taxonomy(taxonomy_uid=taxonomy_uid, tag=tag, parent_tag=parent_tag_str)
-        return Tag(taxonomy_uid=taxonomy_uid, tag=tag)
+        tag_value = self._add_tag_to_taxonomy(taxonomy_uid=taxonomy_uid, tag=tag, parent_tag=parent_tag_str)
+        return Tag(taxonomy_uid=taxonomy_uid, tag=tag_value)
 
-    def _add_tag_to_taxonomy(self, taxonomy_uid: int, tag: str, parent_tag: Optional[str] = None) -> None:
+    def _add_tag_to_taxonomy(self, taxonomy_uid: int, tag: str, parent_tag: Optional[str] = None) -> str:
         """
         Subclasses should override this method to implement adding tags to a taxonomy.
+
+        It should return the 'tag' value of the newly created tag, or the existing tag
+        if a tag already exists.
         """
         raise NotImplementedError()
 
@@ -81,9 +85,8 @@ class Tagstore:
         """
         Get a list of all tags in the given taxonomy, in hierarchical and alphabetical order.
 
-        Returns tuples of (Tag, parent_tag) where parent_tag is the 'tag' string which uniquely
-        identifies the parent tag. This method guarantees that parent tags will be returned
-        before their child tags.
+        Returns tuples of (Tag, parent_tag).
+        This method guarantees that parent tags will be returned before their child tags.
         """
         raise NotImplementedError()
         yield None  # Required to make this non-implementation also a generator. pylint: disable=unreachable
