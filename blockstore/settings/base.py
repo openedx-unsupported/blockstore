@@ -42,9 +42,11 @@ THIRD_PARTY_APPS = (
 )
 
 PROJECT_APPS = (
+    'blockstore.apps.mysql_unicode',
     'blockstore.apps.core',
     'blockstore.apps.api',
     'blockstore.apps.bundles.apps.BundlesConfig',
+    'tagstore.backends.tagstore_django',
 )
 
 INSTALLED_APPS += THIRD_PARTY_APPS
@@ -73,12 +75,19 @@ WSGI_APPLICATION = 'blockstore.wsgi.application'
 # Set this value in the environment-specific files (e.g. local.py, production.py, test.py)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': '',
         'USER': '',
         'PASSWORD': '',
         'HOST': '',  # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',  # Set to empty string for default.
+        'OPTIONS': {
+            # Use a non-broken unicode encoding. See "mysql_unicode/migrations/0001_initial.py"
+            # for details. Together with that migration, this setting will force the use of
+            # the correct unicode implementation.
+            # Note that this limits the length of InnoDB indexed columns to 191 characters.
+            'charset': 'utf8mb4',
+        },
     }
 }
 
@@ -170,6 +179,12 @@ ENABLE_AUTO_AUTH = False
 AUTO_AUTH_USERNAME_PREFIX = 'auto_auth_'
 
 SOCIAL_AUTH_STRATEGY = 'auth_backends.strategies.EdxDjangoStrategy'
+# Django model max_length overrides required for MySQL utf8mb4 charset:
+SOCIAL_AUTH_UID_LENGTH = 190
+SOCIAL_AUTH_NONCE_SERVER_URL_LENGTH = 190
+SOCIAL_AUTH_ASSOCIATION_SERVER_URL_LENGTH = 190
+SOCIAL_AUTH_ASSOCIATION_HANDLE_LENGTH = 190
+SOCIAL_AUTH_EMAIL_LENGTH = 190
 
 # Set these to the correct values for your OAuth2/OpenID Connect provider (e.g., devstack)
 SOCIAL_AUTH_EDX_OIDC_KEY = 'replace-me'

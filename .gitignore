@@ -38,6 +38,7 @@ htmlcov
 .tox
 unittests.xml
 .pytest_cache
+.mypy_cache/
 
 ### Internationalization artifacts
 *.mo
