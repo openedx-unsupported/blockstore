@@ -7,7 +7,7 @@ from django.db.models import Q, Subquery
 from .tagstore_django.models import Entity as EntityModel, Tag as TagModel, Taxonomy as TaxonomyModel
 
 from .. import Tagstore
-from ..models import EntityId, Tag, TaxonomyMetadata, UserId
+from ..models import EntityId, Tag, TaxonomyId, Taxonomy, UserId
 
 
 class DjangoTagstore(Tagstore):
@@ -15,7 +15,7 @@ class DjangoTagstore(Tagstore):
     Django tag storage backend.
     """
 
-    def create_taxonomy(self, name: str, owner_id: Optional[UserId]) -> TaxonomyMetadata:
+    def create_taxonomy(self, name: str, owner_id: Optional[UserId]) -> Taxonomy:
         """ Create a new taxonomy with the specified name and owner. """
         owner_obj: Optional[UserId] = None
         if owner_id is not None:
@@ -24,16 +24,16 @@ class DjangoTagstore(Tagstore):
                 external_id=owner_id.external_id,
             )
         obj = TaxonomyModel.objects.create(name=name, owner=owner_obj)
-        return TaxonomyMetadata(uid=obj.id, name=name, owner_id=owner_id)
+        return Taxonomy(uid=obj.id, name=name, owner_id=owner_id, tagstore=self)
 
-    def get_taxonomy(self, uid: int) -> Optional[TaxonomyMetadata]:
+    def get_taxonomy(self, taxonomy_uid: TaxonomyId) -> Optional[Taxonomy]:
         try:
-            tax = TaxonomyModel.objects.get(pk=uid)
+            tax = TaxonomyModel.objects.get(pk=taxonomy_uid)
         except TaxonomyModel.DoesNotExist:
             return None
-        return tax.as_tuple
+        return tax.as_tuple(self)
 
-    def _add_tag_to_taxonomy(self, taxonomy_uid: int, tag: str, parent_tag: Optional[str] = None) -> str:
+    def _add_tag_to_taxonomy(self, taxonomy_uid: TaxonomyId, tag: str, parent_tag: Optional[str] = None) -> str:
         if parent_tag:
             # Check the parent tag:
             try:
@@ -53,23 +53,23 @@ class DjangoTagstore(Tagstore):
                 raise ValueError("That tag already exists with a different parent tag.")
         return db_tag.tag
 
-    def list_tags_in_taxonomy(self, uid: int) -> Iterator[Tag]:
-        for tag in TagModel.objects.filter(taxonomy_id=uid).order_by('tag'):
-            yield Tag(taxonomy_uid=uid, tag=tag.tag)
+    def list_tags_in_taxonomy(self, taxonomy_uid: TaxonomyId) -> Iterator[Tag]:
+        for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid).order_by('tag'):
+            yield Tag(taxonomy_uid=taxonomy_uid, tag=tag.tag)
 
-    def list_tags_in_taxonomy_hierarchically(self, uid: int) -> Iterator[Tuple[Tag, Tag]]:
+    def list_tags_in_taxonomy_hierarchically(self, taxonomy_uid: TaxonomyId) -> Iterator[Tuple[Tag, Tag]]:
         """
         Get a list of all tags in the given taxonomy, in hierarchical and alphabetical order.
 
         Returns tuples of (Tag, parent_tag) where parent_tag is the parent tag. This method
         guarantees that parent tags will be returned before their child tags.
         """
-        for tag in TagModel.objects.filter(taxonomy_id=uid).order_by('path'):
-            yield (Tag(taxonomy_uid=uid, tag=tag.tag), tag.parent_tag_tuple)
+        for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid).order_by('path'):
+            yield (Tag(taxonomy_uid=taxonomy_uid, tag=tag.tag), tag.parent_tag_tuple)
 
-    def list_tags_in_taxonomy_containing(self, uid: int, text: str) -> Iterator[Tag]:
-        for tag in TagModel.objects.filter(taxonomy_id=uid, tag__icontains=text).order_by('tag'):
-            yield Tag(taxonomy_uid=uid, tag=tag.tag)
+    def list_tags_in_taxonomy_containing(self, taxonomy_uid: TaxonomyId, text: str) -> Iterator[Tag]:
+        for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid, tag__icontains=text).order_by('tag'):
+            yield Tag(taxonomy_uid=taxonomy_uid, tag=tag.tag)
 
     # Tagging Entities ##########################
 

@@ -34,17 +34,17 @@ Here is an example of using the Tagstore API::
 
     # Create a biology taxonomy:
     biology = tagstore.create_taxonomy("Biology", owner_id=None)
-    plant = tagstore.add_tag_to_taxonomy('plant', biology)
-    conifer = tagstore.add_tag_to_taxonomy('conifer', biology, parent_tag=plant)
-    cypress = tagstore.add_tag_to_taxonomy('cypress', biology, parent_tag=conifer)
-    pine = tagstore.add_tag_to_taxonomy('pine', biology, parent_tag=conifer)
-    aster = tagstore.add_tag_to_taxonomy('aster', biology, parent_tag=plant)
+    plant = biology.add_tag('plant')
+    conifer = biology.add_tag('conifer', parent_tag=plant)
+    cypress = biology.add_tag('cypress', parent_tag=conifer)
+    pine = biology.add_tag('pine', parent_tag=conifer)
+    aster = biology.add_tag('aster', parent_tag=plant)
 
     # Create a "sizes" taxonomy:
     sizes = tagstore.create_taxonomy("sizes", owner_id=None)
-    small = tagstore.add_tag_to_taxonomy('small', sizes)
-    med = tagstore.add_tag_to_taxonomy('med', sizes)
-    large = tagstore.add_tag_to_taxonomy('large', sizes)
+    small = sizes.add_tag('small')
+    med = sizes.add_tag('med')
+    large = sizes.add_tag('large')
 
     # Tag some entities:
     dandelion = EntityId(entity_type='thing', external_id='dandelion')

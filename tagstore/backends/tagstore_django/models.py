@@ -5,7 +5,8 @@ from typing import Optional
 
 from django.db import models
 
-from tagstore.models import EntityId, TaxonomyMetadata, UserId, Tag as TagTuple
+from tagstore import Tagstore
+from tagstore.models import EntityId, Taxonomy as TaxonomyTuple, UserId, Tag as TagTuple
 
 # If MySQL is configured to use utf8mb4 (correct utf8), indexed
 # columns have a max length of 191. Until Django supports limiting index
@@ -48,10 +49,9 @@ class Taxonomy(models.Model):
     class Meta:
         db_table = 'tagstore_taxonomy'
 
-    @property
-    def as_tuple(self) -> TaxonomyMetadata:
+    def as_tuple(self, tagstore: Tagstore) -> TaxonomyTuple:
         owner_id = UserId(self.owner.as_tuple) if self.owner is not None else None
-        return TaxonomyMetadata(uid=self.id, name=self.name, owner_id=owner_id)
+        return TaxonomyTuple(uid=self.id, name=self.name, owner_id=owner_id, tagstore=tagstore)
 
 
 class Tag(models.Model):

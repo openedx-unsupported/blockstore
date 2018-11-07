@@ -7,7 +7,7 @@ from typing import Iterable
 from django.test import TestCase
 
 from .. import Tagstore
-from ..models import EntityId, TaxonomyMetadata, UserId
+from ..models import EntityId, Taxonomy, UserId
 from .django import DjangoTagstore
 
 
@@ -53,23 +53,22 @@ class AbstractBackendTest:
     def test_add_tag_to_taxonomy(self):
         """ add_tag_to_taxonomy will add a tag to the given taxonomy """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
-        self.assertEqual(len([t for t in self.tagstore.list_tags_in_taxonomy(tax.uid)]), 0)
-        tag = self.tagstore.add_tag_to_taxonomy('testing', tax)
-        tags = [t for t in self.tagstore.list_tags_in_taxonomy(tax.uid)]
+        self.assertEqual(len([t for t in tax.list_tags()]), 0)
+        tag = tax.add_tag('testing')
+        tags = [t for t in tax.list_tags()]
         self.assertEqual(len(tags), 1)
         self.assertEqual(tags[0], tag)
-        # And it can also add by taxonomy ID alone:
-        tag2 = self.tagstore.add_tag_to_taxonomy('testing 2', tax.uid)
-        self.assertEqual(set(t for t in self.tagstore.list_tags_in_taxonomy(tax.uid)), {tag, tag2})
+        tag2 = tax.add_tag('testing 2')
+        self.assertEqual(set(t for t in tax.list_tags()), {tag, tag2})
 
     def test_case_sensitive_tags(self):
         """ add_tag_to_taxonomy will add a tag to the given taxonomy """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
-        self.assertEqual(len([t for t in self.tagstore.list_tags_in_taxonomy(tax.uid)]), 0)
-        tag1 = self.tagstore.add_tag_to_taxonomy('testing', tax)
-        tag2 = self.tagstore.add_tag_to_taxonomy('Testing', tax)
+        self.assertEqual(len([t for t in tax.list_tags()]), 0)
+        tag1 = tax.add_tag('testing')
+        tag2 = tax.add_tag('Testing')
         self.assertEqual(tag2.tag, 'testing')  # It should have returned the existing tag's case
-        tags = set([t for t in self.tagstore.list_tags_in_taxonomy(tax.uid)])
+        tags = set([t for t in tax.list_tags()])
         self.assertEqual(len(tags), 1)
         self.assertEqual(tags, {tag1, tag2})
 
@@ -86,8 +85,8 @@ class AbstractBackendTest:
         ]
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
         for tag in valid_tags:
-            self.tagstore.add_tag_to_taxonomy(tag, tax)
-        tags_created = set([t.tag for t in self.tagstore.list_tags_in_taxonomy(tax.uid)])
+            tax.add_tag(tag)
+        tags_created = set([t.tag for t in tax.list_tags()])
         self.assertEqual(tags_created, set(valid_tags))
 
     def test_forbidden_tag_names(self):
@@ -105,15 +104,15 @@ class AbstractBackendTest:
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
         for tag in invalid_tags:
             with self.assertRaises(ValueError):
-                self.tagstore.add_tag_to_taxonomy(tag, tax)
+                tax.add_tag(tag, tax)
 
     def test_add_tag_to_taxonomy_idempotent(self):
         """ add_tag_to_taxonomy will add a tag to the given taxonomy only once """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
-        tag1 = self.tagstore.add_tag_to_taxonomy('testing', tax)
-        tag2 = self.tagstore.add_tag_to_taxonomy('testing', tax)
+        tag1 = tax.add_tag('testing')
+        tag2 = tax.add_tag('testing')
         self.assertEqual(tag1, tag2)
-        tags = [t for t in self.tagstore.list_tags_in_taxonomy(tax.uid)]
+        tags = [t for t in tax.list_tags()]
         self.assertEqual(tags, [tag1])
 
     def test_add_tag_to_taxonomy_idempotent_parent(self):
@@ -122,44 +121,44 @@ class AbstractBackendTest:
         including when it's a child tag with a parent
         """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
-        parent = self.tagstore.add_tag_to_taxonomy('parent', tax)
-        child1 = self.tagstore.add_tag_to_taxonomy('child', tax, parent_tag=parent)
-        child2 = self.tagstore.add_tag_to_taxonomy('child', tax, parent_tag=parent)
+        parent = tax.add_tag('parent')
+        child1 = tax.add_tag('child', parent_tag=parent)
+        child2 = tax.add_tag('child', parent_tag=parent)
         self.assertEqual(child1, child2)
-        tags = [t for t in self.tagstore.list_tags_in_taxonomy(tax.uid)]
+        tags = [t for t in tax.list_tags()]
         self.assertEqual(len(tags), 2)  # the 2 tags are 'parent' and 'child'
 
     def test_add_tag_to_taxonomy_exists_elsewhere(self):
         """ add_tag_to_taxonomy will not allow a child that exists elsewhere """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
-        parent = self.tagstore.add_tag_to_taxonomy('parent', tax)
-        other = self.tagstore.add_tag_to_taxonomy('other', tax)
-        self.tagstore.add_tag_to_taxonomy('child', tax, parent_tag=parent)
+        parent = tax.add_tag('parent')
+        other = tax.add_tag('other')
+        tax.add_tag('child', parent_tag=parent)
         with self.assertRaises(ValueError):
-            self.tagstore.add_tag_to_taxonomy('child', tax, parent_tag=other)
+            tax.add_tag('child', parent_tag=other)
         with self.assertRaises(ValueError):
-            self.tagstore.add_tag_to_taxonomy('child', tax)
+            tax.add_tag('child')
 
     def test_add_tag_to_taxonomy_circular(self):
         """ add_tag_to_taxonomy will not allow circular tags """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
-        grandma = self.tagstore.add_tag_to_taxonomy('grandma', tax)
-        mother = self.tagstore.add_tag_to_taxonomy('mother', tax, parent_tag=grandma)
+        grandma = tax.add_tag('grandma')
+        mother = tax.add_tag('mother', parent_tag=grandma)
         with self.assertRaises(ValueError):
-            self.tagstore.add_tag_to_taxonomy('grandma', tax, parent_tag=mother)
+            tax.add_tag('grandma', parent_tag=mother)
 
     def test_add_tag_to_taxonomy_bad_parent(self):
         """ add_tag_to_taxonomy will not allow a parent from another taxonomy """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
         tax2 = self.tagstore.create_taxonomy("Other Taxonomy", owner_id=some_user)
-        parent = self.tagstore.add_tag_to_taxonomy('parent', tax2)
+        parent = tax2.add_tag('parent')
         with self.assertRaises(ValueError):
-            self.tagstore.add_tag_to_taxonomy('child', tax, parent_tag=parent)
+            tax.add_tag('child', parent_tag=parent)
 
-    def _create_taxonomy_with_tags(self, tags: Iterable[str]) -> TaxonomyMetadata:
+    def _create_taxonomy_with_tags(self, tags: Iterable[str]) -> Taxonomy:
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
         for tag in tags:
-            self.tagstore.add_tag_to_taxonomy(tag, tax)
+            tax.add_tag(tag)
         return tax
 
     def test_list_tags_in_taxonomy(self):
@@ -167,19 +166,19 @@ class AbstractBackendTest:
         tags_in = ['Zulu', 'Uniform', 'Foxtrot', 'Βήτα', 'Alfa', 'Alpha', 'Αλφα']
         tags_out_expected = ['Alfa', 'Alpha', 'Foxtrot', 'Uniform', 'Zulu', 'Αλφα', 'Βήτα']
         tax = self._create_taxonomy_with_tags(tags_in)
-        tags_out = [t.tag for t in self.tagstore.list_tags_in_taxonomy(tax.uid)]
+        tags_out = [t.tag for t in tax.list_tags()]
         self.assertEqual(tags_out, tags_out_expected)
 
     def test_list_tags_in_taxonomy_hierarchically(self):
         """ Test that tags get returned with hierarchy information """
         biology = self.tagstore.create_taxonomy("Biology", owner_id=some_user)
-        plant = self.tagstore.add_tag_to_taxonomy('plant', biology)
-        conifer = self.tagstore.add_tag_to_taxonomy('conifer', biology, parent_tag=plant)
-        cypress = self.tagstore.add_tag_to_taxonomy('cypress', biology, parent_tag=conifer)
-        pine = self.tagstore.add_tag_to_taxonomy('pine', biology, parent_tag=conifer)
-        aster = self.tagstore.add_tag_to_taxonomy('aster', biology, parent_tag=plant)
+        plant = biology.add_tag('plant')
+        conifer = biology.add_tag('conifer', parent_tag=plant)
+        cypress = biology.add_tag('cypress', parent_tag=conifer)
+        pine = biology.add_tag('pine', parent_tag=conifer)
+        aster = biology.add_tag('aster', parent_tag=plant)
 
-        tags_out = list(self.tagstore.list_tags_in_taxonomy_hierarchically(biology.uid))
+        tags_out = list(biology.list_tags_hierarchically())
 
         self.assertEqual(tags_out, [
             (plant, None),
@@ -194,13 +193,13 @@ class AbstractBackendTest:
         tags_in = ['Zulu', 'Uniform', 'Foxtrot', 'Βήτα', 'Alfa', 'Alpha', 'Αλφα']
         tax = self._create_taxonomy_with_tags(tags_in)
         # Contains 'al' (case insensitive)
-        results = [t.tag for t in self.tagstore.list_tags_in_taxonomy_containing(tax.uid, "al")]
+        results = [t.tag for t in tax.list_tags_containing("al")]
         self.assertEqual(results, ['Alfa', 'Alpha'])
         # Contains 'FO' (case insensitive)
-        results = [t.tag for t in self.tagstore.list_tags_in_taxonomy_containing(tax.uid, "FO")]
+        results = [t.tag for t in tax.list_tags_containing("FO")]
         self.assertEqual(results, ['Foxtrot', 'Uniform'])
         # Contains 'nomatch' (case insensitive)
-        results = [t.tag for t in self.tagstore.list_tags_in_taxonomy_containing(tax.uid, "nomatch")]
+        results = [t.tag for t in tax.list_tags_containing("nomatch")]
         self.assertEqual(results, [])
 
     # Tagging entities
@@ -208,7 +207,7 @@ class AbstractBackendTest:
     def test_add_tag_to(self):
         """ Test add_tag_to """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
-        tag = self.tagstore.add_tag_to_taxonomy('testing', tax)
+        tag = tax.add_tag('testing')
         entity_id = EntityId(entity_type='content', external_id='block-v1:b1')
 
         self.assertEqual(self.tagstore.get_tags_applied_to(entity_id), set())
@@ -218,8 +217,8 @@ class AbstractBackendTest:
     def test_remove_tag_from(self):
         """ Test remove_tag_from """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
-        tag1 = self.tagstore.add_tag_to_taxonomy('tag1', tax)
-        tag2 = self.tagstore.add_tag_to_taxonomy('tag2', tax)
+        tag1 = tax.add_tag('tag1')
+        tag2 = tax.add_tag('tag2')
         entity_id = EntityId(entity_type='content', external_id='block-v1:b1')
         untagged_entity_id = EntityId(entity_type='content', external_id='block-v1:b2')
 
@@ -234,10 +233,10 @@ class AbstractBackendTest:
     def test_entity_ids(self):
         """ Test that entities are always identified by their type AND external_id together """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
-        tag1 = self.tagstore.add_tag_to_taxonomy('t1', tax)
-        tag2 = self.tagstore.add_tag_to_taxonomy('t2', tax)
-        tag3 = self.tagstore.add_tag_to_taxonomy('t3', tax)
-        tag4 = self.tagstore.add_tag_to_taxonomy('t4', tax)
+        tag1 = tax.add_tag('t1')
+        tag2 = tax.add_tag('t2')
+        tag3 = tax.add_tag('t3')
+        tag4 = tax.add_tag('t4')
         entity1 = EntityId(entity_type='typeA', external_id='alpha')
         entity2 = EntityId(entity_type='typeA', external_id='beta')
         entity3 = EntityId(entity_type='typeB', external_id='alpha')  # Differs from entity1 only by type
@@ -256,21 +255,21 @@ class AbstractBackendTest:
     def test_get_entities_tagged_with(self):
         """ Test get_entities_tagged_with() """
         sizes = self.tagstore.create_taxonomy("sizes", owner_id=some_user)
-        small = self.tagstore.add_tag_to_taxonomy('small', sizes)
-        med = self.tagstore.add_tag_to_taxonomy('med', sizes)
-        large = self.tagstore.add_tag_to_taxonomy('large', sizes)
+        small = sizes.add_tag('small')
+        med = sizes.add_tag('med')
+        large = sizes.add_tag('large')
 
         biology = self.tagstore.create_taxonomy("Biology", owner_id=some_user)
-        plant = self.tagstore.add_tag_to_taxonomy('plant', biology)
-        conifer = self.tagstore.add_tag_to_taxonomy('conifer', biology, parent_tag=plant)
-        cypress = self.tagstore.add_tag_to_taxonomy('cypress', biology, parent_tag=conifer)
-        _pine = self.tagstore.add_tag_to_taxonomy('pine', biology, parent_tag=conifer)
-        aster = self.tagstore.add_tag_to_taxonomy('aster', biology, parent_tag=plant)
+        plant = biology.add_tag('plant')
+        conifer = biology.add_tag('conifer', parent_tag=plant)
+        cypress = biology.add_tag('cypress', parent_tag=conifer)
+        _pine = biology.add_tag('pine', parent_tag=conifer)
+        aster = biology.add_tag('aster', parent_tag=plant)
 
-        animal = self.tagstore.add_tag_to_taxonomy('animal', biology)
-        mammal = self.tagstore.add_tag_to_taxonomy('mammal', biology, parent_tag=animal)
-        fish = self.tagstore.add_tag_to_taxonomy('fish', biology, parent_tag=animal)
-        canine = self.tagstore.add_tag_to_taxonomy('canine', biology, parent_tag=mammal)
+        animal = biology.add_tag('animal')
+        mammal = biology.add_tag('mammal', parent_tag=animal)
+        fish = biology.add_tag('fish', parent_tag=animal)
+        canine = biology.add_tag('canine', parent_tag=mammal)
 
         # Create some entities:
         elephant = EntityId(entity_type='thing', external_id='elephant')
