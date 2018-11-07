@@ -33,41 +33,41 @@ class DjangoTagstore(Tagstore):
             return None
         return tax.as_tuple(self)
 
-    def _add_tag_to_taxonomy(self, taxonomy_uid: TaxonomyId, tag: str, parent_tag: Optional[str] = None) -> str:
+    def _add_tag_to_taxonomy(self, taxonomy_uid: TaxonomyId, name: str, parent_tag: Optional[str] = None) -> str:
         if parent_tag:
             # Check the parent tag:
             try:
-                pt = TagModel.objects.get(taxonomy_id=taxonomy_uid, tag=parent_tag)
+                pt = TagModel.objects.get(taxonomy_id=taxonomy_uid, name=parent_tag)
             except TagModel.DoesNotExist:
                 raise ValueError("Invalid parent tag.")
-            path = TagModel.make_path(taxonomy_uid, tag, pt.path)
+            path = TagModel.make_path(taxonomy_uid, name, pt.path)
         else:
-            path = TagModel.make_path(taxonomy_uid, tag)
+            path = TagModel.make_path(taxonomy_uid, name)
         db_tag, created = TagModel.objects.get_or_create(
             taxonomy_id=taxonomy_uid,
-            tag=tag,
+            name=name,
             defaults={'path': path},
         )
         if not created:
             if db_tag.path != path:
                 raise ValueError("That tag already exists with a different parent tag.")
-        return db_tag.tag
+        return db_tag.name
 
-    def get_tag_in_taxonomy(self, tag: str, taxonomy_uid: TaxonomyId) -> Optional[Tag]:
+    def get_tag_in_taxonomy(self, name: str, taxonomy_uid: TaxonomyId) -> Optional[Tag]:
         """
         If a tag with the specified name (case insensitive) exists in this taxonomy, get it.
 
         Otherwise returns None.
         """
         try:
-            tag_obj = TagModel.objects.get(taxonomy_id=taxonomy_uid, tag=tag)
-            return Tag(taxonomy_uid=taxonomy_uid, tag=tag_obj.tag)
+            tag_obj = TagModel.objects.get(taxonomy_id=taxonomy_uid, name=name)
+            return Tag(taxonomy_uid=taxonomy_uid, name=tag_obj.name)
         except TagModel.DoesNotExist:
             return None
 
     def list_tags_in_taxonomy(self, taxonomy_uid: TaxonomyId) -> Iterator[Tag]:
-        for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid).order_by('tag'):
-            yield Tag(taxonomy_uid=taxonomy_uid, tag=tag.tag)
+        for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid).order_by('name'):
+            yield Tag(taxonomy_uid=taxonomy_uid, name=tag.name)
 
     def list_tags_in_taxonomy_hierarchically(self, taxonomy_uid: TaxonomyId) -> Iterator[Tuple[Tag, Tag]]:
         """
@@ -77,11 +77,11 @@ class DjangoTagstore(Tagstore):
         guarantees that parent tags will be returned before their child tags.
         """
         for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid).order_by('path'):
-            yield (Tag(taxonomy_uid=taxonomy_uid, tag=tag.tag), tag.parent_tag_tuple)
+            yield (Tag(taxonomy_uid=taxonomy_uid, name=tag.name), tag.parent_tag_tuple)
 
     def list_tags_in_taxonomy_containing(self, taxonomy_uid: TaxonomyId, text: str) -> Iterator[Tag]:
-        for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid, tag__icontains=text).order_by('tag'):
-            yield Tag(taxonomy_uid=taxonomy_uid, tag=tag.tag)
+        for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid, name__icontains=text).order_by('name'):
+            yield Tag(taxonomy_uid=taxonomy_uid, name=tag.name)
 
     # Tagging Entities ##########################
 
@@ -91,7 +91,7 @@ class DjangoTagstore(Tagstore):
 
         Will be a no-op if the tag is already applied.
         """
-        tag_model = TagModel.objects.get(taxonomy_id=tag.taxonomy_uid, tag=tag.tag)
+        tag_model = TagModel.objects.get(taxonomy_id=tag.taxonomy_uid, name=tag.name)
         for entity in entity_ids:
             (em, _created) = EntityModel.objects.get_or_create(
                 entity_type=entity.entity_type,
@@ -105,7 +105,7 @@ class DjangoTagstore(Tagstore):
 
         Will be a no-op if the entities do not have that tag.
         """
-        tag = TagModel.objects.get(taxonomy_id=tag.taxonomy_uid, tag=tag.tag)
+        tag = TagModel.objects.get(taxonomy_id=tag.taxonomy_uid, name=tag.name)
         # This could be optimized to a single DB query, but that's probably not necessary
         for eid in entity_ids:
             try:
@@ -123,7 +123,7 @@ class DjangoTagstore(Tagstore):
         tags = TagModel.objects.filter(entity__id__in=Subquery(entities.values('id')))
         tags_found = set()
         for tag in tags:
-            tags_found.add(Tag(taxonomy_uid=tag.taxonomy_id, tag=tag.tag))
+            tags_found.add(Tag(taxonomy_uid=tag.taxonomy_id, name=tag.name))
         return tags_found
 
     # Searching Entities ##########################
@@ -147,13 +147,13 @@ class DjangoTagstore(Tagstore):
             # Convert the set of tags to a set of materialized paths:
             tags_filter = Q()
             for tag in tags:
-                tags_filter = tags_filter | (Q(taxonomy_id=tag.taxonomy_uid) & Q(tag=tag.tag))
+                tags_filter = tags_filter | (Q(taxonomy_id=tag.taxonomy_uid) & Q(name=tag.name))
             paths = TagModel.objects.filter(tags_filter).values_list('path', flat=True)
             for path in paths:
                 entities = entities.filter(tags__path__startswith=path)
         else:
             for tag in tags:
-                entities = entities.filter(tags__taxonomy_id=tag.taxonomy_uid, tags__tag=tag.tag)
+                entities = entities.filter(tags__taxonomy_id=tag.taxonomy_uid, tags__name=tag.name)
 
         if entity_types is not None:
             entities = entities.filter(entity_type__in=entity_types)

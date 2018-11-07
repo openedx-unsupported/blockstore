@@ -72,13 +72,13 @@ class AbstractBackendTest:
         self.assertEqual(len([t for t in tax.list_tags()]), 0)
         tag1 = tax.add_tag('testing')
         tag2 = tax.add_tag('Testing')
-        self.assertEqual(tag2.tag, 'testing')  # It should have returned the existing tag's case
+        self.assertEqual(tag2.name, 'testing')  # It should have returned the existing tag's case
         tags = set([t for t in tax.list_tags()])
         self.assertEqual(len(tags), 1)
         self.assertEqual(tags, {tag1, tag2})
         # get_tag should also respect the original case:
-        self.assertEqual(tax.get_tag('testing').tag, 'testing')
-        self.assertEqual(tax.get_tag('teSTING').tag, 'testing')
+        self.assertEqual(tax.get_tag('testing').name, 'testing')
+        self.assertEqual(tax.get_tag('teSTING').name, 'testing')
 
     def test_allowed_tag_names(self):
         """ add_tag_to_taxonomy will allow these tags """
@@ -94,7 +94,7 @@ class AbstractBackendTest:
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
         for tag in valid_tags:
             tax.add_tag(tag)
-        tags_created = set([t.tag for t in tax.list_tags()])
+        tags_created = set([t.name for t in tax.list_tags()])
         self.assertEqual(tags_created, set(valid_tags))
 
     def test_forbidden_tag_names(self):
@@ -181,7 +181,7 @@ class AbstractBackendTest:
         tags_in = ['Zulu', 'Uniform', 'Foxtrot', 'Βήτα', 'Alfa', 'Alpha', 'Αλφα']
         tags_out_expected = ['Alfa', 'Alpha', 'Foxtrot', 'Uniform', 'Zulu', 'Αλφα', 'Βήτα']
         tax = self._create_taxonomy_with_tags(tags_in)
-        tags_out = [t.tag for t in tax.list_tags()]
+        tags_out = [t.name for t in tax.list_tags()]
         self.assertEqual(tags_out, tags_out_expected)
 
     def test_list_tags_in_taxonomy_hierarchically(self):
@@ -208,13 +208,13 @@ class AbstractBackendTest:
         tags_in = ['Zulu', 'Uniform', 'Foxtrot', 'Βήτα', 'Alfa', 'Alpha', 'Αλφα']
         tax = self._create_taxonomy_with_tags(tags_in)
         # Contains 'al' (case insensitive)
-        results = [t.tag for t in tax.list_tags_containing("al")]
+        results = [t.name for t in tax.list_tags_containing("al")]
         self.assertEqual(results, ['Alfa', 'Alpha'])
         # Contains 'FO' (case insensitive)
-        results = [t.tag for t in tax.list_tags_containing("FO")]
+        results = [t.name for t in tax.list_tags_containing("FO")]
         self.assertEqual(results, ['Foxtrot', 'Uniform'])
         # Contains 'nomatch' (case insensitive)
-        results = [t.tag for t in tax.list_tags_containing("nomatch")]
+        results = [t.name for t in tax.list_tags_containing("nomatch")]
         self.assertEqual(results, [])
 
     # Tagging entities

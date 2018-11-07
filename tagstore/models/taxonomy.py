@@ -24,7 +24,7 @@ class Taxonomy(NamedTuple):
 
     # Convenience methods:
 
-    def add_tag(self, tag: str, parent_tag: Optional[Tag] = None) -> Tag:
+    def add_tag(self, name: str, parent_tag: Optional[Tag] = None) -> Tag:
         """
         Add the specified tag to this given taxonomy, and retuns it.
 
@@ -34,7 +34,7 @@ class Taxonomy(NamedTuple):
         Will raise a ValueError if trying to add a child tag that
         already exists anywhere in the taxonomy.
         """
-        return self.tagstore.add_tag_to_taxonomy(tag, self.uid, parent_tag)
+        return self.tagstore.add_tag_to_taxonomy(name, self.uid, parent_tag)
 
     def get_tag(self, tag: str) -> Optional[Tag]:
         """

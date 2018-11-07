@@ -29,12 +29,12 @@ class Migration(migrations.Migration):
             name='Tag',
             fields=[
                 ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('tag', models.CharField(max_length=180)),
+                ('name', models.CharField(db_column='tag', max_length=180)),
                 ('path', models.CharField(db_index=True, max_length=180)),
             ],
             options={
                 'db_table': 'tagstore_tag',
-                'ordering': ('tag',),
+                'ordering': ('name',),
             },
         ),
         migrations.CreateModel(
@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='tag',
-            unique_together=set([('taxonomy', 'tag')]),
+            unique_together=set([('taxonomy', 'name')]),
         ),
         migrations.AlterUniqueTogether(
             name='entity',

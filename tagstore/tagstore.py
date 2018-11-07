@@ -25,7 +25,7 @@ class Tagstore:
         """ Get metadata about the given taxonomy """
         raise NotImplementedError()
 
-    def add_tag_to_taxonomy(self, tag: str, taxonomy_uid: TaxonomyId, parent_tag: Optional[Tag] = None) -> Tag:
+    def add_tag_to_taxonomy(self, name: str, taxonomy_uid: TaxonomyId, parent_tag: Optional[Tag] = None) -> Tag:
         """
         Add the specified tag to the given taxonomy, and retuns it.
 
@@ -37,25 +37,25 @@ class Tagstore:
 
         Subclasses should implement this by overriding _add_tag_to_taxonomy()
         """
-        if not isinstance(tag, str) or len(tag) < 1:
-            raise ValueError("Tag value must be a (non-empty) string.")
+        if not isinstance(name, str) or len(name) < 1:
+            raise ValueError("Tag name must be a (non-empty) string.")
 
-        if tag != tag.strip():
-            raise ValueError("Tag cannot start or end with whitespace.")
+        if name != name.strip():
+            raise ValueError("Tag name cannot start or end with whitespace.")
 
-        if any(char in tag for char in ':,;\n\r\\'):
-            raise ValueError("Tag contains an invalid character.")
+        if any(char in name for char in ':,;\n\r\\'):
+            raise ValueError("Tag name contains an invalid character.")
 
         parent_tag_str: Optional[str] = None
         if parent_tag is not None:
             if parent_tag.taxonomy_uid != taxonomy_uid:
                 raise ValueError("A tag cannot have a parent from another taxonomy")
-            parent_tag_str = parent_tag.tag
+            parent_tag_str = parent_tag.name
 
-        tag_value = self._add_tag_to_taxonomy(taxonomy_uid=taxonomy_uid, tag=tag, parent_tag=parent_tag_str)
-        return Tag(taxonomy_uid=taxonomy_uid, tag=tag_value)
+        final_name = self._add_tag_to_taxonomy(taxonomy_uid=taxonomy_uid, name=name, parent_tag=parent_tag_str)
+        return Tag(taxonomy_uid=taxonomy_uid, name=final_name)
 
-    def _add_tag_to_taxonomy(self, taxonomy_uid: TaxonomyId, tag: str, parent_tag: Optional[str] = None) -> str:
+    def _add_tag_to_taxonomy(self, taxonomy_uid: TaxonomyId, name: str, parent_tag: Optional[str] = None) -> str:
         """
         Subclasses should override this method to implement adding tags to a taxonomy.
 
@@ -64,7 +64,7 @@ class Tagstore:
         """
         raise NotImplementedError()
 
-    def get_tag_in_taxonomy(self, tag: str, taxonomy_uid: TaxonomyId) -> Optional[Tag]:
+    def get_tag_in_taxonomy(self, name: str, taxonomy_uid: TaxonomyId) -> Optional[Tag]:
         """
         If a tag with the specified name (case insensitive) exists in this taxonomy, get it.
 
