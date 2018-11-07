@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(primary_key=True, serialize=False)),
                 ('entity_type', models.CharField(max_length=180)),
-                ('external_id', models.CharField(max_length=255)),
+                ('external_id', models.CharField(max_length=180)),
             ],
             options={
                 'db_table': 'tagstore_entity',
@@ -65,9 +65,5 @@ class Migration(migrations.Migration):
         migrations.AlterUniqueTogether(
             name='entity',
             unique_together=set([('entity_type', 'external_id')]),
-        ),
-        migrations.RunSQL(
-            sql=r'CREATE INDEX "tagstore_tag_uppercase" ON "tagstore_tag" (UPPER("tag"));',
-            reverse_sql=r'DROP INDEX "tagstore_tag_uppercase";'
         ),
     ]

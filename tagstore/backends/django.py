@@ -33,7 +33,7 @@ class DjangoTagstore(Tagstore):
             return None
         return tax.as_tuple
 
-    def _add_tag_to_taxonomy(self, taxonomy_uid: int, tag: str, parent_tag: Optional[str] = None) -> None:
+    def _add_tag_to_taxonomy(self, taxonomy_uid: int, tag: str, parent_tag: Optional[str] = None) -> str:
         if parent_tag:
             # Check the parent tag:
             try:
@@ -51,6 +51,7 @@ class DjangoTagstore(Tagstore):
         if not created:
             if db_tag.path != path:
                 raise ValueError("That tag already exists with a different parent tag.")
+        return db_tag.tag
 
     def list_tags_in_taxonomy(self, uid: int) -> Iterator[Tag]:
         for tag in TagModel.objects.filter(taxonomy_id=uid).order_by('tag'):

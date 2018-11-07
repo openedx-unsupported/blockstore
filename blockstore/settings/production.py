@@ -24,6 +24,7 @@ DB_OVERRIDES = dict(
     NAME=environ.get('DB_MIGRATION_NAME', DATABASES['default']['NAME']),
     HOST=environ.get('DB_MIGRATION_HOST', DATABASES['default']['HOST']),
     PORT=environ.get('DB_MIGRATION_PORT', DATABASES['default']['PORT']),
+    OPTIONS=environ.get('DB_MIGRATION_OPTIONS', DATABASES['default']['OPTIONS']),
 )
 
 for override, value in DB_OVERRIDES.iteritems():

@@ -8,5 +8,8 @@ class Tag(NamedTuple):
     """
     A tag that can be applied to content.
     """
-    taxonomy_uid: int  # The Unique ID of the taxonomy which owns this tag
-    tag: str  # The text of this tag, which also serves as its identifier. Unique within this taxonomy.
+    # The Unique ID of the taxonomy which owns this tag
+    taxonomy_uid: int
+    # The text of this tag, which also serves as its identifier.
+    # Case is preserved but within a taxonomy, tags must be case-insensitively unique.
+    tag: str

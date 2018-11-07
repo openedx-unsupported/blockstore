@@ -7,6 +7,11 @@ from django.db import models
 
 from tagstore.models import EntityId, TaxonomyMetadata, UserId, Tag as TagTuple
 
+# If MySQL is configured to use utf8mb4 (correct utf8), indexed
+# columns have a max length of 191. Until Django supports limiting index
+# length to 191 characters, we need to limit the value length to below
+# 191 characters, for any column that might be indexed.
+# (https://code.djangoproject.com/ticket/18392#comment:3)
 MAX_CHAR_FIELD_LENGTH = 180
 
 
@@ -16,7 +21,7 @@ class Entity(models.Model):
     """
     id = models.BigAutoField(primary_key=True)
     entity_type = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH)
-    external_id = models.CharField(max_length=255)
+    external_id = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH)
 
     tags = models.ManyToManyField('Tag')
 
@@ -56,10 +61,8 @@ class Tag(models.Model):
     id = models.BigAutoField(primary_key=True)
     taxonomy = models.ForeignKey(Taxonomy, null=False)
     # The tag string, like "good problem".
-    # The migration creates an uppercase index on this field for
-    # case-insensitive searches
     tag = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH)
-    # Materialized path. Always ends with ":".
+    # Materialized path. Lowercase and always ends with ":".
     # A simple tag like "good-problem" would have a path of "good-problem:"
     # A tag like "mammal" that is a child of "animal" would have a path of
     # "animal:mammal:". Tags are not allowed to contain the ":" character
@@ -83,14 +86,14 @@ class Tag(models.Model):
         Return the full 'materialized path' for use in the path field.
 
         make_path(15, 'easy') -> '15:easy:'
-        make_path(200, 'lion', 'animal:mammal:') -> '200:animal:mammal:lion:'
+        make_path(200, 'Lion', 'animal:mammal:') -> '200:animal:mammal:lion:'
         """
         prefix = str(taxonomy_id) + cls.PATH_SEP
         if parent_path:
             assert parent_path.startswith(prefix)
-            return parent_path + tag + cls.PATH_SEP
+            return parent_path + tag.lower() + cls.PATH_SEP
         else:
-            return prefix + tag + cls.PATH_SEP
+            return prefix + tag.lower() + cls.PATH_SEP
 
     @property
     def parent_tag_tuple(self) -> Optional[TagTuple]:
