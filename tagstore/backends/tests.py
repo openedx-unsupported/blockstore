@@ -62,7 +62,12 @@ class AbstractBackendTest:
         self.assertEqual(set(t for t in tax.list_tags()), {tag, tag2})
 
     def test_case_sensitive_tags(self):
-        """ add_tag_to_taxonomy will add a tag to the given taxonomy """
+        """
+        Check case sensitive behavior
+
+        Tags preserve the case that they are originally created with.
+        Searching for tags is always case-insensitive.
+        """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
         self.assertEqual(len([t for t in tax.list_tags()]), 0)
         tag1 = tax.add_tag('testing')
@@ -71,6 +76,9 @@ class AbstractBackendTest:
         tags = set([t for t in tax.list_tags()])
         self.assertEqual(len(tags), 1)
         self.assertEqual(tags, {tag1, tag2})
+        # get_tag should also respect the original case:
+        self.assertEqual(tax.get_tag('testing').tag, 'testing')
+        self.assertEqual(tax.get_tag('teSTING').tag, 'testing')
 
     def test_allowed_tag_names(self):
         """ add_tag_to_taxonomy will allow these tags """
@@ -154,6 +162,13 @@ class AbstractBackendTest:
         parent = tax2.add_tag('parent')
         with self.assertRaises(ValueError):
             tax.add_tag('child', parent_tag=parent)
+
+    def test_get_tag_in_taxonomy(self):
+        """ get_tag_in_taxonomy will retrieve Tags """
+        tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
+        self.assertEqual(tax.get_tag('testing'), None)
+        tag = tax.add_tag('testing')
+        self.assertEqual(tax.get_tag('testing'), tag)
 
     def _create_taxonomy_with_tags(self, tags: Iterable[str]) -> Taxonomy:
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)

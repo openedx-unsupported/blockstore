@@ -36,6 +36,14 @@ class Taxonomy(NamedTuple):
         """
         return self.tagstore.add_tag_to_taxonomy(tag, self.uid, parent_tag)
 
+    def get_tag(self, tag: str) -> Optional[Tag]:
+        """
+        If a tag with the specified name (case insensitive) exists in this taxonomy, get it.
+
+        Otherwise returns None.
+        """
+        return self.tagstore.get_tag_in_taxonomy(tag, self.uid)
+
     def list_tags(self) -> Iterator[Tag]:
         """
         Get a (flattened) list of all tags in the given taxonomy, in alphabetical order.

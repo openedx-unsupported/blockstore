@@ -64,6 +64,14 @@ class Tagstore:
         """
         raise NotImplementedError()
 
+    def get_tag_in_taxonomy(self, tag: str, taxonomy_uid: TaxonomyId) -> Optional[Tag]:
+        """
+        If a tag with the specified name (case insensitive) exists in this taxonomy, get it.
+
+        Otherwise returns None.
+        """
+        raise NotImplementedError()
+
     def list_tags_in_taxonomy(self, taxonomy_uid: TaxonomyId) -> Iterator[Tag]:
         """
         Get a (flattened) list of all tags in the given taxonomy, in alphabetical order.

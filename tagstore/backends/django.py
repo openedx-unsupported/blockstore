@@ -53,6 +53,18 @@ class DjangoTagstore(Tagstore):
                 raise ValueError("That tag already exists with a different parent tag.")
         return db_tag.tag
 
+    def get_tag_in_taxonomy(self, tag: str, taxonomy_uid: TaxonomyId) -> Optional[Tag]:
+        """
+        If a tag with the specified name (case insensitive) exists in this taxonomy, get it.
+
+        Otherwise returns None.
+        """
+        try:
+            tag_obj = TagModel.objects.get(taxonomy_id=taxonomy_uid, tag=tag)
+            return Tag(taxonomy_uid=taxonomy_uid, tag=tag_obj.tag)
+        except TagModel.DoesNotExist:
+            return None
+
     def list_tags_in_taxonomy(self, taxonomy_uid: TaxonomyId) -> Iterator[Tag]:
         for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid).order_by('tag'):
             yield Tag(taxonomy_uid=taxonomy_uid, tag=tag.tag)
