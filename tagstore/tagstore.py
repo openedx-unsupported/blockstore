@@ -2,12 +2,9 @@
 A system for storing and retrieving tags related to Blockstore entities
 """
 
-from typing import Iterator, List, Optional, Set, Tuple, Union
+from typing import Iterator, List, Optional, Set, Tuple
 
-from .models.entity import EntityId
-from .models.tag import Tag
-from .models.taxonomy import TaxonomyId, TaxonomyMetadata
-from .models.user import UserId
+from .models import EntityId, Tag, TaxonomyId, Taxonomy, UserId
 
 
 class Tagstore:
@@ -20,68 +17,70 @@ class Tagstore:
 
     # Taxonomy CRUD ##########################
 
-    def create_taxonomy(self, name: str, owner_id: Optional[UserId]) -> TaxonomyMetadata:
+    def create_taxonomy(self, name: str, owner_id: Optional[UserId] = None) -> Taxonomy:
         """ Create a new taxonomy with the specified name and owner. """
         raise NotImplementedError()
 
-    def get_taxonomy(self, uid: int) -> Optional[TaxonomyMetadata]:
+    def get_taxonomy(self, taxonomy_uid: TaxonomyId) -> Optional[Taxonomy]:
         """ Get metadata about the given taxonomy """
         raise NotImplementedError()
 
-    def add_tag_to_taxonomy(
-        self, tag: str, taxonomy: Union[TaxonomyId, TaxonomyMetadata], parent_tag: Optional[Tag] = None
-    ) -> Tag:
+    def add_tag_to_taxonomy(self, name: str, taxonomy_uid: TaxonomyId, parent_tag: Optional[Tag] = None) -> Tag:
         """
         Add the specified tag to the given taxonomy, and retuns it.
 
-        Will be a no-op if the tag already exists in the taxonomy (case-insensitive),
-        however the returned (existing) Tag may differ in case.
+        If a Tag already exists in the taxonomy with the given name (case-insensitive)
+        and the given parent, then that Tag is returned and no changes are made.
+
         Will raise a ValueError if the specified taxonomy or parent doesn't exist.
         Will raise a ValueError if trying to add a child tag that
-        already exists anywhere in the taxonomy.
+        already exists but with a different parent tag.
 
         Subclasses should implement this by overriding _add_tag_to_taxonomy()
         """
-        if not isinstance(tag, str) or len(tag) < 1:
-            raise ValueError("Tag value must be a (non-empty) string.")
+        if not isinstance(name, str) or len(name) < 1:
+            raise ValueError("Tag name must be a (non-empty) string.")
 
-        if tag != tag.strip():
-            raise ValueError("Tag cannot start or end with whitespace.")
+        if name != name.strip():
+            raise ValueError("Tag name cannot start or end with whitespace.")
 
-        if any(char in tag for char in ':,;\n\r\\'):
-            raise ValueError("Tag contains an invalid character.")
-
-        if isinstance(taxonomy, TaxonomyMetadata):
-            taxonomy_uid = taxonomy.uid
-        else:
-            taxonomy_uid = taxonomy
+        if any(char in name for char in ':,;\n\r\\'):
+            raise ValueError("Tag name contains an invalid character.")
 
         parent_tag_str: Optional[str] = None
         if parent_tag is not None:
             if parent_tag.taxonomy_uid != taxonomy_uid:
                 raise ValueError("A tag cannot have a parent from another taxonomy")
-            parent_tag_str = parent_tag.tag
+            parent_tag_str = parent_tag.name
 
-        tag_value = self._add_tag_to_taxonomy(taxonomy_uid=taxonomy_uid, tag=tag, parent_tag=parent_tag_str)
-        return Tag(taxonomy_uid=taxonomy_uid, tag=tag_value)
+        final_name = self._add_tag_to_taxonomy(taxonomy_uid=taxonomy_uid, name=name, parent_tag=parent_tag_str)
+        return Tag(taxonomy_uid=taxonomy_uid, name=final_name)
 
-    def _add_tag_to_taxonomy(self, taxonomy_uid: int, tag: str, parent_tag: Optional[str] = None) -> str:
+    def _add_tag_to_taxonomy(self, taxonomy_uid: TaxonomyId, name: str, parent_tag: Optional[str] = None) -> str:
         """
         Subclasses should override this method to implement adding tags to a taxonomy.
 
-        It should return the 'tag' value of the newly created tag, or the existing tag
+        It should return the 'name' value of the newly created tag, or the existing tag
         if a tag already exists.
         """
         raise NotImplementedError()
 
-    def list_tags_in_taxonomy(self, uid: int) -> Iterator[Tag]:
+    def get_tag_in_taxonomy(self, name: str, taxonomy_uid: TaxonomyId) -> Optional[Tag]:
+        """
+        If a tag with the specified name (case insensitive) exists in this taxonomy, get it.
+
+        Otherwise returns None.
+        """
+        raise NotImplementedError()
+
+    def list_tags_in_taxonomy(self, taxonomy_uid: TaxonomyId) -> Iterator[Tag]:
         """
         Get a (flattened) list of all tags in the given taxonomy, in alphabetical order.
         """
         raise NotImplementedError()
         yield None  # Required to make this non-implementation also a generator. pylint: disable=unreachable
 
-    def list_tags_in_taxonomy_hierarchically(self, uid: int) -> Iterator[Tuple[Tag, Tag]]:
+    def list_tags_in_taxonomy_hierarchically(self, taxonomy_uid: TaxonomyId) -> Iterator[Tuple[Tag, Tag]]:
         """
         Get a list of all tags in the given taxonomy, in hierarchical and alphabetical order.
 
@@ -91,7 +90,7 @@ class Tagstore:
         raise NotImplementedError()
         yield None  # Required to make this non-implementation also a generator. pylint: disable=unreachable
 
-    def list_tags_in_taxonomy_containing(self, uid: int, text: str) -> Iterator[Tag]:
+    def list_tags_in_taxonomy_containing(self, taxonomy_uid: TaxonomyId, text: str) -> Iterator[Tag]:
         """
         Get a (flattened) list of all tags in the given taxonomy that contain the given string
         (case insensitive). This is intended to be used for auto-complete when users tag content

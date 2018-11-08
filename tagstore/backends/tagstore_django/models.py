@@ -5,7 +5,8 @@ from typing import Optional
 
 from django.db import models
 
-from tagstore.models import EntityId, TaxonomyMetadata, UserId, Tag as TagTuple
+from tagstore import Tagstore
+from tagstore.models import EntityId, Taxonomy as TaxonomyTuple, UserId, Tag as TagTuple
 
 # If MySQL is configured to use utf8mb4 (correct utf8), indexed
 # columns have a max length of 191. Until Django supports limiting index
@@ -48,10 +49,9 @@ class Taxonomy(models.Model):
     class Meta:
         db_table = 'tagstore_taxonomy'
 
-    @property
-    def as_tuple(self) -> TaxonomyMetadata:
+    def as_tuple(self, tagstore: Tagstore) -> TaxonomyTuple:
         owner_id = UserId(self.owner.as_tuple) if self.owner is not None else None
-        return TaxonomyMetadata(uid=self.id, name=self.name, owner_id=owner_id)
+        return TaxonomyTuple(uid=self.id, name=self.name, owner_id=owner_id, tagstore=tagstore)
 
 
 class Tag(models.Model):
@@ -61,7 +61,7 @@ class Tag(models.Model):
     id = models.BigAutoField(primary_key=True)
     taxonomy = models.ForeignKey(Taxonomy, null=False)
     # The tag string, like "good problem".
-    tag = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH)
+    name = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_column='tag')
     # Materialized path. Lowercase and always ends with ":".
     # A simple tag like "good-problem" would have a path of "good-problem:"
     # A tag like "mammal" that is a child of "animal" would have a path of
@@ -73,15 +73,15 @@ class Tag(models.Model):
 
     class Meta:
         db_table = 'tagstore_tag'
-        ordering = ('tag', )
+        ordering = ('name', )
         unique_together = (
-            ('taxonomy', 'tag'),
+            ('taxonomy', 'name'),
             # Note that (taxonomy, path) is also unique but we don't bother
             # with an index for that.
         )
 
     @classmethod
-    def make_path(cls, taxonomy_id: int, tag: str, parent_path: str = '') -> str:
+    def make_path(cls, taxonomy_id: int, name: str, parent_path: str = '') -> str:
         """
         Return the full 'materialized path' for use in the path field.
 
@@ -91,9 +91,9 @@ class Tag(models.Model):
         prefix = str(taxonomy_id) + cls.PATH_SEP
         if parent_path:
             assert parent_path.startswith(prefix)
-            return parent_path + tag.lower() + cls.PATH_SEP
+            return parent_path + name.lower() + cls.PATH_SEP
         else:
-            return prefix + tag.lower() + cls.PATH_SEP
+            return prefix + name.lower() + cls.PATH_SEP
 
     @property
     def parent_tag_tuple(self) -> Optional[TagTuple]:
@@ -106,4 +106,4 @@ class Tag(models.Model):
         parts = self.path.split(self.PATH_SEP)
         if len(parts) <= 3:
             return None
-        return TagTuple(taxonomy_uid=self.taxonomy_id, tag=parts[-3])
+        return TagTuple(taxonomy_uid=self.taxonomy_id, name=parts[-3])

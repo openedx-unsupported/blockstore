@@ -12,4 +12,4 @@ class Tag(NamedTuple):
     taxonomy_uid: int
     # The text of this tag, which also serves as its identifier.
     # Case is preserved but within a taxonomy, tags must be case-insensitively unique.
-    tag: str
+    name: str
