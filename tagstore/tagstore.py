@@ -17,7 +17,7 @@ class Tagstore:
 
     # Taxonomy CRUD ##########################
 
-    def create_taxonomy(self, name: str, owner_id: Optional[UserId]) -> Taxonomy:
+    def create_taxonomy(self, name: str, owner_id: Optional[UserId] = None) -> Taxonomy:
         """ Create a new taxonomy with the specified name and owner. """
         raise NotImplementedError()
 
@@ -29,11 +29,12 @@ class Tagstore:
         """
         Add the specified tag to the given taxonomy, and retuns it.
 
-        Will be a no-op if the tag already exists in the taxonomy (case-insensitive),
-        however the returned (existing) Tag may differ in case.
+        If a Tag already exists in the taxonomy with the given name (case-insensitive)
+        and the given parent, then that Tag is returned and no changes are made.
+
         Will raise a ValueError if the specified taxonomy or parent doesn't exist.
         Will raise a ValueError if trying to add a child tag that
-        already exists anywhere in the taxonomy.
+        already exists but with a different parent tag.
 
         Subclasses should implement this by overriding _add_tag_to_taxonomy()
         """
@@ -59,7 +60,7 @@ class Tagstore:
         """
         Subclasses should override this method to implement adding tags to a taxonomy.
 
-        It should return the 'tag' value of the newly created tag, or the existing tag
+        It should return the 'name' value of the newly created tag, or the existing tag
         if a tag already exists.
         """
         raise NotImplementedError()

@@ -26,7 +26,7 @@ class Taxonomy(NamedTuple):
 
     def add_tag(self, name: str, parent_tag: Optional[Tag] = None) -> Tag:
         """
-        Add the specified tag to this given taxonomy, and retuns it.
+        Add the specified tag to this given taxonomy, and return it.
 
         Will be a no-op if the tag already exists in the taxonomy (case-insensitive),
         however the returned (existing) Tag may differ in case.

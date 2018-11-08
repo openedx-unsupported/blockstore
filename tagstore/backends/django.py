@@ -15,7 +15,7 @@ class DjangoTagstore(Tagstore):
     Django tag storage backend.
     """
 
-    def create_taxonomy(self, name: str, owner_id: Optional[UserId]) -> Taxonomy:
+    def create_taxonomy(self, name: str, owner_id: Optional[UserId] = None) -> Taxonomy:
         """ Create a new taxonomy with the specified name and owner. """
         owner_obj: Optional[UserId] = None
         if owner_id is not None:

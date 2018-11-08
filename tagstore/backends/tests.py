@@ -7,7 +7,7 @@ from typing import Iterable
 from django.test import TestCase
 
 from .. import Tagstore
-from ..models import EntityId, Taxonomy, UserId
+from ..models import EntityId, Tag, Taxonomy, UserId
 from .django import DjangoTagstore
 
 
@@ -163,6 +163,13 @@ class AbstractBackendTest:
         with self.assertRaises(ValueError):
             tax.add_tag('child', parent_tag=parent)
 
+    def test_add_tag_to_taxonomy_nonexistent_parent(self):
+        """ add_tag_to_taxonomy will not allow a parent that doesn't exist """
+        tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
+        parent = Tag(taxonomy_uid=tax.uid, name='bad')
+        with self.assertRaises(ValueError):
+            tax.add_tag('child', parent_tag=parent)
+
     def test_get_tag_in_taxonomy(self):
         """ get_tag_in_taxonomy will retrieve Tags """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
@@ -303,54 +310,60 @@ class AbstractBackendTest:
         # Run some searches and test the results:
 
         # large
-        result = set([e for e in self.tagstore.get_entities_tagged_with(large)])
+        result = set(self.tagstore.get_entities_tagged_with(large))
         self.assertEqual(result, {elephant, redwood})
 
         # asters
-        result = set([e for e in self.tagstore.get_entities_tagged_with(aster)])
+        result = set(self.tagstore.get_entities_tagged_with(aster))
         self.assertEqual(result, {dandelion})
 
         # plants
-        result = set([e for e in self.tagstore.get_entities_tagged_with(plant)])
+        result = set(self.tagstore.get_entities_tagged_with(plant))
         self.assertEqual(result, {dandelion, redwood})
 
         # plants, with no tag inheritance
-        result = set([e for e in self.tagstore.get_entities_tagged_with(plant, include_child_tags=False)])
+        result = set(self.tagstore.get_entities_tagged_with(plant, include_child_tags=False))
         self.assertEqual(result, set())
 
         # fish
-        result = set([e for e in self.tagstore.get_entities_tagged_with(fish)])
+        result = set(self.tagstore.get_entities_tagged_with(fish))
         self.assertEqual(result, set())
 
         # conifers
-        result = set([e for e in self.tagstore.get_entities_tagged_with(conifer)])
+        result = set(self.tagstore.get_entities_tagged_with(conifer))
         self.assertEqual(result, {redwood})
 
         # cypress, with no tag inheritance
-        result = set([e for e in self.tagstore.get_entities_tagged_with(cypress, include_child_tags=False)])
+        result = set(self.tagstore.get_entities_tagged_with(cypress, include_child_tags=False))
         self.assertEqual(result, {redwood})
 
         # large things
-        result = set([e for e in self.tagstore.get_entities_tagged_with(large, entity_types=['thing'])])
+        result = set(self.tagstore.get_entities_tagged_with(large, entity_types=['thing']))
         self.assertEqual(result, {elephant, redwood})
 
         # large non-things:
-        result = set([e for e in self.tagstore.get_entities_tagged_with(large, entity_types=['nonthing'])])
+        result = set(self.tagstore.get_entities_tagged_with(large, entity_types=['nonthing']))
         self.assertEqual(result, set())
 
         # small things starting with "d"
-        result = set([e for e in self.tagstore.get_entities_tagged_with(
+        result = set(self.tagstore.get_entities_tagged_with(
             small, entity_types=['thing'], external_id_prefix='d'
-        )])
+        ))
         self.assertEqual(result, {dandelion})
 
         # filter a pre-set list:
-        result = set([e for e in self.tagstore.get_entities_tagged_with(large, entity_ids=[elephant, dog])])
+        result = set(self.tagstore.get_entities_tagged_with(large, entity_ids=[elephant, dog]))
         self.assertEqual(result, {elephant})
 
         # large mammals:
         result = set([e for e in self.tagstore.get_entities_tagged_with_all({large, mammal})])
         self.assertEqual(result, {elephant})
+
+    def test_get_entities_tagged_with_all_invalid(self):
+        """ Test get_entities_tagged_with_all() with invalid arguments """
+        with self.assertRaises(ValueError):
+            # Passing zero tags as the first argument should raise a value error:
+            list(self.tagstore.get_entities_tagged_with_all(set(), entity_types=['thing']))
 
 
 class DjangoBackendTest(AbstractBackendTest, TestCase):

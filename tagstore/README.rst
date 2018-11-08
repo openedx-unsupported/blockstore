@@ -13,7 +13,7 @@ Features
 * Python 3 API with type hints
 * Allows any "entity" to be tagged, where an entity could be a user, a block, a collection, etc.
 * Allows rich searching for entities by tags. e.g. "Find all large animals" will return an entity that was tagged with "large" and "dog", since it knows that the "dog" tag is a type of "animal" tag.
-* Designed to support multiple tag storage backends, although the current version of Tagstore only includes a Django ORM backend, which stores tags in MySQL/PostgeSQL/SQLite. (A reasonably complete Neo4j backend implementation also existed in an early version and can found at https://github.com/open-craft/blockstore/pull/7/commits/05503ade0d29296119578837fe059a04e57209e0)
+* Designed to support multiple tag storage backends, although the current version of Tagstore only includes a Django ORM backend, which stores tags in MySQL/PostgeSQL/SQLite. (A reasonably complete Neo4j backend implementation also existed in an early version and can found at https://github.com/open-craft/blockstore/commit/714b22f8456fb3b509aca54f59dc96de060d36fe)
 
 Non-features
 ------------
@@ -40,6 +40,18 @@ Here is an example of using the Tagstore API::
     pine = biology.add_tag('pine', parent_tag=conifer)
     aster = biology.add_tag('aster', parent_tag=plant)
 
+    # Print tag hierarchy tree:
+    depths = {}
+    for (tag, parent) in biology.list_tags_hierarchically():
+        depths[tag] = depths[parent] + 1 if parent else 0
+        print(("  " * depths[tag]) + tag.name)
+    # The resulting hierarchy that gets printed out is:
+    #   plant
+    #     aster
+    #     conifer
+    #       cypress
+    #       pine
+
     # Create a "sizes" taxonomy:
     sizes = tagstore.create_taxonomy("sizes", owner_id=None)
     small = sizes.add_tag('small')
@@ -55,29 +67,29 @@ Here is an example of using the Tagstore API::
     tagstore.add_tag_to(cypress, redwood)
 
     # Find all asters
-    set([e for e in tagstore.get_entities_tagged_with(aster)])
+    set(tagstore.get_entities_tagged_with(aster))
     # result: {dandelion}
 
     # plants
-    set([e for e in tagstore.get_entities_tagged_with(plant)])
+    set(tagstore.get_entities_tagged_with(plant))
     # result: {dandelion, redwood}
 
     # small plants
-    set([e for e in tagstore.get_entities_tagged_with_all({plant, small})])
+    set(tagstore.get_entities_tagged_with_all({plant, small}))
     # result: {dandelion}
 
     # plants, with no tag inheritance
-    set([e for e in tagstore.get_entities_tagged_with(plant, include_child_tags=False)])
+    set(tagstore.get_entities_tagged_with(plant, include_child_tags=False))
     # result: set()
 
     # conifers
-    set([e for e in tagstore.get_entities_tagged_with(conifer)])
+    set(tagstore.get_entities_tagged_with(conifer))
     # result: {redwood}
 
-    # small things starting with "d"
-    set([e for e in tagstore.get_entities_tagged_with(
-        small, entity_types=['thing'], external_id_prefix='d'
-    )])
+    # plants starting with "d"
+    set(tagstore.get_entities_tagged_with(
+        plant, entity_types=['thing'], external_id_prefix='d'
+    ))
     # result: {dandelion}
 
 
