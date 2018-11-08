@@ -28,8 +28,9 @@ class Taxonomy(NamedTuple):
         """
         Add the specified tag to this given taxonomy, and return it.
 
-        Will be a no-op if the tag already exists in the taxonomy (case-insensitive),
-        however the returned (existing) Tag may differ in case.
+        If a Tag already exists in the taxonomy with the given name (case-insensitive)
+        and the given parent, then that Tag is returned and no changes are made.
+
         Will raise a ValueError if the specified taxonomy or parent doesn't exist.
         Will raise a ValueError if trying to add a child tag that
         already exists anywhere in the taxonomy.
