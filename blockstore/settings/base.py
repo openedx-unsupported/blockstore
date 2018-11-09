@@ -205,6 +205,7 @@ LOGIN_REDIRECT_URL = '/admin/'
 PLATFORM_NAME = 'Your Platform Name Here'
 # END OPENEDX-SPECIFIC CONFIGURATION
 
+
 # Set up logging for development use (logging to stdout)
 LOGGING = {
     'version': 1,
@@ -217,6 +218,12 @@ LOGGING = {
     },
     'handlers': {
         'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+            'stream': 'ext://sys.stdout',
+        },
+        'local': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'standard',
