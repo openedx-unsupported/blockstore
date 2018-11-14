@@ -1,0 +1,5 @@
+{% extends "admin/app_index.html" %}
+{% load i18n %}
+{% load tagstore_admin %}
+
+{% block sidebar %}{% tag_hierarchy %}{% endblock %}

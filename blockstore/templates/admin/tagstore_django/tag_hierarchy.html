@@ -1,0 +1,13 @@
+{# Template to display list of taxonomies (and tags) on the admin page #}
+<ul>
+{% for taxonomy in tags %}
+	<h2>{{ taxonomy.name }}</h2>
+	{% if taxonomy.tags|length %}
+		<ul>
+		{% for taglist in taxonomy.tags %}
+			{% include "admin/tagstore_django/list_item.html" with taglist=taglist.children taxid=taxonomy.id %}
+		{% endfor %}
+		</ul>
+	{% endif %}
+{% endfor %}
+</ul>

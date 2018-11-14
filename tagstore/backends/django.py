@@ -79,6 +79,33 @@ class DjangoTagstore(Tagstore):
         for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid).order_by('path'):
             yield (Tag(taxonomy_uid=taxonomy_uid, name=tag.name), tag.parent_tag_tuple)
 
+    def list_tags_in_taxonomy_hierarchically_as_dict(self, taxonomy_uid: TaxonomyId) -> dict:
+        """
+        Get all tags in the given taxonomy as a list of nested dictionaries.
+
+        Returns a list in the form of [tag, tag, ...] where tag is a dictionary
+        containing the name and id of a top level tag (it has no parent)
+        and also a list holding all `children` of that tag recursively (can be empty).
+        """
+        tags: dict = {'children': []}
+        stack = [tags]
+        for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid).order_by('path'):
+            parent = tag.parent_tag_tuple.name if tag.parent_tag_tuple else None
+            node = {'name': tag.name, 'id': tag.id, 'children': []}
+            if parent is None:
+                del stack[1:]
+                stack[0]['children'].append(node)
+                stack.append(node)
+            elif parent == stack[-1]['name']:
+                stack[-1]['children'].append(node)
+                stack.append(node)
+            else:
+                while parent != stack[-1]['name']:
+                    stack.pop()
+                stack[-1]['children'].append(node)
+                stack.append(node)
+        return tags
+
     def list_tags_in_taxonomy_containing(self, taxonomy_uid: TaxonomyId, text: str) -> Iterator[Tag]:
         for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid, name__icontains=text).order_by('name'):
             yield Tag(taxonomy_uid=taxonomy_uid, name=tag.name)
