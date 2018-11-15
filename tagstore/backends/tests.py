@@ -215,22 +215,21 @@ class AbstractBackendTest:
         biology = self.tagstore.create_taxonomy("Biology", owner_id=some_user)
         plant = biology.add_tag('plant')
         conifer = biology.add_tag('conifer', parent_tag=plant)
-        cypress = biology.add_tag('cypress', parent_tag=conifer)
-        pine = biology.add_tag('pine', parent_tag=conifer)
-        aster = biology.add_tag('aster', parent_tag=plant)
+        biology.add_tag('cypress', parent_tag=conifer)
+        biology.add_tag('pine', parent_tag=conifer)
+        biology.add_tag('aster', parent_tag=plant)
 
         tags_out = self.tagstore.list_tags_in_taxonomy_hierarchically_as_dict(biology.uid)
 
         self.assertEqual(
             tags_out,
-            {'children': 
+            {'children':
                 [{'name': 'plant', 'id': 57, 'children': [
                     {'name': 'aster', 'id': 61, 'children': []},
                     {'name': 'conifer', 'id': 58, 'children': [
                         {'name': 'cypress', 'id': 59, 'children': []},
-                        {'name': 'pine', 'id': 60, 'children': []} ]}]}]}
+                        {'name': 'pine', 'id': 60, 'children': []}]}]}]}
         )
-
 
     def test_list_tags_in_taxonomy_containing(self):
         """ Test filtering tags """

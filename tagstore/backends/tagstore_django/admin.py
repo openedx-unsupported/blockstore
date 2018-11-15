@@ -6,7 +6,7 @@ from django.contrib import admin
 from tagstore.backends.django import DjangoTagstore
 # from tagstore.models import EntityId
 
-from .models import Taxonomy, Tag, MAX_CHAR_FIELD_LENGTH
+from .models import Taxonomy, Tag, Entity, MAX_CHAR_FIELD_LENGTH
 
 
 class CustomTagAdminForm(forms.ModelForm):
@@ -70,5 +70,5 @@ class TaxonomyAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Tag, TagAdmin)
-# admin.site.register(Entity)
+admin.site.register(Entity)
 admin.site.register(Taxonomy, TaxonomyAdmin)
