@@ -79,32 +79,24 @@ class DjangoTagstore(Tagstore):
         for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid).order_by('path'):
             yield (Tag(taxonomy_uid=taxonomy_uid, name=tag.name), tag.parent_tag_tuple)
 
-    def list_tags_in_taxonomy_hierarchically_as_dict(self, taxonomy_uid: TaxonomyId) -> dict:
+    def get_tags_in_taxonomy_hierarchically_as_dict(self, taxonomy_uid: TaxonomyId) -> dict:
         """
-        Get all tags in the given taxonomy as a list of nested dictionaries.
+        Get all tags in the given taxonomy as nested dictionaries.
 
-        Returns a list in the form of [tag, tag, ...] where tag is a dictionary
-        containing the name and id of a top level tag (it has no parent)
-        and also a list holding all `children` of that tag recursively (can be empty).
+        Returns a dictionary. An example is {'children': [
+            {'name': 'mammal', 'id': 57, 'children': [
+                {'name': 'cow', 'id': 58, 'children': []}
+            ]}
+        ]}.
         """
-        tags: dict = {'children': []}
-        stack = [tags]
+        root: dict = {'children': []}
+        all_nodes: dict = {None: root}
         for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid).order_by('path'):
-            parent = tag.parent_tag_tuple.name if tag.parent_tag_tuple else None
             node = {'name': tag.name, 'id': tag.id, 'children': []}
-            if parent is None:
-                del stack[1:]
-                stack[0]['children'].append(node)
-                stack.append(node)
-            elif parent == stack[-1]['name']:
-                stack[-1]['children'].append(node)
-                stack.append(node)
-            else:
-                while parent != stack[-1]['name']:
-                    stack.pop()
-                stack[-1]['children'].append(node)
-                stack.append(node)
-        return tags
+            as_tuple = Tag(taxonomy_uid=taxonomy_uid, name=tag.name)
+            all_nodes[as_tuple] = node
+            all_nodes[tag.parent_tag_tuple]['children'].append(node)
+        return root
 
     def list_tags_in_taxonomy_containing(self, taxonomy_uid: TaxonomyId, text: str) -> Iterator[Tag]:
         for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid, name__icontains=text).order_by('name'):

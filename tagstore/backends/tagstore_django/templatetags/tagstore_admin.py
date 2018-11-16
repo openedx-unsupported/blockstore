@@ -15,6 +15,8 @@ def tag_hierarchy():
     tags_by_taxonomy = []
     for taxonomy in taxonomies:
         taxonomy_detail = {'name': taxonomy.name, 'id': taxonomy.id, 'tags': []}
-        taxonomy_detail['tags'].append(tagstore.list_tags_in_taxonomy_hierarchically_as_dict(taxonomy.id))
+        taxonomy_detail['tags'].append(
+            tagstore.get_tags_in_taxonomy_hierarchically_as_dict(taxonomy.id)
+        )
         tags_by_taxonomy.append(taxonomy_detail)
     return {'tags': tags_by_taxonomy}

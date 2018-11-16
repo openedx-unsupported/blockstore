@@ -210,7 +210,7 @@ class AbstractBackendTest:
             (pine, conifer),
         ])
 
-    def test_list_tags_in_taxonomy_hierarchically_as_dict(self):
+    def test_get_tags_in_taxonomy_hierarchically_as_dict(self):
         """ Test that tags get returned as dictionary """
         biology = self.tagstore.create_taxonomy("Biology", owner_id=some_user)
         plant = biology.add_tag('plant')
@@ -219,17 +219,14 @@ class AbstractBackendTest:
         biology.add_tag('pine', parent_tag=conifer)
         biology.add_tag('aster', parent_tag=plant)
 
-        tags_out = self.tagstore.list_tags_in_taxonomy_hierarchically_as_dict(biology.uid)
+        tags_out = self.tagstore.get_tags_in_taxonomy_hierarchically_as_dict(biology.uid)
 
-        self.assertEqual(
-            tags_out,
-            {'children':
-                [{'name': 'plant', 'id': 57, 'children': [
-                    {'name': 'aster', 'id': 61, 'children': []},
-                    {'name': 'conifer', 'id': 58, 'children': [
-                        {'name': 'cypress', 'id': 59, 'children': []},
-                        {'name': 'pine', 'id': 60, 'children': []}]}]}]}
-        )
+        self.assertEqual(tags_out['children'][0]['name'], 'plant')
+        self.assertEqual(tags_out['children'][0]['children'][0]['name'], 'aster')
+        self.assertEqual(tags_out['children'][0]['children'][1]['name'], 'conifer')
+        tags_out_conifer = tags_out['children'][0]['children'][1]
+        self.assertEqual(tags_out_conifer['children'][0]['name'], 'cypress')
+        self.assertEqual(tags_out_conifer['children'][1]['name'], 'pine')
 
     def test_list_tags_in_taxonomy_containing(self):
         """ Test filtering tags """

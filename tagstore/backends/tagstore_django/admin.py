@@ -69,6 +69,12 @@ class TaxonomyAdmin(admin.ModelAdmin):
     pass
 
 
+class EntityAdmin(admin.ModelAdmin):
+    """ Controls display and saving of Entity model objects. """
+    list_display = ('entity_type', 'external_id')
+    search_fields = ('entity_type', 'external_id')
+
+
 admin.site.register(Tag, TagAdmin)
-admin.site.register(Entity)
+admin.site.register(Entity, EntityAdmin)
 admin.site.register(Taxonomy, TaxonomyAdmin)

@@ -2,18 +2,18 @@
 {% load i18n %}
 
 {% for tag in taglist %}
-		<li>
-				{{ tag.name }}
-				<a href="/admin/tagstore_django/tag/add/?taxonomy={{ taxid }}&parent={{ tag.name }}"
-						class="addlink" alt="{% trans "Add" %}"></a>&nbsp;
-				{# <a href="tag/{{ tag.id }}/change/" class="changelink"></a>&nbsp; #}
-				{# <a href="tag/{{ tag.id }}/delete/" alt="{% trans "Delete" %}" #}
-				{#		style="font-weight: bold; color: darkred; text-decoration: none;">🗙</a> #}
+    <li>
+        {{ tag.name }}
+        <a href="/admin/tagstore_django/tag/add/?taxonomy={{ taxid }}&parent={{ tag.name }}"
+            class="addlink" alt="{% trans "Add" %}"></a>&nbsp;
+        {# <a href="tag/{{ tag.id }}/change/" class="changelink"></a>&nbsp; #}
+        {# <a href="tag/{{ tag.id }}/delete/" alt="{% trans "Delete" %}" #}
+        {# style="font-weight: bold; color: darkred; text-decoration: none;">🗙</a> #}
 
-				{% if tag.children|length %}
-						<ul>
-							{% include "admin/tagstore_django/list_item.html" with taglist=tag.children taxid=taxid %}
-						</ul>
-				{% endif %}
-		</li>
+        {% if tag.children|length %}
+            <ul>
+              {% include "admin/tagstore_django/list_item.html" with taglist=tag.children taxid=taxid %}
+            </ul>
+        {% endif %}
+    </li>
 {% endfor %}
