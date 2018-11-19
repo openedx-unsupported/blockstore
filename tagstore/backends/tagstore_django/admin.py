@@ -4,7 +4,6 @@ from django import forms
 from django.contrib import admin
 
 from tagstore.backends.django import DjangoTagstore
-# from tagstore.models import EntityId
 
 from .models import Taxonomy, Tag, Entity, MAX_CHAR_FIELD_LENGTH
 
@@ -22,14 +21,9 @@ class CustomTagAdminForm(forms.ModelForm):
         super(CustomTagAdminForm, self).__init__(*args, **kwargs)
         self.fields['parent'].widget.attrs.update({'value': parent_tag})
 
-    # TODO: create a dry run flag for add_tag_to_taxonomy which
-    # can be used to validate before attempting to save
-
 
 class TagAdmin(admin.ModelAdmin):
     """ Controls display and saving of Tag model objects. """
-    list_filter = ('taxonomy',)
-    list_display = ('name', 'path', 'taxonomy')
     readonly_fields = ('path',)
     search_fields = ('path',)
     form = CustomTagAdminForm
@@ -55,20 +49,6 @@ class TagAdmin(admin.ModelAdmin):
     #     super(TagAdmin, self).delete_model(request, obj)
 
 
-class TagInline(admin.TabularInline):
-    """ TODO: Allows bulk editing of Tag objects on the edit taxonomy page. """
-    parent = forms.CharField(max_length=MAX_CHAR_FIELD_LENGTH, required=False)
-    model = Tag
-    readonly_fields = ('path',)
-    form = CustomTagAdminForm
-
-
-class TaxonomyAdmin(admin.ModelAdmin):
-    """ Controls display and saving of Taxonomy model objects. """
-    # inlines = [TagInline]
-    pass
-
-
 class EntityAdmin(admin.ModelAdmin):
     """ Controls display and saving of Entity model objects. """
     list_display = ('entity_type', 'external_id')
@@ -77,4 +57,4 @@ class EntityAdmin(admin.ModelAdmin):
 
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Entity, EntityAdmin)
-admin.site.register(Taxonomy, TaxonomyAdmin)
+admin.site.register(Taxonomy)

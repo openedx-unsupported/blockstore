@@ -31,6 +31,7 @@ class Entity(models.Model):
             ('entity_type', 'external_id'),
         )
         db_table = 'tagstore_entity'
+        verbose_name_plural = 'Entities'
 
     @property
     def as_tuple(self) -> EntityId:
@@ -51,6 +52,7 @@ class Taxonomy(models.Model):
 
     class Meta:
         db_table = 'tagstore_taxonomy'
+        verbose_name_plural = 'Taxonomies'
 
     def as_tuple(self, tagstore: Tagstore) -> TaxonomyTuple:
         owner_id = UserId(self.owner.as_tuple) if self.owner is not None else None
