@@ -26,7 +26,7 @@ dev.up:
 
 dev.provision:
 	docker exec -t edx.devstack.mysql /bin/bash -c 'mysql -uroot <<< "create database if not exists blockstore_db;"'
-	docker exec -t edx.devstack.blockstore /bin/bash -c 'source ~/.bashrc && make requirements && make migrate'
+	docker exec -t edx.devstack.blockstore /bin/bash -c 'source ~/.bashrc && make requirements && make migrate-dev'
 
 stop:
 	docker-compose --project-name blockstore -f docker-compose.yml stop
@@ -48,7 +48,13 @@ requirements: ## Install requirements for development
 requirements-test: ## Install requirements for testing
 	${VENV_BIN}/pip install -qr requirements/test.txt --exists-action w
 
-migrate:  ## Apply database migrations
+production-requirements:
+	pip install -r requirements.txt --exists-action w
+
+migrate:
+	python manage.py migrate
+
+migrate-dev:  ## Apply database migrations
 	${VENV_BIN}/python manage.py migrate --no-input
 
 runserver:  ## Run django development server
