@@ -31,10 +31,14 @@ class Entity(models.Model):
             ('entity_type', 'external_id'),
         )
         db_table = 'tagstore_entity'
+        verbose_name_plural = 'Entities'
 
     @property
     def as_tuple(self) -> EntityId:
         return EntityId(entity_type=self.entity_type, external_id=self.external_id)
+
+    def __str__(self) -> str:
+        return "%s %s" % (self.entity_type, self.external_id)
 
 
 class Taxonomy(models.Model):
@@ -44,14 +48,18 @@ class Taxonomy(models.Model):
     """
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH)
-    owner = models.ForeignKey(Entity, null=True, on_delete=models.SET_NULL)
+    owner = models.ForeignKey(Entity, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
         db_table = 'tagstore_taxonomy'
+        verbose_name_plural = 'Taxonomies'
 
     def as_tuple(self, tagstore: Tagstore) -> TaxonomyTuple:
         owner_id = UserId(self.owner.as_tuple) if self.owner is not None else None
         return TaxonomyTuple(uid=self.id, name=self.name, owner_id=owner_id, tagstore=tagstore)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Tag(models.Model):
@@ -107,3 +115,6 @@ class Tag(models.Model):
         if len(parts) <= 3:
             return None
         return TagTuple(taxonomy_uid=self.taxonomy_id, name=parts[-3])
+
+    def __str__(self) -> str:
+        return self.name
