@@ -6,4 +6,3 @@ gunicorn
 mysqlclient
 PyYAML
 python-memcached
-sqlparse

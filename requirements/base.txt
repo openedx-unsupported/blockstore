@@ -10,3 +10,4 @@ git+https://github.com/alanjds/drf-nested-routers.git
 edx-auth-backends
 mysqlclient
 pytz
+sqlparse
