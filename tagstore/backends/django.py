@@ -91,16 +91,12 @@ class DjangoTagstore(Tagstore):
         """
         root: dict = {'children': []}
         all_nodes: dict = {None: root}
-        for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid).order_by('path'):
+        taxonomy_uid_as_int = int(taxonomy_uid)
+        for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid_as_int).order_by('path'):
             node = {'name': tag.name, 'id': tag.id, 'children': []}
-            as_tuple = Tag(taxonomy_uid=taxonomy_uid, name=tag.name)
+            as_tuple = Tag(taxonomy_uid=taxonomy_uid_as_int, name=tag.name)
             all_nodes[as_tuple] = node
-            # parent_tag_tuple doesn't hash to the same value as Tag in python3.6.7
-            if tag.parent_tag_tuple:
-                parent_as_tuple = Tag(taxonomy_uid=taxonomy_uid, name=tag.parent_tag_tuple.name)
-                all_nodes[parent_as_tuple]['children'].append(node)
-            else:
-                all_nodes[None]['children'].append(node)
+            all_nodes[tag.parent_tag_tuple]['children'].append(node)
         return root
 
     def list_tags_in_taxonomy_containing(self, taxonomy_uid: TaxonomyId, text: str) -> Iterator[Tag]:
