@@ -51,7 +51,7 @@ requirements-test: ## Install requirements for testing
 production-requirements:
 	pip install -r requirements.txt --exists-action w
 
-migrate:
+migrate: ## Apply database migrations
 	${VENV_BIN}/python manage.py migrate --no-input
 
 runserver:  ## Run django development server
