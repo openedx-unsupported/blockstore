@@ -7,8 +7,11 @@ from rest_framework.test import APIRequestFactory
 from blockstore.apps.bundles.tests.factories import (
     BundleFactory, BundleVersionFactory, CollectionFactory, FileInfoFactory
 )
+from tagstore.backends.tests.factories import EntityFactory
+
 from ..serializers.bundles import BundleSerializer, BundleVersionSerializer
 from ..serializers.collections import CollectionSerializer
+from ..serializers.entities import EntitySerializer, EntityTagSerializer
 from ..serializers.snapshots import FileInfoSerializer
 
 
@@ -159,3 +162,66 @@ class FileInfoSerializerTestCase(SerializerBaseTestCase):
             'bundles/{}/files/{}/'.format(self.bundle.uuid, file_info.path),
             file_info_serializer.data['url']
         )
+
+
+class EntitySerializerTestCase(SerializerBaseTestCase):
+    """
+    Tests for the EntitySerializer
+    """
+
+    def test_entity_serializer_data(self):
+
+        entity = EntityFactory(
+            entity_type='xblock',
+            external_id='some-resource-uri',
+        )
+
+        entity_serializer = EntitySerializer(
+            entity, context=self.context,
+        )
+
+        self.assertSequenceEqual(list(entity_serializer.data.keys()), [
+            'id', 'entity_type', 'external_id',
+        ])
+
+        self.assertEqual(entity_serializer.data['entity_type'], 'xblock')
+        self.assertEqual(entity_serializer.data['external_id'], 'some-resource-uri')
+
+
+class EntityTagSerializerTestCase(TestCase):
+    """
+    Tests for the EntityTagSerializer
+    """
+
+    def setUp(self):
+
+        super().setUp()
+
+        self.entity_tags = {
+            'tags': [
+                {
+                    'taxonomy_uid': 7,
+                    'taxonomy_name': 'Subject Area',
+                    'tag': 'Biochemistry'
+                },
+                {
+                    'taxonomy_uid': 9,
+                    'taxonomy_name': 'License',
+                    'tag': 'CC-BY-SA-4.0'
+                }
+            ]
+        }
+
+    def test_entity_tag_serializer_data(self):
+
+        entity_tag_serializer = EntityTagSerializer(
+            self.entity_tags
+        )
+
+        self.assertSequenceEqual(list(entity_tag_serializer.data.keys()), ['tags'])
+        self.assertSequenceEqual(list(entity_tag_serializer.data['tags'][0].keys()), [
+            'taxonomy_uid', 'taxonomy_name', 'tag',
+        ])
+
+        self.assertEqual(entity_tag_serializer.data['tags'][0]['taxonomy_uid'], 7)
+        self.assertEqual(entity_tag_serializer.data['tags'][0]['taxonomy_name'], 'Subject Area')

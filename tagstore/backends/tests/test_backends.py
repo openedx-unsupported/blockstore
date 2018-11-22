@@ -6,9 +6,9 @@ from typing import Iterable
 
 from django.test import TestCase
 
-from .. import Tagstore
-from ..models import EntityId, Tag, Taxonomy, UserId
-from .django import DjangoTagstore
+from ... import Tagstore
+from ...models import EntityId, Tag, Taxonomy, UserId
+from ..django import DjangoTagstore
 
 
 # Identify a user that will own the taxonomies we create
