@@ -94,7 +94,7 @@ class DjangoTagstore(Tagstore):
         taxonomy_uid_as_int = int(taxonomy_uid)
         for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid_as_int).order_by('path'):
             node = {'name': tag.name, 'id': tag.id, 'children': []}
-            as_tuple = Tag(taxonomy_uid=taxonomy_uid_as_int, name=tag.name)
+            as_tuple = Tag(taxonomy_uid=taxonomy_uid_as_int, name=tag.name.lower())
             all_nodes[as_tuple] = node
             all_nodes[tag.parent_tag_tuple]['children'].append(node)
         return root
