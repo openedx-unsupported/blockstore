@@ -70,7 +70,7 @@ class Tag(models.Model):
     taxonomy = models.ForeignKey(Taxonomy, null=False)
     # The tag string, like "good problem".
     name = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_column='tag')
-    # Materialized path. Lowercase and always ends with ":".
+    # Materialized path. Always ends with ":".
     # A simple tag like "good-problem" would have a path of "good-problem:"
     # A tag like "mammal" that is a child of "animal" would have a path of
     # "animal:mammal:". Tags are not allowed to contain the ":" character
@@ -99,9 +99,9 @@ class Tag(models.Model):
         prefix = str(taxonomy_id) + cls.PATH_SEP
         if parent_path:
             assert parent_path.startswith(prefix)
-            return parent_path + name.lower() + cls.PATH_SEP
+            return parent_path + name + cls.PATH_SEP
         else:
-            return prefix + name.lower() + cls.PATH_SEP
+            return prefix + name + cls.PATH_SEP
 
     @property
     def parent_tag_tuple(self) -> Optional[TagTuple]:

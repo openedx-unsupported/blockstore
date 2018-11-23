@@ -49,7 +49,7 @@ class DjangoTagstore(Tagstore):
             defaults={'path': path},
         )
         if not created:
-            if db_tag.path != path:
+            if db_tag.path.lower() != path.lower():
                 raise ValueError("That tag already exists with a different parent tag.")
         return db_tag.name
 
@@ -94,7 +94,7 @@ class DjangoTagstore(Tagstore):
         taxonomy_uid_as_int = int(taxonomy_uid)
         for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid_as_int).order_by('path'):
             node = {'name': tag.name, 'id': tag.id, 'children': []}
-            as_tuple = Tag(taxonomy_uid=taxonomy_uid_as_int, name=tag.name.lower())
+            as_tuple = Tag(taxonomy_uid=taxonomy_uid_as_int, name=tag.name)
             all_nodes[as_tuple] = node
             all_nodes[tag.parent_tag_tuple]['children'].append(node)
         return root
