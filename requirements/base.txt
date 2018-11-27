@@ -10,3 +10,5 @@ git+https://github.com/alanjds/drf-nested-routers.git
 edx-auth-backends
 mysqlclient
 pytz
+django-cors-headers>=2.2.0,<2.3
+django-environ==0.4.5
