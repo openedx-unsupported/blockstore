@@ -10,5 +10,8 @@ register = template.Library()
 def tag_hierarchy(taxonomy_uid):
     """ Renders a hierarchical view in HTML of Tag objects. """
     tagstore = DjangoTagstore()
-    tags = tagstore.get_tags_in_taxonomy_hierarchically_as_dict(taxonomy_uid)
-    return {'tags': tags, 'taxonomy_uid': taxonomy_uid}
+    if taxonomy_uid:
+        tags = tagstore.get_tags_in_taxonomy_hierarchically_as_dict(taxonomy_uid)
+        return {'tags': tags, 'taxonomy_uid': taxonomy_uid}
+    else:
+        return

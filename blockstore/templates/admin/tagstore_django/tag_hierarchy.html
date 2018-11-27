@@ -6,7 +6,7 @@
     <ul>
     {% include "admin/tagstore_django/list_item.html" with taglist=tags.children taxonomy_uid=taxonomy_uid %}
     </ul>
+  {% endif %}
     <a href="/admin/tagstore_django/tag/add/?taxonomy={{ taxonomy_uid }}"
         class="addlink">{% trans "Add New Tag" %}</a>
-  {% endif %}
 </ul>

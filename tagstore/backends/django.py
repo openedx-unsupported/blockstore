@@ -49,7 +49,7 @@ class DjangoTagstore(Tagstore):
             defaults={'path': path},
         )
         if not created:
-            if db_tag.path != path:
+            if db_tag.path.lower() != path.lower():
                 raise ValueError("That tag already exists with a different parent tag.")
         return db_tag.name
 
