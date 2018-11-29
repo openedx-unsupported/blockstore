@@ -1,4 +1,6 @@
 import os
+import platform
+from logging.handlers import SysLogHandler
 from os.path import join, abspath, dirname
 
 
@@ -205,6 +207,12 @@ LOGIN_REDIRECT_URL = '/admin/'
 PLATFORM_NAME = 'Your Platform Name Here'
 # END OPENEDX-SPECIFIC CONFIGURATION
 
+hostname = platform.node().split(".")[0]
+
+syslog_address = '/var/run/syslog' if platform.system().lower() == 'darwin' else '/dev/log'
+syslog_format = '[service_variant=blockstore][%(name)s] %(levelname)s [{hostname}  %(process)d] ' \
+                '[%(filename)s:%(lineno)d] - %(message)s'.format(hostname=hostname)
+
 # Set up logging for development use (logging to stdout)
 LOGGING = {
     'version': 1,
@@ -214,6 +222,7 @@ LOGGING = {
             'format': '%(asctime)s %(levelname)s %(process)d '
                       '[%(name)s] %(filename)s:%(lineno)d - %(message)s',
         },
+        'syslog_format': {'format': syslog_format},
     },
     'handlers': {
         'console': {
@@ -222,30 +231,37 @@ LOGGING = {
             'formatter': 'standard',
             'stream': 'ext://sys.stdout',
         },
+        'local': {
+            'level': 'INFO',
+            'class': 'logging.handlers.SysLogHandler',
+            'address': syslog_address,
+            'formatter': 'syslog_format',
+            'facility': SysLogHandler.LOG_LOCAL0,
+        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console', 'local'],
             'propagate': True,
             'level': 'INFO'
         },
         'requests': {
-            'handlers': ['console'],
+            'handlers': ['console', 'local'],
             'propagate': True,
             'level': 'WARNING'
         },
         'factory': {
-            'handlers': ['console'],
+            'handlers': ['console', 'local'],
             'propagate': True,
             'level': 'WARNING'
         },
         'django.request': {
-            'handlers': ['console'],
+            'handlers': ['console', 'local'],
             'propagate': True,
             'level': 'WARNING'
         },
         '': {
-            'handlers': ['console'],
+            'handlers': ['console', 'local'],
             'level': 'DEBUG',
             'propagate': False
         },

@@ -13,7 +13,7 @@ ALLOWED_HOSTS = ['*']
 LOGGING['handlers']['local']['level'] = 'INFO'
 
 CONFIG_FILE = get_env_setting('BLOCKSTORE_CFG')
-with open(CONFIG_FILE, encoding='utf-8') as f:
+with open(CONFIG_FILE) as f:
     config_from_yaml = yaml.load(f)
     vars().update(config_from_yaml)
 
@@ -27,5 +27,5 @@ DB_OVERRIDES = dict(
     OPTIONS=environ.get('DB_MIGRATION_OPTIONS', DATABASES['default']['OPTIONS']),
 )
 
-for override, value in DB_OVERRIDES.iteritems():
+for override, value in DB_OVERRIDES.items():
     DATABASES['default'][override] = value
