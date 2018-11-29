@@ -51,6 +51,7 @@ PROJECT_APPS = (
     'blockstore.apps.api',
     'blockstore.apps.bundles.apps.BundlesConfig',
     'tagstore.backends.tagstore_django',
+    'tagstore.tagstore_rest',
 )
 
 INSTALLED_APPS += THIRD_PARTY_APPS

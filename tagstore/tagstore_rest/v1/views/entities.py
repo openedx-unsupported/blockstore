@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 from tagstore.backends.tagstore_django.models import Entity, Tag
 
-from ..serializers.entities import EntitySerializer, EntityTagSerializer, TagByTaxonomySerializer
+from ..serializers.entities import EntitySerializer, EntityTagSerializer
 
 
 class EntityViewSet(viewsets.ReadOnlyModelViewSet):
@@ -49,19 +49,13 @@ class EntityTagViewSet(viewsets.ViewSet):
         taxonomies = request.GET.get('taxonomies', '').split(',')
 
         if taxonomies[0]:
-            queryset = entity.tags.filter(taxonomy__in=taxonomies)
+            try:
+                queryset = entity.tags.filter(taxonomy__in=taxonomies)
+            except ValueError:
+                queryset = entity.tags.filter(taxonomy__name__in=taxonomies)
         else:
             queryset = entity.tags.all()
 
         extracted = [self._convert(tag) for tag in queryset]
         serializer = EntityTagSerializer({'tags': extracted})
-        return Response(serializer.data)
-
-    def retrieve(self, request, pk=None, external_id=None):  # pylint: disable=unused-argument
-        '''
-        Get a single tag belonging to an entity.
-        '''
-        entity = get_object_or_404(Entity, external_id=external_id)
-        tag = get_object_or_404(entity.tags, id=pk)
-        serializer = TagByTaxonomySerializer(self._convert(tag))
         return Response(serializer.data)

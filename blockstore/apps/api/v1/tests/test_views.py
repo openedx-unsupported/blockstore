@@ -13,9 +13,6 @@ from blockstore.apps.bundles.store import BundleDataStore
 from blockstore.apps.bundles.tests.factories import (
     BundleFactory, CollectionFactory
 )
-from tagstore.backends.tests.factories import (
-    EntityFactory, TagFactory, TaxonomyFactory
-)
 
 HTML_CONTENT_BYTES = b"<p>I am an HTML file!</p>"
 TEXT_CONTENT_BYTES = b"I am a text file!"
@@ -53,27 +50,6 @@ class ViewsBaseTestCase(TestCase):
         })
 
         self.bundle_version = self.bundle.versions.first()
-
-        self.taxonomy = TaxonomyFactory(
-            name='This Taxonomy'
-        )
-
-        self.tags = [
-            TagFactory(
-                name='tag1',
-                taxonomy=self.taxonomy,
-            ),
-            TagFactory(
-                name='tag2',
-                taxonomy=self.taxonomy,
-            ),
-        ]
-
-        self.entity = EntityFactory(
-            entity_type='xblock',
-            external_id='some-resource-uri',
-        )
-        self.entity.tags = self.tags
 
     def response(self, view_name, kwargs=None, method='get', query_params=None, expected_response_code=200,
                  **method_kwargs):
@@ -576,43 +552,3 @@ class BundleFileViewSetTestCase(ViewsBaseTestCase):
 
         new_bundle_version = self.bundle.versions.order_by('-version_num').first()
         self.assertEqual(len(new_bundle_version.snapshot().files.keys()), files_count - 1)
-
-
-class EntityTagViewSetTestCase(ViewsBaseTestCase):
-    """ Tests for EntityTagViewSet. """
-
-    def test_list(self):
-
-        response = self.response('api:v1:entitytags-list', kwargs={
-            'external_id': self.entity.external_id
-        })
-
-        self.assertIn('tags', response.data)
-        self.assertTrue(isinstance(response.data['tags'], list))
-        self.assertEqual(len(response.data['tags']), 2)
-        self.assertIn('taxonomy_uid', response.data['tags'][0])
-        self.assertIn('taxonomy_name', response.data['tags'][0])
-        self.assertIn('tag', response.data['tags'][0])
-        self.assertEqual(response.data['tags'][0]['tag'], 'tag1')
-
-    def test_query_params_for_taxonomy(self):
-
-        response = self.response('api:v1:entitytags-list', kwargs={
-            'external_id': self.entity.external_id,
-        }, query_params={'taxonomies': self.taxonomy.id})
-
-        self.assertTrue(isinstance(response.data['tags'], list))
-        self.assertEqual(len(response.data['tags']), 2)
-
-    def test_get(self):
-
-        response = self.response('api:v1:entitytags-detail', kwargs={
-            'pk': self.tags[0].id,
-            'external_id': self.entity.external_id,
-        })
-
-        self.assertIn('taxonomy_uid', response.data)
-        self.assertIn('taxonomy_name', response.data)
-        self.assertIn('tag', response.data)
-        self.assertEqual(response.data['taxonomy_name'], 'This Taxonomy')
-        self.assertEqual(response.data['tag'], 'tag1')
