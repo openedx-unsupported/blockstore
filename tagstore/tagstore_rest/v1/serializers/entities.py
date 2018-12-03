@@ -3,6 +3,7 @@ Serializers for Entities.
 """
 
 from rest_framework import serializers
+
 from tagstore.backends.tagstore_django.models import Entity
 
 

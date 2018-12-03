@@ -3,7 +3,7 @@
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 
-from tagstore.backends.tests.factories import EntityFactory
+from tagstore.backends.tagstore_django.models import Entity
 
 from ..serializers.entities import EntitySerializer, EntityTagSerializer
 
@@ -31,7 +31,7 @@ class EntitySerializerTestCase(SerializerBaseTestCase):
 
     def test_entity_serializer_data(self):
 
-        entity = EntityFactory(
+        entity = Entity(
             entity_type='xblock',
             external_id='some-resource-uri',
         )

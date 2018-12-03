@@ -50,8 +50,9 @@ class EntityTagViewSetTestCase(ViewsBaseTestCase):
 
     def test_list(self):
 
-        response = self.response('tagstore:apiv1:entitytags-list', kwargs={
-            'external_id': self.entity.external_id
+        response = self.response('tagstore:apiv1:entity-tags', kwargs={
+            'pk': self.entity.external_id,
+            'entity_type': self.entity.entity_type,
         })
 
         self.assertIn('tags', response.data)
@@ -64,8 +65,9 @@ class EntityTagViewSetTestCase(ViewsBaseTestCase):
 
     def test_query_params_for_taxonomy(self):
 
-        response = self.response('tagstore:apiv1:entitytags-list', kwargs={
-            'external_id': self.entity.external_id,
+        response = self.response('tagstore:apiv1:entity-tags', kwargs={
+            'pk': self.entity.external_id,
+            'entity_type': self.entity.entity_type,
         }, query_params={'taxonomies': self.taxonomy.uid})
 
         self.assertTrue(isinstance(response.data['tags'], list))
@@ -73,8 +75,9 @@ class EntityTagViewSetTestCase(ViewsBaseTestCase):
 
     def test_query_params_for_taxonomy_by_name(self):
 
-        response = self.response('tagstore:apiv1:entitytags-list', kwargs={
-            'external_id': self.entity.external_id,
+        response = self.response('tagstore:apiv1:entity-tags', kwargs={
+            'pk': self.entity.external_id,
+            'entity_type': self.entity.entity_type,
         }, query_params={'taxonomies': self.taxonomy.name})
 
         self.assertTrue(isinstance(response.data['tags'], list))
