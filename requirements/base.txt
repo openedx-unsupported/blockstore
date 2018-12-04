@@ -1,5 +1,7 @@
 attrs<19.0.0
 django>=1.11,<1.12
+django-cors-headers>=2.2.0,<2.3
+django-environ==0.4.5
 django-extensions
 django-rest-swagger
 django-waffle

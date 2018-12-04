@@ -1,7 +1,10 @@
 import os
+import environ
 import platform
 from logging.handlers import SysLogHandler
 from os.path import join, abspath, dirname
+
+env = environ.Env()
 
 
 # PATH vars
@@ -41,6 +44,7 @@ THIRD_PARTY_APPS = (
     'django_filters',
     'social_django',
     'waffle',
+    'corsheaders',
 )
 
 PROJECT_APPS = (
@@ -49,6 +53,7 @@ PROJECT_APPS = (
     'blockstore.apps.api',
     'blockstore.apps.bundles.apps.BundlesConfig',
     'tagstore.backends.tagstore_django',
+    'tagstore.tagstore_rest',
 )
 
 INSTALLED_APPS += THIRD_PARTY_APPS
@@ -58,6 +63,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
@@ -197,6 +203,12 @@ SOCIAL_AUTH_EDX_OIDC_ID_TOKEN_DECRYPTION_KEY = SOCIAL_AUTH_EDX_OIDC_SECRET
 
 # Request the user's permissions in the ID token
 EXTRA_SCOPE = ['permissions']
+
+# CORS Config
+CORS_ORIGIN_ALLOW_ALL = env('DJANGO_CORS_ORIGIN_ALLOW_ALL', default=False)
+CORS_ORIGIN_WHITELIST = env.list('DJANGO_CORS_ORIGIN_WHITELIST', default=[])
+CORS_ORIGIN_REGEX_WHITELIST = (r'^(https?://)?localhost:.+$', )
+
 
 # TODO Set this to another (non-staff, ideally) path.
 LOGIN_REDIRECT_URL = '/admin/'
