@@ -12,21 +12,21 @@ class EntityRouter(routers.DefaultRouter):
     """
     routes = [
         Route(
-            url=r'^{prefix}$',
+            url=r'^{prefix}/$',
             mapping={'get': 'list'},
             name='{basename}-list',
             detail=False,
             initkwargs={'suffix': 'List'}
         ),
         Route(
-            url=r'^{prefix}/(?P<entity_type>[^/.]+)/{lookup}$',
+            url=r'^{prefix}/(?P<entity_type>[^/.]+)/{lookup}/$',
             mapping={'get': 'retrieve'},
             name='{basename}-detail',
             detail=True,
             initkwargs={'suffix': 'Detail'}
         ),
         Route(
-            url=r'^{prefix}/(?P<entity_type>[^/.]+)/{lookup}/tags$',
+            url=r'^{prefix}/(?P<entity_type>[^/.]+)/{lookup}/tags/$',
             mapping={'get': 'tags'},
             name='{basename}-tags',
             detail=True,
