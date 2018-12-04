@@ -49,7 +49,7 @@ class DjangoTagstore(Tagstore):
             defaults={'path': path},
         )
         if not created:
-            if db_tag.path != path:
+            if db_tag.path.lower() != path.lower():
                 raise ValueError("That tag already exists with a different parent tag.")
         return db_tag.name
 
@@ -78,6 +78,26 @@ class DjangoTagstore(Tagstore):
         """
         for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid).order_by('path'):
             yield (Tag(taxonomy_uid=taxonomy_uid, name=tag.name), tag.parent_tag_tuple)
+
+    def get_tags_in_taxonomy_hierarchically_as_dict(self, taxonomy_uid: TaxonomyId) -> dict:
+        """
+        Get all tags in the given taxonomy as nested dictionaries.
+
+        Returns a dictionary. An example is {'children': [
+            {'name': 'mammal', 'id': 57, 'children': [
+                {'name': 'cow', 'id': 58, 'children': []}
+            ]}
+        ]}.
+        """
+        root: dict = {'children': []}
+        all_nodes: dict = {None: root}
+        taxonomy_uid_as_int = int(taxonomy_uid)
+        for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid_as_int).order_by('path'):
+            node = {'name': tag.name, 'id': tag.id, 'children': []}
+            as_tuple = Tag(taxonomy_uid=taxonomy_uid_as_int, name=tag.name)
+            all_nodes[as_tuple] = node
+            all_nodes[tag.parent_tag_tuple]['children'].append(node)
+        return root
 
     def list_tags_in_taxonomy_containing(self, taxonomy_uid: TaxonomyId, text: str) -> Iterator[Tag]:
         for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid, name__icontains=text).order_by('name'):

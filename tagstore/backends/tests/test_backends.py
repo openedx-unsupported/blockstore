@@ -210,6 +210,24 @@ class AbstractBackendTest:
             (pine, conifer),
         ])
 
+    def test_get_tags_in_taxonomy_hierarchically_as_dict(self):
+        """ Test that tags get returned as dictionary """
+        biology = self.tagstore.create_taxonomy("Biology", owner_id=some_user)
+        plant = biology.add_tag('plant')
+        conifer = biology.add_tag('conifer', parent_tag=plant)
+        biology.add_tag('cypress', parent_tag=conifer)
+        biology.add_tag('pine', parent_tag=conifer)
+        biology.add_tag('aster', parent_tag=plant)
+
+        tags_out = self.tagstore.get_tags_in_taxonomy_hierarchically_as_dict(biology.uid)
+
+        self.assertEqual(tags_out['children'][0]['name'], 'plant')
+        self.assertEqual(tags_out['children'][0]['children'][0]['name'], 'aster')
+        self.assertEqual(tags_out['children'][0]['children'][1]['name'], 'conifer')
+        tags_out_conifer = tags_out['children'][0]['children'][1]
+        self.assertEqual(tags_out_conifer['children'][0]['name'], 'cypress')
+        self.assertEqual(tags_out_conifer['children'][1]['name'], 'pine')
+
     def test_list_tags_in_taxonomy_containing(self):
         """ Test filtering tags """
         tags_in = ['Zulu', 'Uniform', 'Foxtrot', 'Βήτα', 'Alfa', 'Alpha', 'Αλφα']

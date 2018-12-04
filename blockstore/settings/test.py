@@ -2,6 +2,10 @@ import os
 
 from blockstore.settings.base import *
 
+# Docker does not support the syslog socket at /dev/log. Rely on the console.
+LOGGING['handlers']['local'] = {
+    'class': 'logging.NullHandler',
+}
 
 # MYSQL TEST DATABASE
 DATABASES = {
