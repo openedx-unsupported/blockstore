@@ -46,13 +46,14 @@ PROJECT_APPS = (
     'blockstore.apps.core',
     'blockstore.apps.api',
     'blockstore.apps.bundles.apps.BundlesConfig',
+    'blockstore.apps.search.apps.SearchConfig',
     'tagstore.backends.tagstore_django',
 )
 
 INSTALLED_APPS += THIRD_PARTY_APPS
 INSTALLED_APPS += PROJECT_APPS
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -89,6 +90,13 @@ DATABASES = {
             'charset': 'utf8mb4',
         },
     }
+}
+
+# ELASTICSEARCH CONFIGURATION
+ELASTICSEARCH = {
+    'default': {
+        'hosts': os.environ.get('ELASTICSEARCH_URL'),
+    },
 }
 
 # Internationalization
