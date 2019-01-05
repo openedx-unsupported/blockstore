@@ -57,6 +57,9 @@ migrate: ## Apply database migrations
 runserver:  ## Run django development server
 	${VENV_BIN}/python manage.py runserver 0.0.0.0:18250
 
+static:  ## Collect static files
+	${VENV_BIN}/python manage.py collectstatic --noinput
+
 test: clean ## Run tests and generate coverage report
 	${VENV_BIN}/coverage run ./manage.py test blockstore tagstore --settings=blockstore.settings.test
 	${VENV_BIN}/coverage html
