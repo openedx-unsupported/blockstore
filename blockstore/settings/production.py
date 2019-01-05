@@ -12,6 +12,12 @@ ALLOWED_HOSTS = ['*']
 
 LOGGING['handlers']['local']['level'] = 'INFO'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+
 CONFIG_FILE = get_env_setting('BLOCKSTORE_CFG')
 with open(CONFIG_FILE) as f:
     config_from_yaml = yaml.load(f)
