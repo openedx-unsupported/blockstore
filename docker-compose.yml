@@ -28,6 +28,7 @@ services:
       - "18250:18250"
     volumes:
       - ./:/blockstore/app/:cached
+      - blockstore_venv:/blockstore/venv/
     environment:
       - ELASTICSEARCH_URL=edx.devstack.blockstore-elasticsearch:9200
       - MYSQL_DATABASE=blockstore_db
@@ -41,4 +42,5 @@ networks:
       name: devstack_default
 
 volumes:
+  blockstore_venv:
   elasticsearch_data:
