@@ -27,7 +27,7 @@ class EntityRouter(routers.DefaultRouter):
         ),
         Route(
             url=r'^{prefix}/(?P<entity_type>[^/.]+)/{lookup}/tags/$',
-            mapping={'get': 'tags'},
+            mapping={'get': 'tags', 'post': 'update_tags'},
             name='{basename}-tags',
             detail=True,
             initkwargs={'suffix': 'Tags'}

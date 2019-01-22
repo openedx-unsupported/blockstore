@@ -3,7 +3,7 @@ from future.moves.urllib.parse import urlencode
 
 from django.test import TestCase
 from rest_framework.reverse import reverse
-from rest_framework.test import APIClient, APIRequestFactory
+from rest_framework.test import APIClient
 
 from tagstore.backends.django import DjangoTagstore
 from tagstore.models import EntityId
@@ -17,7 +17,6 @@ class ViewsBaseTestCase(TestCase):
         super().setUp()
 
         self.client = APIClient()
-        self.request_factory = APIRequestFactory()
 
         self.tagstore = DjangoTagstore()
 
@@ -31,8 +30,8 @@ class ViewsBaseTestCase(TestCase):
         for t in self.tags:
             self.tagstore.add_tag_to(t, self.entity)
 
-    def response(self, view_name, kwargs=None, method='get', query_params=None, expected_response_code=200,
-                 **method_kwargs):
+    def response(self, view_name, kwargs=None, method='get', query_params=None,
+                 expected_response_code=200, body=None, **method_kwargs):
         """
         Returns a response with the wsgi_request containing any given query params.
         """
@@ -40,7 +39,7 @@ class ViewsBaseTestCase(TestCase):
         if query_params:
             url = '{}?{}'.format(url, urlencode(query_params))
 
-        response = getattr(self.client, method)(url, **method_kwargs)
+        response = getattr(self.client, method)(url, body, **method_kwargs)
         self.assertEqual(response.status_code, expected_response_code)
         return response
 
@@ -82,3 +81,42 @@ class EntityTagViewSetTestCase(ViewsBaseTestCase):
 
         self.assertTrue(isinstance(response.data['tags'], list))
         self.assertEqual(len(response.data['tags']), 2)
+
+    def test_post(self):
+        body = {
+            'tags': ['bunch', 'of', 'silly', 'tags']}
+
+        response = self.response('tagstore:apiv1:entity-tags', kwargs={
+            'pk': self.entity.external_id,
+            'entity_type': self.entity.entity_type,
+        }, expected_response_code=201, body=body, method='post')
+
+        self.assertTrue(isinstance(response.data['tags'], list))
+        self.assertEqual(len(response.data['tags']), 6)
+
+    def test_post_with_complex_tag_json(self):
+        body = {
+            'tags': [
+                {
+                    'taxonomy_uid': self.taxonomy.uid,
+                    'tag': 'test',
+                },
+                {
+                    'taxonomy_name': 'Depth of Knowledge',
+                    'tag': 'test2',
+                },
+                {
+                    'taxonomy_uid': self.taxonomy.uid,
+                    'tag': 'test3',
+                    'parent': 'test',
+                }
+            ]}
+
+        response = self.response('tagstore:apiv1:entity-tags', kwargs={
+            'pk': self.entity.external_id,
+            'entity_type': self.entity.entity_type,
+        }, expected_response_code=201, body=body, method='post', format='json')
+
+        self.assertTrue(isinstance(response.data['tags'], list))
+        self.assertEqual(len(response.data['tags']), 5)
+        self.assertTrue(any(x['tag'] == 'test' for x in response.data['tags']))
