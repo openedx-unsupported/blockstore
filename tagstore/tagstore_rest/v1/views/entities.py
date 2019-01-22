@@ -1,14 +1,11 @@
 '''
 Views for Tags and Taxonomies.
 '''
-import io
 import logging
 
-from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.parsers import JSONParser
 
 from tagstore.backends.tagstore_django.models import (
     Entity,
@@ -57,11 +54,11 @@ class EntityViewSet(viewsets.ViewSet):
             'tag': tag.name,
         }
 
-    def serialize_tags(self, entity, taxonomies=['']):
+    def serialize_tags(self, entity, taxonomies=None):
         '''
         Serialize an entity's tags, optionally filtered by taxonomy.
         '''
-        if taxonomies[0]:
+        if taxonomies and taxonomies[0]:
             try:
                 queryset = entity.tags.filter(taxonomy__in=taxonomies)
             except ValueError:
