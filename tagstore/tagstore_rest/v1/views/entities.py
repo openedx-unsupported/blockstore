@@ -13,8 +13,9 @@ from tagstore.backends.tagstore_django.models import (
     Taxonomy
 )
 from tagstore.backends.django import DjangoTagstore
-from tagstore.models.entity import EntityId
 from tagstore.models.taxonomy import TaxonomyId
+
+from tagstore.settings.base import FREEFORM_TAXONOMY_UID
 
 from ..serializers.entities import EntitySerializer, EntityTagSerializer
 
@@ -88,8 +89,7 @@ class EntityViewSet(viewsets.ViewSet):
         tagstore = DjangoTagstore()
 
         entity_obj = get_object_or_404(Entity, external_id=pk, entity_type=entity_type)
-        entity = EntityId(external_id=pk, entity_type=entity_type)
-        freeform_obj, _ = Taxonomy.objects.get_or_create(name='FreeForm')
+        freeform_obj, _ = Taxonomy.objects.get_or_create(id=FREEFORM_TAXONOMY_UID, name='FreeForm')
         freeform = TaxonomyId(freeform_obj.id)
 
         if not request.data.get('tags', ''):
@@ -98,38 +98,28 @@ class EntityViewSet(viewsets.ViewSet):
         for tag in request.data['tags']:
             # a single free form tag
             if isinstance(tag, str):
-                try:
-                    _tag = tagstore.get_tag_in_taxonomy(tag, freeform)
-                    if not _tag:
-                        _tag = tagstore.add_tag_to_taxonomy(tag, freeform)
-                    tagstore.add_tag_to(_tag, entity)
-                except ValueError:
-                    return Response(status=500)
+                _tag = tagstore.get_tag_in_taxonomy(tag, freeform)
+                if not _tag:
+                    _tag = tagstore.add_tag_to_taxonomy(tag, freeform)
+                tagstore.add_tag_to(_tag, entity_obj.as_tuple)
 
             # a tag within a taxonomy
             elif isinstance(tag, dict):
                 taxonomy_uid = tag.get('taxonomy_uid', None)
-                taxonomy_name = tag.get('taxonomy_name', None)
                 tag_name = tag.get('tag', None)
                 tag_parent = tag.get('parent', None)
 
-                if not (taxonomy_uid or taxonomy_name) or not tag_name:
+                if not taxonomy_uid or not tag_name:
                     continue
 
-                if taxonomy_uid:
-                    tx_obj, _ = Taxonomy.objects.get_or_create(id=taxonomy_uid)
-                else:
-                    tx_obj, _ = Taxonomy.objects.get_or_create(name=taxonomy_name)
+                tx_obj, _ = Taxonomy.objects.get_or_create(id=taxonomy_uid)
 
                 tx = TaxonomyId(tx_obj.id)
                 p = tagstore.get_tag_in_taxonomy(tag_parent, tx)
                 _tag = tagstore.get_tag_in_taxonomy(tag_name, tx)
-                try:
-                    if not _tag:
-                        _tag = tagstore.add_tag_to_taxonomy(tag_name, tx, p)
-                    tagstore.add_tag_to(_tag, entity)
-                except ValueError:
-                    return Response(status=500)
+                if not _tag:
+                    _tag = tagstore.add_tag_to_taxonomy(tag_name, tx, p)
+                tagstore.add_tag_to(_tag, entity_obj.as_tuple)
 
         serializer = self.serialize_tags(entity_obj)
         return Response(serializer.data, status=201)

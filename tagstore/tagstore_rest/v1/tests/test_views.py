@@ -102,10 +102,6 @@ class EntityTagViewSetTestCase(ViewsBaseTestCase):
                     'tag': 'test',
                 },
                 {
-                    'taxonomy_name': 'Depth of Knowledge',
-                    'tag': 'test2',
-                },
-                {
                     'taxonomy_uid': self.taxonomy.uid,
                     'tag': 'test3',
                     'parent': 'test',
@@ -118,5 +114,5 @@ class EntityTagViewSetTestCase(ViewsBaseTestCase):
         }, expected_response_code=201, body=body, method='post', format='json')
 
         self.assertTrue(isinstance(response.data['tags'], list))
-        self.assertEqual(len(response.data['tags']), 5)
+        self.assertEqual(len(response.data['tags']), 4)
         self.assertTrue(any(x['tag'] == 'test' for x in response.data['tags']))
