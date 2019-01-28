@@ -15,7 +15,7 @@ from tagstore.backends.tagstore_django.models import (
 from tagstore.backends.django import DjangoTagstore
 from tagstore.models.taxonomy import TaxonomyId
 
-from tagstore.settings.base import FREEFORM_TAXONOMY_UID
+from tagstore.constants import FREEFORM_TAXONOMY_UID
 
 from ..serializers.entities import EntitySerializer, EntityTagSerializer
 
