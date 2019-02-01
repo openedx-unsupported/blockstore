@@ -12,6 +12,8 @@ git+https://github.com/alanjds/drf-nested-routers.git
 edx-auth-backends
 elasticsearch>=6.0.0,<7.0.0
 elasticsearch-dsl>=6.0.0,<7.0.0
-mysqlclient
+# Can upgrade once we move to Django 2.0
+# https://github.com/PyMySQL/mysqlclient-python/issues/306
+mysqlclient>1.3,<1.4
 pytz
 sqlparse
