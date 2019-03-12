@@ -30,7 +30,7 @@ primary key is used as the clustering index, meaning that MySQL will store table
 data in primary key order. If that ordering is random, your data is much more
 fragmented. For that reason, when UUIDs are needed, they're used as secondary
 unique indexes. Those indexes may get fragmented, but it will have less of an
-impact overall, and we're never going to do range queryies on UUIDs anyhow. Side
+impact overall, and we're never going to do range queries on UUIDs anyhow. Side
 note: If you use UUID1 and get fancy with bit re-ordering, you can get around
 this, but it adds complexity to the code and prevents us from using the randomly
 generated UUID4.
@@ -55,9 +55,8 @@ it's not *that* expensive, and migrating data once it gets that large is a pain.
 import uuid
 
 from django.db import models
-from django.dispatch import receiver
 
-from .store import BundleDataStore, snapshot_created
+from .store import DraftRepo, SnapshotRepo, bytes_from_hex_str
 
 MAX_CHAR_FIELD_LENGTH = 180
 
@@ -108,13 +107,17 @@ class Bundle(models.Model):
         """
         return BundleVersion.get_bundle_version(self.uuid, version_num)
 
+    def new_version_from_snapshot(self, snapshot):
+        """Convenience method to create a new BundleVersion from a Snapshot."""
+        return BundleVersion.create_new_version(self.uuid, snapshot.hash_digest)
+
 
 class BundleVersion(models.Model):
     """
     The contents of a BundleVersion are immutable (the snapshot it points to),
     but the metadata about a BundleVersion (e.g. change_description) can be
     changed. Other entities in the system that need to attach metadata to
-    versions of Bundles should use this model and not reference BundleSnapshots
+    versions of Bundles should use this model and not reference Snapshots
     directly.
 
     Target Scale: 1B rows
@@ -132,29 +135,24 @@ class BundleVersion(models.Model):
             ("bundle", "version_num"),
         )
 
-    @staticmethod
-    @receiver(snapshot_created)
-    def listen_for_snapshot_creation(**kwargs):
-        """
-        The BundleStore layer doesn't know we exist, but it emits signals when a
-        new BundleSnapshot is created. We listen for that signal and create a
-        new BundleVersion that points to it.
-        """
-        bundle_uuid = kwargs['bundle_uuid']
-        snapshot_digest = kwargs['hash_digest']
-
+    @classmethod
+    def create_new_version(cls, bundle_uuid, snapshot_digest):
         bundle = Bundle.objects.get(uuid=bundle_uuid)
         versions = list(bundle.versions.order_by('-version_num')[:1])
         next_version_num = versions[0].version_num + 1 if versions else 1
-
-        bundle.versions.create(
+        return bundle.versions.create(
             version_num=next_version_num,
-            snapshot_digest=snapshot_digest,
+            snapshot_digest=snapshot_digest.hex(),
         )
 
     def snapshot(self):
-        store = BundleDataStore()
-        return store.snapshot(self.bundle.uuid, self.snapshot_digest)
+        store = SnapshotRepo()
+        # We have to store our snapshot digest as a hex string in the database
+        # because Django's MySQL support doesn't allow indexes on binary fields.
+        return store.get(
+            self.bundle.uuid,
+            bytes_from_hex_str(self.snapshot_digest)
+        )
 
     def __str__(self):
         return "{self.bundle.uuid}@{self.version_num}".format(self=self)
@@ -173,6 +171,48 @@ class BundleVersion(models.Model):
             filter_kwargs['version_num'] = version_num
 
         return cls.objects.filter(**filter_kwargs).order_by('-version_num').first()
+
+
+class Draft(models.Model):
+    """
+    Drafts create Snapshots and (optionally) BundleVersions that point to
+    Snapshots.
+    """
+    id = models.BigAutoField(primary_key=True)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    bundle = models.ForeignKey(
+        Bundle, related_name="drafts", related_query_name="draft", editable=False
+    )
+    name = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH)
+
+    # pylint: disable=arguments-differ
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            draft_repo = DraftRepo(SnapshotRepo())
+            latest_bundle_version = self.bundle.get_bundle_version()
+            if latest_bundle_version is None:
+                base_snapshot = None
+            else:
+                base_snapshot = latest_bundle_version.snapshot()
+            draft_repo.create(self.uuid, self.bundle.uuid, self.name, base_snapshot)
+        super().save(*args, **kwargs)
+
+    @property
+    def staged_draft(self):
+        draft_repo = DraftRepo(SnapshotRepo())
+        return draft_repo.get(self.uuid)
+
+    @property
+    def bundle_uuid(self):
+        return self.bundle.uuid
+
+    class Meta:
+        unique_together = (
+            ("bundle", "name"),
+        )
+
+    def __str__(self):
+        return f"{self.name} ({self.uuid})"
 
 
 class BundleLink(models.Model):

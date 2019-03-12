@@ -30,6 +30,7 @@ default.db
 # Static assets
 media/
 assets/
+test_storage/
 
 # Unit test / coverage reports
 .coverage
@@ -84,3 +85,4 @@ private.py
 
 docs/_build/
 
+.vscode/

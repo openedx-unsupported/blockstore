@@ -5,7 +5,7 @@ import uuid
 
 from django.core.management.base import BaseCommand
 
-from ...store import BundleDataStore, files_from_disk
+from ...store import SnapshotRepo, files_from_disk
 
 
 class Command(BaseCommand):
@@ -24,7 +24,7 @@ class Command(BaseCommand):
         # Fetch Bundle data from source directory
         bundle_data_path = pathlib.Path(bundle_src)
 
-        # Now call the BundleDataStore
-        store = BundleDataStore()
+        # Now call the SnapshotRepo
+        store = SnapshotRepo()
         with files_from_disk(bundle_data_path) as bundle_version_files:
-            store.create_snapshot(bundle_uuid, bundle_version_files)
+            store.create(bundle_uuid, bundle_version_files)
