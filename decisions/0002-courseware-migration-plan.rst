@@ -6,7 +6,7 @@ Open edX Courseware Data Migration Plan
 Context
 -------
 
-A major design goal of Blockstore is to create
+
 
 
 ------------------
