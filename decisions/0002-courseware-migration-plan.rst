@@ -6,7 +6,8 @@ Open edX Courseware Data Migration Plan
 Context
 -------
 
-
+Please note that this migration proposal is at a very early stage of iteration
+and no portion of it has yet been accepted.
 
 
 ------------------
@@ -41,13 +42,14 @@ Once this plan is executed, the proposed end state is:
 authoring side.
 2. The LMS continues to use Modulestore to serve courseware.
 3. The LMS points to static assets controlled by Blockstore.
-4. Content Libraries exist as a special case of a more general (and more
-powerful) authoring mechanism.
+4. Content Libraries will become a more general concept, and the Content Library
+of today will be recast as a type of Content Library, like "Problem Bank". With
+the idea that additional, pluggable types will follow.
 5. The publish step explicitly pushes data from Blockstore into the Split
 Modulestore.
 
-This would get us to a place where we could get much of the search and reuse
-use cases for Blockstore on the authoring side, without having to boil the
+This would get us to a place where we could lay the foundation for a more
+powerful (search/tagging/reuse) authoring experience, without having to boil the
 ocean to rework the existing Modulestore for serving courseware to students.
 It would also allow us to separately evolve the LMS's read-optimized data store
 from Blockstore's read/write use cases, as well as any other read-optimized
@@ -57,6 +59,47 @@ Note that this is the target state where we can declare that all content
 authoring has been migrated to Blockstore. This is not the end state of the
 system as a whole, and the number of places Blockstore publishes to would likely
 increase to support things like adaptive learning use cases.
+
+----------------
+Release Timeline
+----------------
+
+This is a high level summary of the release timeline, with more details about
+each piece in the sections that follow. The goal is to always give a transition
+release cycle for backwards compatibility, and to provide new Blockstore-powered
+capabilities with each release.
+
+Juniper
+=======
+
+* Old Mongo: Management command to convert Old Mongo courses to Split.
+* XBlock Conversion: Video, HTML, and Capa XModules are converted to XBlock.
+* Content Libraries: Mixed operation where existing Content Libraries are
+supported with a conversion management command. Converted Content Libraries
+(Problem Banks) will have a new authoring experience making them easier to
+search and manage. Early iteration of a pluggable mechanism for supporting
+different Content Library types.
+
+Koa
+===
+
+* Old Mongo: Old Mongo entirely removed (requires updating many tests).
+* XBlock Conversion: All remaining XModules are converted to XBlock. Remove
+XModule proxying.
+* Content Libraries: Only allow Blockstore backed Content Libraries. Add a new
+Content Library type that can be used with larger sections of reusable, but
+still static content. Public release of plugin mechanism.
+* Courses: Introduction of Blockstore-backed Courses and a conversion management
+command.
+
+Lilac
+=====
+
+* Courses: Only allow Blockstore backed Courses. Modulestore for LMS becomes
+read-only except for the import mechanism. Move videos to Blockstore and retire
+edx-val.
+* More dynamic composition of content for students, requiring storage changes
+on the LMS.
 
 ----------------------------------------------
 Paving the Runway: Necessary Open edX Upgrades
@@ -88,7 +131,6 @@ may also evolve into a different API altogether.
 3. Everything else. There is a long tail of XModules that are much smaller and
 less frequently used: LibraryContent, Poll, Randomize, WordCloud, etc.
 
-
 Old Mongo Retirement
 ====================
 
@@ -103,17 +145,35 @@ conversion management command that will convert Old Mongo courses to Split while
 maintaining the IDs (and thus student state). A proof of concept of that work is
 at: https://github.com/edx/edx-platform/pull/17393
 
+The release timeline would look like:
+
+* Juniper: Old Mongo and Split Mongo both work. A management command is provided
+to do in-place conversion of courses from Old Mongo to Split Mongo.
+* Koa: Only Split Mongo is supported.
+
 Converted courses can still be edited in Studio, but Blockstore will only
 publish to the Split Modulestore. (TODO: Clarify this.)
 
+Publish Step Consolidation
+==========================
 
----------------------
-Phases and Milestones
----------------------
+The ``course_published`` signal (and other course lifecycle signals) are
+currently handled inconsistently thoughtout the system, with some tasks
+executing on Studio workers and some on LMS workers. This works at the moment,
+because the Studio and LMS storage for course content is the same. That will
+break when we start shifting things to Blockstore, and we'll want to firmly
+draw the distinction that ``course_published`` processing needs to happen in the
+LMS.
 
+
+----------
+Milestones
+----------
 
 Milestone 1: Content Libraries
 ==============================
+
+Target Release: Juniper
 
 Content Libraries as they exist in Open edX today have a few features that make
 them easy to separate and port:
@@ -129,5 +189,8 @@ The first milestone is would deliver:
 * A mechanism to convert an existing Modulestore-backed Content Library to be
 Blockstore-backed.
 
-It would be useful to see this as a starting point
+-------------------------------
+API Boundaries and Plugabbility
+-------------------------------
+
 
