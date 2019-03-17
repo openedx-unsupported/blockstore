@@ -98,8 +98,10 @@ Lilac
 * Courses: Only allow Blockstore backed Courses. Modulestore for LMS becomes
   read-only except for the import mechanism. Move videos to Blockstore and retire
   edx-val.
-* More dynamic composition of content for students, requiring storage changes
-  on the LMS.
+* More dynamic composition of content for students, requiring a new, more
+  flexibile read-optimized store in the LMS (while traditional Courses continue
+  to exist in Split). (Possibly based off of Block Transformers, but possibly
+  something entirely new.)
 
 ----------------------------------------------
 Paving the Runway: Necessary Open edX Upgrades
