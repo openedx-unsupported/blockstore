@@ -7,17 +7,15 @@ from rest_framework import viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from tagstore.backends.tagstore_django.models import (
+from tagstore.models import (
     Entity,
     Tag,
-    Taxonomy
+    TaxonomyId, Taxonomy,
 )
-from tagstore.backends.django import DjangoTagstore
-from tagstore.models.taxonomy import TaxonomyId
 
 from tagstore.constants import FREEFORM_TAXONOMY_UID
 
-from ..serializers.entities import EntitySerializer, EntityTagSerializer
+from tagstore.tagstore_rest.serializers.entities import EntitySerializer, EntityTagSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +84,6 @@ class EntityViewSet(viewsets.ViewSet):
         '''
         Update tags belonging to an entity.
         '''
-        tagstore = DjangoTagstore()
 
         entity_obj = get_object_or_404(Entity, external_id=pk, entity_type=entity_type)
         freeform_obj, _ = Taxonomy.objects.get_or_create(id=FREEFORM_TAXONOMY_UID, name='FreeForm')

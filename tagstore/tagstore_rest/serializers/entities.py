@@ -1,23 +1,18 @@
 """
 Serializers for Entities.
 """
-
 from rest_framework import serializers
 
-from tagstore.backends.tagstore_django.models import Entity
+from tagstore.models import Entity
 
 
 class EntitySerializer(serializers.ModelSerializer):
     """
     Serializer for the Entity model.
     """
-
     class Meta:
-
         model = Entity
-
         fields = (
-            'id',
             'entity_type',
             'external_id',
         )

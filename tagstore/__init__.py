@@ -1,4 +1,3 @@
 """
-Convenience module to make importing Tagstore easier.
+Tagstore is a blockstore plugin for tagging content
 """
-from .tagstore import Tagstore

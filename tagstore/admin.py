@@ -3,9 +3,8 @@
 from django import forms
 from django.contrib import admin
 
-from tagstore.backends.django import DjangoTagstore
-
-from .models import Taxonomy, Tag, Entity, MAX_CHAR_FIELD_LENGTH
+from .models import Taxonomy, Tag, Entity
+from .models.common import MAX_CHAR_FIELD_LENGTH
 
 
 class CustomTagAdminForm(forms.ModelForm):
@@ -34,15 +33,13 @@ class TagAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         """ Uses the tagstore API to save new tags to the database. """
-        tagstore = DjangoTagstore()
         taxonomy = form.cleaned_data['taxonomy']
         name = form.cleaned_data['name']
         parent_tag_str = form.cleaned_data['parent']
-        parent = tagstore.get_tag_in_taxonomy(parent_tag_str, taxonomy.id)
-        try:
-            tagstore.add_tag_to_taxonomy(name, taxonomy.id, parent)
-        except ValueError:
-            pass
+        if parent_tag_str:
+            parent_id = taxonomy.tags.get(name=parent_tag_str).id
+        taxonomy.add_tag(name, parent_id)
+        # note that there is no way to properly raise validation errors from here
 
     # def delete_model(self, request, obj):
     #     """ TODO: Uses the tagstore API to delete tags from the database. """

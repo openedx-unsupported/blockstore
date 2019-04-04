@@ -53,7 +53,7 @@ PROJECT_APPS = (
     'blockstore.apps.api',
     'blockstore.apps.bundles.apps.BundlesConfig',
     'blockstore.apps.search.apps.SearchConfig',
-    'tagstore.backends.tagstore_django',
+    'tagstore',
     'tagstore.tagstore_rest',
 )
 

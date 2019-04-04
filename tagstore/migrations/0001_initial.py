@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Entity',
             fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
+                ('_id', models.BigAutoField(primary_key=True, serialize=False, db_column='id')),
                 ('entity_type', models.CharField(max_length=180)),
                 ('external_id', models.CharField(max_length=180)),
             ],
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Tag',
             fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
+                ('_id', models.BigAutoField(primary_key=True, serialize=False, db_column='id')),
                 ('name', models.CharField(db_column='tag', max_length=180)),
                 ('path', models.CharField(db_index=True, max_length=180)),
             ],
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=180)),
-                ('owner', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='tagstore_django.Entity')),
+                ('owner', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='tagstore.Entity')),
             ],
             options={
                 'verbose_name_plural': 'Taxonomies',
@@ -53,12 +53,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tag',
             name='taxonomy',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tagstore_django.Taxonomy'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tags', to='tagstore.Taxonomy'),
         ),
         migrations.AddField(
             model_name='entity',
             name='tags',
-            field=models.ManyToManyField(to='tagstore_django.Tag'),
+            field=models.ManyToManyField(to='tagstore.Tag'),
         ),
         migrations.AlterUniqueTogether(
             name='tag',

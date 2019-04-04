@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
     run_before = [
         ('contenttypes', '0001_initial'),
         ('core', '0001_initial'),
-        ('tagstore_django', '0001_initial'),
+        ('tagstore', '0001_initial'),
     ]
 
     operations = [
