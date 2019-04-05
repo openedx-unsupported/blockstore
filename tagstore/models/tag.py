@@ -152,7 +152,7 @@ class Tag(models.Model):
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
         """
-        Tag objects should never be created or deleted manually, because
+        Tag objects should never be created manually, because
         the Taxonomy needs to do a lot of validation. Use the
         Taxonomy.add_tag() method instead.
         """
@@ -162,5 +162,8 @@ class Tag(models.Model):
         self.clean()
         super().save(*args, **kwargs)
 
-    def delete(self, *args, **kwargs):  # pylint: disable=arguments-differ
-        raise NotImplementedError()
+    def delete(self, **kwargs):  # pylint: disable=arguments-differ
+        """
+        Delete this Tag and any sub-tags
+        """
+        self.taxonomy.delete_tag(self, **kwargs)  # pylint: disable=no-member

@@ -155,6 +155,60 @@ class TagstoreCrudTest(TestCase):
         with self.assertRaises(Tag.DoesNotExist):
             tax.add_tag('child', parent_tag=parent)
 
+    def test_tag_delete(self):
+        """
+        Test Tag.delete()
+        """
+        biology = Taxonomy.objects.create(name="Biology", owner=Entity.get(some_user))
+        plant = biology.add_tag('plant')
+        conifer = biology.add_tag('conifer', parent_tag=plant)
+        cypress = biology.add_tag('cypress', parent_tag=conifer)
+        pine = biology.add_tag('pine', parent_tag=conifer)
+        aster = biology.add_tag('aster', parent_tag=plant)
+
+        self.assertEqual(biology.get_tag('conifer'), conifer.id)
+        self.assertEqual(biology.get_tag('cypress'), cypress.id)
+        self.assertEqual(biology.get_tag('pine'), pine.id)
+        conifer.delete()
+        self.assertEqual(biology.get_tag('conifer'), None)
+        self.assertEqual(biology.get_tag('cypress'), None)
+        self.assertEqual(biology.get_tag('pine'), None)
+        self.assertEqual(biology.get_tag('aster'), aster.id)
+
+    def test_taxonomy_delete_tag(self):
+        """
+        Test Taxonomy.delete_tag()
+        """
+        biology = Taxonomy.objects.create(name="Biology", owner=Entity.get(some_user))
+        plant = biology.add_tag('plant')
+        conifer = biology.add_tag('conifer', parent_tag=plant)
+        _cypress = biology.add_tag('cypress', parent_tag=conifer)
+        _pine = biology.add_tag('pine', parent_tag=conifer)
+        aster = biology.add_tag('aster', parent_tag=plant)
+
+        # Delete the aster tag by name:
+        self.assertEqual(biology.get_tag('aster'), aster.id)
+        biology.delete_tag('aster')
+        self.assertEqual(biology.get_tag('aster'), None)
+        # Delete the 'conifer' tag and subtags by ID:
+        self.assertEqual(biology.get_tag('conifer'), conifer.id)
+        biology.delete_tag(conifer.id)
+        self.assertEqual(biology.get_tag('conifer'), None)
+        self.assertEqual(biology.get_tag('cypress'), None)
+        self.assertEqual(biology.get_tag('pine'), None)
+
+    def test_taxonomy_delete_tag_from_other_taxonomy(self):
+        """
+        Test Taxonomy.delete_tag() with a TagId from another taxonomy
+        """
+        biology = Taxonomy.objects.create(name="Biology")
+        plant = biology.add_tag('plant')
+        sizes = Taxonomy.objects.create(name="Sizes")
+        _large = biology.add_tag('large')
+
+        with self.assertRaises(ValueError):
+            sizes.delete_tag(plant.id)
+
     def test_get_tag(self):
         """ get_tag will retrieve Tag IDs """
         tax = Taxonomy.objects.create(name="TestTax", owner=Entity.get(some_user))

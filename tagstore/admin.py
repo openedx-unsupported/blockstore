@@ -42,10 +42,6 @@ class TagAdmin(admin.ModelAdmin):
         taxonomy.add_tag(name, parent_id)
         # note that there is no way to properly raise validation errors from here
 
-    # def delete_model(self, request, obj):
-    #     """ TODO: Uses the tagstore API to delete tags from the database. """
-    #     super(TagAdmin, self).delete_model(request, obj)
-
 
 class EntityAdmin(admin.ModelAdmin):
     """ Controls display and saving of Entity model objects. """

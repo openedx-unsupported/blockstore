@@ -69,6 +69,20 @@ class Taxonomy(models.Model):
         # Note that the existing tag's name, if any, may differ in case from the provided name.
         return tag
 
+    def delete_tag(self, tag: Union[str, Tag, TagId], **kwargs) -> None:
+        """
+        Remove the specified tag and any sub-tags from this taxonomy.
+        """
+        if isinstance(tag, str):
+            name = tag
+        else:
+            name = tag.name
+            if tag.taxonomy_id != self.id:
+                raise ValueError(f"Taxonomy {self.id} cannot delete tags from taxonomy {tag.taxonomy_id}")
+
+        tag_path = self.tags.get(name=name).path
+        self.tags.filter(path__istartswith=tag_path).delete(**kwargs)
+
     def get_tag(self, name: str) -> Optional[TagId]:
         """
         If a tag with the specified name (case insensitive) exists in this
@@ -112,18 +126,21 @@ class Taxonomy(models.Model):
         """
         Get all tags in the given taxonomy as nested dictionaries.
 
+        This is mostly for use by the admin site.
+
         Returns a dictionary. An example is {'children': [
-            {'name': 'mammal', '_id': 57, 'children': [
-                {'name': 'cow', '_id': 58, 'children': []}
+            {'name': 'mammal', 'pk': 57, 'children': [
+                {'name': 'cow', 'pk': 58, 'children': []}
             ]}
         ]}.
 
-        The '_id' field should never be exposed outside of the Tagstore app.
+        The 'pk' field should never be exposed outside of the Tagstore app; use
+        the 'name' as the primary key instead (name is unique within a taxonomy)
         """
         root: dict = {'children': []}
         all_nodes: dict = {None: root}
         for tag in self.tags.order_by('path'):
-            node = {'name': tag.name, '_id': tag.pk, 'children': []}
+            node = {'name': tag.name, 'pk': tag.pk, 'children': []}
             all_nodes[tag.id] = node
             all_nodes[tag.parent_tag_id]['children'].append(node)
         return root

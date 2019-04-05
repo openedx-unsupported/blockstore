@@ -7,8 +7,8 @@
         <a href="/admin/tagstore/tag/add/?taxonomy={{ taxonomy_id }}&parent={{ tag.name }}"
             class="addlink" alt="{% trans "Add" %}"></a>&nbsp;
         {# <a href="tag/{{ tag.id }}/change/" class="changelink"></a>&nbsp; #}
-        {# <a href="tag/{{ tag.id }}/delete/" alt="{% trans "Delete" %}" #}
-        {# style="font-weight: bold; color: darkred; text-decoration: none;">🗙</a> #}
+        <a href="/admin/tagstore/tag/{{ tag.pk }}/delete/" alt="{% trans "Delete" %}"
+            class="deletelink"></a>
 
         {% if tag.children|length %}
             <ul>
