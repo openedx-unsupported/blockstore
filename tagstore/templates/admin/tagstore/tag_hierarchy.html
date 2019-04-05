@@ -4,9 +4,9 @@
   {% if tags.children|length %}
   <h2>{% trans "Tags in Taxonomy" %}</h2>
     <ul>
-    {% include "admin/tagstore_django/list_item.html" with taglist=tags.children taxonomy_uid=taxonomy_uid %}
+    {% include "admin/tagstore/list_item.html" with taglist=tags.children taxonomy_uid=taxonomy_uid %}
     </ul>
   {% endif %}
-    <a href="/admin/tagstore_django/tag/add/?taxonomy={{ taxonomy_uid }}"
+    <a href="/admin/tagstore/tag/add/?taxonomy={{ taxonomy_id }}"
         class="addlink">{% trans "Add New Tag" %}</a>
 </ul>

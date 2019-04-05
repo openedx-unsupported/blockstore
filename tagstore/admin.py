@@ -36,6 +36,7 @@ class TagAdmin(admin.ModelAdmin):
         taxonomy = form.cleaned_data['taxonomy']
         name = form.cleaned_data['name']
         parent_tag_str = form.cleaned_data['parent']
+        parent_id = None
         if parent_tag_str:
             parent_id = taxonomy.tags.get(name=parent_tag_str).id
         taxonomy.add_tag(name, parent_id)

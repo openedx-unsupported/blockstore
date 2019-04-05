@@ -123,7 +123,7 @@ class Taxonomy(models.Model):
         root: dict = {'children': []}
         all_nodes: dict = {None: root}
         for tag in self.tags.order_by('path'):
-            node = {'name': tag.name, '_id': tag.id, 'children': []}
+            node = {'name': tag.name, '_id': tag.pk, 'children': []}
             all_nodes[tag.id] = node
             all_nodes[tag.parent_tag_id]['children'].append(node)
         return root

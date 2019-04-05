@@ -4,7 +4,7 @@
 {% for tag in taglist %}
     <li>
         {{ tag.name }}
-        <a href="/admin/tagstore_django/tag/add/?taxonomy={{ taxonomy_uid }}&parent={{ tag.name }}"
+        <a href="/admin/tagstore/tag/add/?taxonomy={{ taxonomy_id }}&parent={{ tag.name }}"
             class="addlink" alt="{% trans "Add" %}"></a>&nbsp;
         {# <a href="tag/{{ tag.id }}/change/" class="changelink"></a>&nbsp; #}
         {# <a href="tag/{{ tag.id }}/delete/" alt="{% trans "Delete" %}" #}
@@ -12,7 +12,7 @@
 
         {% if tag.children|length %}
             <ul>
-              {% include "admin/tagstore_django/list_item.html" with taglist=tag.children taxonomy_uid=taxonomy_uid %}
+              {% include "admin/tagstore/list_item.html" with taglist=tag.children taxonomy_id=taxonomy_id %}
             </ul>
         {% endif %}
     </li>
