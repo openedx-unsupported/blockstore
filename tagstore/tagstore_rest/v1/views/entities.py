@@ -17,11 +17,10 @@ from tagstore.tagstore_rest.serializers import EntitySerializer, EntityDetailSer
 logger = logging.getLogger(__name__)
 
 
-class EntityViewSet(viewsets.ViewSet):
+class EntityViewSet(viewsets.GenericViewSet):
     '''
     ViewSet for Entity model and its tags.
     '''
-
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
 
@@ -29,8 +28,9 @@ class EntityViewSet(viewsets.ViewSet):
         '''
         Get a list of all entities.
         '''
-        serializer = EntitySerializer(self.queryset, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(self.get_queryset())
+        serializer = EntitySerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def retrieve(self, request, pk=None, entity_type=None):  # pylint: disable=unused-argument
         '''

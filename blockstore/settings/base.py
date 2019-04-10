@@ -287,3 +287,9 @@ LOGGING = {
         },
     }
 }
+
+# DJANGO REST FRAMEWORK CONFIGURATION
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'blockstore.apps.api.paginators.DefaultPagination',
+}
+# END DJANGO REST FRAMEWORK CONFIGURATION

@@ -39,7 +39,7 @@ class CollectionsTestCase(TestCase):
 
     def test_list_of_one(self):
         """
-        Make sure list[0] and detail have the same representation.
+        Make sure list['results'][0] and detail have the same representation.
         """
         create_response = self.client.post(
             '/api/v1/collections',
@@ -49,7 +49,7 @@ class CollectionsTestCase(TestCase):
 
         list_response = self.client.get('/api/v1/collections')
         assert list_response.status_code == status.HTTP_200_OK
-        list_data = response_data(list_response)
+        list_data = response_data(list_response)['results']
         assert len(list_data) == 1
 
         first_col_data = list_data[0]
@@ -83,7 +83,12 @@ class CollectionsTestCase(TestCase):
 
         list_response = self.client.get('/api/v1/collections')
         assert list_response.status_code == status.HTTP_200_OK
-        list_data = response_data(list_response)
+        list_data_wrapped = response_data(list_response)
+        assert list_data_wrapped['count'] == 2
+        assert list_data_wrapped['num_pages'] == 1
+        assert list_data_wrapped['current_page'] == 1
+        assert list_data_wrapped['start'] == 0
+        list_data = list_data_wrapped['results']
         assert len(list_data) == 2
 
         # Ordering not guarnateed, but both should be present in list.
@@ -186,8 +191,23 @@ class BundlesMetadataTestCase(TestCase):
             )
         list_response = self.client.get('/api/v1/bundles')
         assert list_response.status_code == status.HTTP_200_OK
-        list_data = response_data(list_response)
+        list_data_wrapped = response_data(list_response)
+        assert list_data_wrapped['count'] == 10
+        assert list_data_wrapped['num_pages'] == 1
+        assert list_data_wrapped['current_page'] == 1
+        assert list_data_wrapped['start'] == 0
+        list_data = list_data_wrapped['results']
         assert len(list_data) == 10
+
+        # And with different pagination:
+        list_response = self.client.get('/api/v1/bundles?page_size=5&page=2')
+        assert list_response.status_code == status.HTTP_200_OK
+        list_data_wrapped = response_data(list_response)
+        assert list_data_wrapped['count'] == 10
+        assert list_data_wrapped['num_pages'] == 2
+        assert list_data_wrapped['current_page'] == 2
+        assert list_data_wrapped['start'] == 5
+        assert len(list_data_wrapped['results']) == 5
 
 
 @isolate_test_storage
