@@ -53,3 +53,10 @@ class Entity(models.Model):
 
     def __str__(self) -> str:
         return "{} Entity ({})".format(self.entity_type, self.external_id)
+
+    @property
+    def is_persisted(self) -> bool:
+        """
+        Whether or not this entity is saved to the database.
+        """
+        return self.pk is not None

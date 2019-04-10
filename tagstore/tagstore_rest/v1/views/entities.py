@@ -4,18 +4,15 @@ Views for Tags and Taxonomies.
 import logging
 
 from rest_framework import viewsets
-from rest_framework.generics import get_object_or_404
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
 from tagstore.models import (
-    Entity,
+    Entity, EntityId,
     Tag,
-    TaxonomyId, Taxonomy,
 )
 
-from tagstore.constants import FREEFORM_TAXONOMY_UID
-
-from tagstore.tagstore_rest.serializers.entities import EntitySerializer, EntityTagSerializer
+from tagstore.tagstore_rest.serializers import EntitySerializer, EntityDetailSerializer, TagSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -37,86 +34,60 @@ class EntityViewSet(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None, entity_type=None):  # pylint: disable=unused-argument
         '''
-        Get a single entity.
+        Get a single entity. Never raises a 404, because Tagstore doesn't know
+        which entities exist or not. If you want to know whether or not the
+        entity is persisted in Tagstore's database, check the resulting
+        "persisted" boolean field.
         '''
-        entity = get_object_or_404(Entity, external_id=pk, entity_type=entity_type)
-        serializer = EntitySerializer(entity)
+        try:
+            entity = Entity.objects.get(external_id=pk, entity_type=entity_type)
+        except Entity.DoesNotExist:
+            entity = Entity(external_id=pk, entity_type=entity_type)
+        serializer = EntityDetailSerializer(entity)
         return Response(serializer.data)
 
-    def _convert(self, tag: Tag) -> dict:
-        '''
-        Prepare the tag for serialization.
-        '''
-        return {
-            'taxonomy_uid': tag.taxonomy.id,
-            'taxonomy_name': tag.taxonomy.name,
-            'tag': tag.name,
-        }
+    def has_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
+        """
+        Does this entity have the given tag?
+        Use this if you need to check if an entity has one specific tag, as it
+        will be faster than loading the entity's entire tag list.
+        Raises 404 if the tag does not exist.
+        """
+        try:
+            entity = Entity.objects.get(external_id=pk, entity_type=entity_type)
+        except Entity.DoesNotExist:
+            raise NotFound("Entity has no tags")
+        try:
+            tag = entity.tags.get(taxonomy_id=taxonomy_id, name=tag_name)
+        except Tag.DoesNotExist:
+            raise NotFound("Entity does not have that tag")
+        return Response(TagSerializer(tag).data)
 
-    def serialize_tags(self, entity, taxonomies=None):
-        '''
-        Serialize an entity's tags, optionally filtered by taxonomy.
-        '''
-        if taxonomies and taxonomies[0]:
-            try:
-                queryset = entity.tags.filter(taxonomy__in=taxonomies)
-            except ValueError:
-                queryset = entity.tags.filter(taxonomy__name__in=taxonomies)
-        else:
-            queryset = entity.tags.all()
+    def add_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
+        """
+        Add the given tag to the entity.
 
-        extracted = [self._convert(tag) for tag in queryset]
-        return EntityTagSerializer({'tags': extracted})
+        Only raises an error if the tag does not exist.
+        TODO: Add an option to auto-create the tag.
+        """
+        try:
+            tag = Tag.objects.get(taxonomy_id=taxonomy_id, name=tag_name)
+        except Tag.DoesNotExist:
+            raise NotFound("Tag does not exist")
+        tag.add_to(EntityId(external_id=pk, entity_type=entity_type))
+        return Response(TagSerializer(tag).data)
 
-    def tags(self, request, entity_type=None, pk=None):
-        '''
-        Get a list of all tags belonging to an entity.
+    def remove_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
+        """
+        Remove the given tag from the entity.
 
-        These can be optionally filtered by `taxonomy` params.
-        '''
-        entity = get_object_or_404(Entity, external_id=pk, entity_type=entity_type)
-        taxonomies = request.GET.get('taxonomies', '').split(',')
-
-        serializer = self.serialize_tags(entity, taxonomies)
-        return Response(serializer.data)
-
-    def update_tags(self, request, entity_type=None, pk=None):
-        '''
-        Update tags belonging to an entity.
-        '''
-
-        entity_obj = get_object_or_404(Entity, external_id=pk, entity_type=entity_type)
-        freeform_obj, _ = Taxonomy.objects.get_or_create(id=FREEFORM_TAXONOMY_UID, name='FreeForm')
-        freeform = TaxonomyId(freeform_obj.id)
-
-        if not request.data.get('tags', ''):
-            return Response(status=204)
-
-        for tag in request.data['tags']:
-            # a single free form tag
-            if isinstance(tag, str):
-                _tag = tagstore.get_tag_in_taxonomy(tag, freeform)
-                if not _tag:
-                    _tag = tagstore.add_tag_to_taxonomy(tag, freeform)
-                tagstore.add_tag_to(_tag, entity_obj.as_tuple)
-
-            # a tag within a taxonomy
-            elif isinstance(tag, dict):
-                taxonomy_uid = tag.get('taxonomy_uid', None)
-                tag_name = tag.get('tag', None)
-                tag_parent = tag.get('parent', None)
-
-                if not taxonomy_uid or not tag_name:
-                    continue
-
-                tx_obj, _ = Taxonomy.objects.get_or_create(id=taxonomy_uid)
-
-                tx = TaxonomyId(tx_obj.id)
-                p = tagstore.get_tag_in_taxonomy(tag_parent, tx)
-                _tag = tagstore.get_tag_in_taxonomy(tag_name, tx)
-                if not _tag:
-                    _tag = tagstore.add_tag_to_taxonomy(tag_name, tx, p)
-                tagstore.add_tag_to(_tag, entity_obj.as_tuple)
-
-        serializer = self.serialize_tags(entity_obj)
-        return Response(serializer.data, status=201)
+        Only raises an error if the tag does not exist.
+        TODO: Add an option to auto-delete the tag from the taxonomy if it's not
+        applied to any other entities.
+        """
+        try:
+            tag = Tag.objects.get(taxonomy_id=taxonomy_id, name=tag_name)
+        except Tag.DoesNotExist:
+            raise NotFound("Tag does not exist")
+        tag.remove_from(EntityId(external_id=pk, entity_type=entity_type))
+        return Response({})

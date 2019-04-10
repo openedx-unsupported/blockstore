@@ -5,7 +5,7 @@ from django.conf.urls import url, include
 from ..routers import EntityRouter
 from .views.entities import EntityViewSet
 
-root_router = EntityRouter()
+root_router = EntityRouter(trailing_slash=False)
 
 root_router.register(r'entities', EntityViewSet)
 
