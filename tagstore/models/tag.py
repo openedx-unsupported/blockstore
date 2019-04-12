@@ -94,6 +94,10 @@ class Tag(models.Model):
         return TagId(taxonomy_id=self.taxonomy_id, name=parts[-3])
 
     @property
+    def parent_tag_name(self) -> Optional[str]:
+        return self.parent_tag_id.name if self.parent_tag_id else None
+
+    @property
     def id(self) -> TagId:
         return TagId(taxonomy_id=self.taxonomy_id, name=self.name)
 

@@ -1,87 +1,115 @@
 """ Tests for api v1 serializers. """
 
 from django.test import TestCase
-from rest_framework.test import APIRequestFactory
 
-from tagstore.backends.tagstore_django.models import Entity
+from tagstore.models import (
+    Entity,
+    Taxonomy,
+)
+from tagstore.tagstore_rest.serializers import (
+    TagSerializer,
+    EntitySerializer,
+    EntityDetailSerializer,
+)
 
-from ..serializers.entities import EntitySerializer, EntityTagSerializer
 
-
-class SerializerBaseTestCase(TestCase):
+class TagSerializerTestCase(TestCase):
     """
-    Base class for serializer tests.
-    """
-
-    def setUp(self):
-
-        super().setUp()
-
-        self.request = APIRequestFactory().get('/')
-        self.request.query_params = {}
-        self.context = {
-            'request': self.request
-        }
-
-
-class EntitySerializerTestCase(SerializerBaseTestCase):
-    """
-    Tests for the EntitySerializer
+    Test TagSerializer
     """
 
-    def test_entity_serializer_data(self):
+    def test_tag_serializer(self):
+        """
+        Test serializing a tag.
+        """
+        taxonomy = Taxonomy.objects.create(name="Test Taxonomy")
 
-        entity = Entity(
-            entity_type='xblock',
-            external_id='some-resource-uri',
-        )
+        parent_tag = taxonomy.add_tag("parent")
+        child_tag = taxonomy.add_tag("child", parent_tag=parent_tag)
 
-        entity_serializer = EntitySerializer(
-            entity, context=self.context,
-        )
+        parent_out = TagSerializer(parent_tag).data
+        self.assertDictEqual(parent_out, {
+            "taxonomy_id": taxonomy.id,
+            "name": "parent",
+            "path": f"{taxonomy.id}:{parent_tag}:",
+        })
 
-        self.assertSequenceEqual(list(entity_serializer.data.keys()), [
-            'id', 'entity_type', 'external_id',
-        ])
+        child_out = TagSerializer(child_tag).data
+        self.assertDictEqual(child_out, {
+            "taxonomy_id": taxonomy.id,
+            "name": "child",
+            "path": f"{taxonomy.id}:{parent_tag}:{child_tag}:",
+        })
 
-        self.assertEqual(entity_serializer.data['entity_type'], 'xblock')
-        self.assertEqual(entity_serializer.data['external_id'], 'some-resource-uri')
 
-
-class EntityTagSerializerTestCase(TestCase):
+class EntitySerializerTestCase(TestCase):
     """
-    Tests for the EntityTagSerializer
+    Test EntitySerializer
     """
 
-    def setUp(self):
+    def test_persisted_entity(self):
+        """
+        Test serializing an entity that exists in Tagstore's database
+        """
+        entity = Entity.objects.create(entity_type='xblock', external_id='alpha')
 
-        super().setUp()
+        entity_out = EntitySerializer(entity).data
+        self.assertDictEqual(entity_out, {
+            "entity_type": "xblock",
+            "external_id": "alpha",
+        })
 
-        self.entity_tags = {
-            'tags': [
+    def test_non_persisted_entity(self):
+        """
+        Test serializing an entity that does not exist in Tagstore's database
+        """
+        entity = Entity(entity_type='xblock', external_id='alpha')
+
+        entity_out = EntitySerializer(entity).data
+        self.assertDictEqual(entity_out, {
+            "entity_type": "xblock",
+            "external_id": "alpha",
+        })
+
+
+class EntityDetailSerializerTestCase(TestCase):
+    """
+    Test EntityDetailSerializer
+    """
+
+    def test_persisted_entity(self):
+        """
+        Test serializing an entity that exists in Tagstore's database
+        """
+        entity = Entity.objects.create(entity_type='xblock', external_id='alpha')
+        taxonomy = Taxonomy.objects.create(name="Test Taxonomy")
+        tag = taxonomy.add_tag("some tag")
+        tag.add_to(entity.id)
+
+        entity_out = EntityDetailSerializer(entity).data
+        self.assertDictEqual(entity_out, {
+            "entity_type": "xblock",
+            "external_id": "alpha",
+            "persisted": True,
+            "tags": [
                 {
-                    'taxonomy_uid': 7,
-                    'taxonomy_name': 'Subject Area',
-                    'tag': 'Biochemistry'
-                },
-                {
-                    'taxonomy_uid': 9,
-                    'taxonomy_name': 'License',
-                    'tag': 'CC-BY-SA-4.0'
+                    "taxonomy_id": taxonomy.id,
+                    "name": "some tag",
+                    "path": f"{taxonomy.id}:some tag:",
                 }
-            ]
-        }
+            ],
+        })
 
-    def test_entity_tag_serializer_data(self):
+    def test_non_persisted_entity(self):
+        """
+        Test serializing an entity that does not exist in Tagstore's database
+        """
+        entity = Entity(entity_type='xblock', external_id='alpha')
 
-        entity_tag_serializer = EntityTagSerializer(
-            self.entity_tags
-        )
-
-        self.assertSequenceEqual(list(entity_tag_serializer.data.keys()), ['tags'])
-        self.assertSequenceEqual(list(entity_tag_serializer.data['tags'][0].keys()), [
-            'taxonomy_uid', 'taxonomy_name', 'tag',
-        ])
-
-        self.assertEqual(entity_tag_serializer.data['tags'][0]['taxonomy_uid'], 7)
-        self.assertEqual(entity_tag_serializer.data['tags'][0]['taxonomy_name'], 'Subject Area')
+        entity_out = EntityDetailSerializer(entity).data
+        self.assertDictEqual(entity_out, {
+            "entity_type": "xblock",
+            "external_id": "alpha",
+            "persisted": False,
+            "tags": [],
+        })

@@ -32,6 +32,7 @@ class Taxonomy(models.Model):
     class Meta:
         db_table = 'tagstore_taxonomy'
         verbose_name_plural = 'Taxonomies'
+        ordering = ['name']
 
     def __str__(self) -> str:
         return self.name

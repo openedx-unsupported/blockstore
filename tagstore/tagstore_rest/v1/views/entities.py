@@ -1,5 +1,5 @@
 '''
-Views for Tags and Taxonomies.
+Tagstore API Viewset for the "Entity" API
 '''
 import logging
 
@@ -20,6 +20,16 @@ logger = logging.getLogger(__name__)
 class EntityViewSet(viewsets.GenericViewSet):
     '''
     ViewSet for Entity model and its tags.
+
+    An entity is any person, place, or thing that can be tagged.
+
+    In general, it's not necessary to explicitly create Entity objects in
+    Tagstore; they will be transparently created if needed when you apply the
+    first tag to an Entity. Likewise, any Entity that has never been created nor
+    assigned tags will still be shown to exist (with no tags), in order to
+    provide a consistent API experience (because Entities represent objects in
+    external systems, and Tagstore really has no idea about what entities do or
+    do not exist.)
     '''
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
@@ -32,7 +42,7 @@ class EntityViewSet(viewsets.GenericViewSet):
         serializer = EntitySerializer(page, many=True)
         return self.get_paginated_response(serializer.data)
 
-    def retrieve(self, request, pk=None, entity_type=None):  # pylint: disable=unused-argument
+    def retrieve_entity(self, request, pk=None, entity_type=None):  # pylint: disable=unused-argument
         '''
         Get a single entity. Never raises a 404, because Tagstore doesn't know
         which entities exist or not. If you want to know whether or not the
@@ -46,7 +56,7 @@ class EntityViewSet(viewsets.GenericViewSet):
         serializer = EntityDetailSerializer(entity)
         return Response(serializer.data)
 
-    def has_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
+    def entity_has_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
         """
         Does this entity have the given tag?
         Use this if you need to check if an entity has one specific tag, as it
@@ -63,9 +73,10 @@ class EntityViewSet(viewsets.GenericViewSet):
             raise NotFound("Entity does not have that tag")
         return Response(TagSerializer(tag).data)
 
-    def add_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
+    def entity_add_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
         """
-        Add the given tag to the entity.
+        Add the given tag to the entity. The entity will be auto-created if it
+        isn't yet tracked (persisted) in Tagstore's database.
 
         Only raises an error if the tag does not exist.
         TODO: Add an option to auto-create the tag.
@@ -77,13 +88,18 @@ class EntityViewSet(viewsets.GenericViewSet):
         tag.add_to(EntityId(external_id=pk, entity_type=entity_type))
         return Response(TagSerializer(tag).data)
 
-    def remove_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
+    def entity_remove_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
         """
         Remove the given tag from the entity.
 
         Only raises an error if the tag does not exist.
-        TODO: Add an option to auto-delete the tag from the taxonomy if it's not
-        applied to any other entities.
+
+        We do not provide an option to auto-delete the tag from the taxonomy if
+        it's not applied to any other entities, because tags can also be removed
+        from entities when entities are deleted, and we want consistent behavior
+        in both cases.
+        TODO: Add a "prune" API method for any taxonomy that deletes any unused
+        tags.
         """
         try:
             tag = Tag.objects.get(taxonomy_id=taxonomy_id, name=tag_name)
