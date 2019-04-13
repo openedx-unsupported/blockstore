@@ -35,12 +35,20 @@ class EntityViewSet(viewsets.GenericViewSet):
     serializer_class = EntitySerializer
 
     def list(self, request, *args, **kwargs):  # pylint: disable=unused-argument
-        '''
-        Get a list of all entities.
-        '''
-        page = self.paginate_queryset(self.get_queryset())
-        serializer = EntitySerializer(page, many=True)
-        return self.get_paginated_response(serializer.data)
+        """
+        Listing entities is generally not going to be performant, so is not
+        supported by this API. Since entities are so varied and represent
+        objects that are managed by external systems, there are not many use
+        cases for listing all entities. We keep this endpoint only to enable
+        the DRF web API browser.
+
+        In the future we may add a way to list a subset of entities that match
+        some critieria.
+        """
+        # page = self.paginate_queryset(self.get_queryset())
+        # serializer = EntitySerializer(page, many=True)
+        # return self.get_paginated_response(serializer.data)
+        return Response([])
 
     def retrieve_entity(self, request, pk=None, entity_type=None):  # pylint: disable=unused-argument
         '''

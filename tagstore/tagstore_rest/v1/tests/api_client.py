@@ -67,3 +67,23 @@ class TagstoreAPIClient(APIClient):
 
     def delete_taxonomy_tag(self, taxonomy_id: int, tag_name: str):
         return self.delete(f'{V1_API}/taxonomies/{taxonomy_id}/tags/{quote(tag_name)}')
+
+    def get_entity(self, entity_type: str, external_id: str):
+        return self.get(f'{V1_API}/entities/{entity_type}/{quote(external_id)}')
+
+    def entity_has_tag(self, entity_type: str, external_id: str, taxonomy_id: int, tag_name: str, **kwargs):
+        return self.get(
+            f'{V1_API}/entities/{entity_type}/{quote(external_id)}/tags/{taxonomy_id}/{quote(tag_name)}',
+            **kwargs,
+        )
+
+    def entity_add_tag(self, entity_type: str, external_id: str, taxonomy_id: int, tag_name: str, **kwargs):
+        return self.post(
+            f'{V1_API}/entities/{entity_type}/{quote(external_id)}/tags/{taxonomy_id}/{quote(tag_name)}',
+            **kwargs,
+        )
+
+    def entity_remove_tag(self, entity_type: str, external_id: str, taxonomy_id: int, tag_name: str):
+        return self.delete(
+            f'{V1_API}/entities/{entity_type}/{quote(external_id)}/tags/{taxonomy_id}/{quote(tag_name)}',
+        )
