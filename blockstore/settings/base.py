@@ -54,7 +54,7 @@ PROJECT_APPS = (
     'blockstore.apps.bundles.apps.BundlesConfig',
     'blockstore.apps.search.apps.SearchConfig',
     'tagstore',
-    'tagstore.tagstore_rest',
+    'tagstore.api.apps.TagstoreApiConfig',
 )
 
 INSTALLED_APPS += THIRD_PARTY_APPS

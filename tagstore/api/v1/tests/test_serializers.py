@@ -6,7 +6,7 @@ from tagstore.models import (
     Entity,
     Taxonomy,
 )
-from tagstore.tagstore_rest.serializers import (
+from tagstore.api.serializers import (
     TagSerializer,
     EntitySerializer,
     EntityDetailSerializer,

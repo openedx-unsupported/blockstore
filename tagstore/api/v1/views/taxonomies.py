@@ -16,7 +16,7 @@ from tagstore.models import (
     Taxonomy,
 )
 
-from tagstore.tagstore_rest.serializers import TaxonomySerializer, TagWithHierarchySerializer
+from tagstore.api.serializers import TaxonomySerializer, TagWithHierarchySerializer
 
 logger = logging.getLogger(__name__)
 

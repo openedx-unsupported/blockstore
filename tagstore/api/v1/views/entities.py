@@ -12,7 +12,7 @@ from tagstore.models import (
     Tag,
 )
 
-from tagstore.tagstore_rest.serializers import EntitySerializer, EntityDetailSerializer, TagSerializer
+from tagstore.api.serializers import EntitySerializer, EntityDetailSerializer, TagSerializer
 
 logger = logging.getLogger(__name__)
 
