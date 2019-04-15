@@ -75,3 +75,6 @@ quality: ## Run quality checks
 	${VENV_BIN}/mypy --config-file tagstore/mypy.ini tagstore
 
 validate: test quality ## Run tests and quality checks
+
+generate_openapi_spec:
+	${VENV_BIN}/python manage.py generate_swagger -o ./api-spec.yaml

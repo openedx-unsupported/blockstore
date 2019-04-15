@@ -4,6 +4,7 @@ Viewset for Tags and Taxonomies.
 import logging
 
 from django.shortcuts import get_object_or_404
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -86,6 +87,13 @@ class TaxonomyViewSet(viewsets.GenericViewSet):
         return Response(TaxonomySerializer(taxonomy).data)
 
     @action(detail=True, methods=['get'])
+    @swagger_auto_schema(
+        responses={200: TagWithHierarchySerializer(many=True)},
+        # Set the operation_id to "..._tags_list" to avoid conflict with
+        # the "get one specific tag" endpoint which has the same auto-generated
+        # operation ID by default ("..._tags_read")
+        operation_id="taxonomies_tags_list",
+    )
     def tags(self, request, pk=None):  # pylint: disable=unused-argument
         """
         List the tags in this taxonomy.

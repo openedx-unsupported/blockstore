@@ -1,0 +1,1842 @@
+swagger: '2.0'
+info:
+  title: Blockstore API
+  description: REST API for Open edX Blockstore
+  license:
+    name: AGPL
+  version: v1
+host: localhost:18250
+schemes:
+  - http
+basePath: /
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions: {}
+paths:
+  /api/v1/bundle_versions:
+    get:
+      operationId: bundle_versions_list
+      description: ViewSet for BundleVersion model.
+      parameters:
+        - name: bundle__uuid
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: bundle__collection__uuid
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: A page number within the paginated result set.
+          required: false
+          type: integer
+        - name: page_size
+          in: query
+          description: Number of results to return per page.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            required:
+              - count
+              - results
+            type: object
+            properties:
+              count:
+                type: integer
+              next:
+                type: string
+                format: uri
+                x-nullable: true
+              previous:
+                type: string
+                format: uri
+                x-nullable: true
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/BundleVersion'
+      tags:
+        - blockstore
+    parameters: []
+  /api/v1/bundle_versions/{bundle_uuid},{version_num}:
+    get:
+      operationId: bundle_versions_read
+      description: ViewSet for BundleVersion model.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/BundleVersionWithFileData'
+      tags:
+        - blockstore
+    put:
+      operationId: bundle_versions_update
+      description: ViewSet for BundleVersion model.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BundleVersion'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/BundleVersion'
+      tags:
+        - blockstore
+    patch:
+      operationId: bundle_versions_partial_update
+      description: ViewSet for BundleVersion model.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BundleVersion'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/BundleVersion'
+      tags:
+        - blockstore
+    parameters:
+      - name: bundle_uuid
+        in: path
+        required: true
+        type: string
+      - name: version_num
+        in: path
+        required: true
+        type: integer
+  /api/v1/bundles:
+    get:
+      operationId: bundles_list
+      description: ViewSet for Bundle model.
+      parameters:
+        - name: collection__uuid
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: A page number within the paginated result set.
+          required: false
+          type: integer
+        - name: page_size
+          in: query
+          description: Number of results to return per page.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            required:
+              - count
+              - results
+            type: object
+            properties:
+              count:
+                type: integer
+              next:
+                type: string
+                format: uri
+                x-nullable: true
+              previous:
+                type: string
+                format: uri
+                x-nullable: true
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/Bundle'
+      tags:
+        - blockstore
+    post:
+      operationId: bundles_create
+      description: ViewSet for Bundle model.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Bundle'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Bundle'
+      tags:
+        - blockstore
+    parameters: []
+  /api/v1/bundles/{bundle_uuid}:
+    get:
+      operationId: bundles_read
+      description: ViewSet for Bundle model.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Bundle'
+      tags:
+        - blockstore
+    put:
+      operationId: bundles_update
+      description: ViewSet for Bundle model.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Bundle'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Bundle'
+      tags:
+        - blockstore
+    patch:
+      operationId: bundles_partial_update
+      description: ViewSet for Bundle model.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Bundle'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Bundle'
+      tags:
+        - blockstore
+    delete:
+      operationId: bundles_delete
+      description: ViewSet for Bundle model.
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - blockstore
+    parameters:
+      - name: bundle_uuid
+        in: path
+        required: true
+        type: string
+  /api/v1/collections:
+    get:
+      operationId: collections_list
+      description: ViewSet for Collection model.
+      parameters:
+        - name: page
+          in: query
+          description: A page number within the paginated result set.
+          required: false
+          type: integer
+        - name: page_size
+          in: query
+          description: Number of results to return per page.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            required:
+              - count
+              - results
+            type: object
+            properties:
+              count:
+                type: integer
+              next:
+                type: string
+                format: uri
+                x-nullable: true
+              previous:
+                type: string
+                format: uri
+                x-nullable: true
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/Collection'
+      tags:
+        - blockstore
+    post:
+      operationId: collections_create
+      description: ViewSet for Collection model.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Collection'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Collection'
+      tags:
+        - blockstore
+    parameters: []
+  /api/v1/collections/{uuid}:
+    get:
+      operationId: collections_read
+      description: ViewSet for Collection model.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Collection'
+      tags:
+        - blockstore
+    put:
+      operationId: collections_update
+      description: ViewSet for Collection model.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Collection'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Collection'
+      tags:
+        - blockstore
+    patch:
+      operationId: collections_partial_update
+      description: ViewSet for Collection model.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Collection'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Collection'
+      tags:
+        - blockstore
+    delete:
+      operationId: collections_delete
+      description: ViewSet for Collection model.
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - blockstore
+    parameters:
+      - name: uuid
+        in: path
+        required: true
+        type: string
+        format: uuid
+        pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+  /api/v1/drafts:
+    get:
+      operationId: drafts_list
+      description: Get a list of Drafts (no file data)
+      parameters:
+        - name: page
+          in: query
+          description: A page number within the paginated result set.
+          required: false
+          type: integer
+        - name: page_size
+          in: query
+          description: Number of results to return per page.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            required:
+              - count
+              - results
+            type: object
+            properties:
+              count:
+                type: integer
+              next:
+                type: string
+                format: uri
+                x-nullable: true
+              previous:
+                type: string
+                format: uri
+                x-nullable: true
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/Draft'
+      tags:
+        - blockstore
+    post:
+      operationId: drafts_create
+      description: Create a new Draft.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Draft'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Draft'
+      tags:
+        - blockstore
+    parameters: []
+  /api/v1/drafts/{uuid}:
+    get:
+      operationId: drafts_read
+      description: Get a single Draft (with file data)
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/DraftWithFileData'
+      tags:
+        - blockstore
+    patch:
+      operationId: drafts_partial_update
+      summary: Create, update, and delete files in a Draft.
+      description: "The data payload in the request should be a JSON dictionary with\
+        \ file\npaths as keys and base64 encoded payloads as values. A null value\
+        \ means\nthat path should be deleted.\n\nPATCH is a bit unusual for this resource\
+        \ in that the only thing you can\npatch are file data. You cannot change the\
+        \ draft name or the Bundle it\nbelongs to, and the only way to update the\
+        \ `base_snapshot` is to commit\nthe Draft.\n\nThere is intentionally no PUT\
+        \ support for file data, for a few reasons:\n\n1. We can't guarantee the semantics\
+        \ of a PUT against a concurrent PATCH,\nparticularly for large numbers of\
+        \ files. Our files are in an object\nstore that do not support multi-file\
+        \ transactions. We can't really even\nguarantee it for multiple concurrent\
+        \ PATCHes -- there's a possibility of\na race condition there.\n\n2. Bundles\
+        \ can become very large, and a PUT might become prohibitively\nlarge. Having\
+        \ everything as a PATCH lets us set somewhat sane per-PATCH\nrequest limits\
+        \ and let the client handle the case where we need to do\nmultiple requests\
+        \ to make the necessary changes.\n\n3. It's just simpler to have only one\
+        \ way to update the files."
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Draft'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Draft'
+      tags:
+        - blockstore
+    parameters:
+      - name: uuid
+        in: path
+        required: true
+        type: string
+        format: uuid
+  /api/v1/drafts/{uuid}/commit:
+    post:
+      operationId: drafts_commit
+      summary: Commit the Draft and create a new BundleVersion that points to it.
+      description: "In the future, we may want to separate these two steps so that\
+        \ we can\ncreate multiple BundleVersions at once in a single transaction,\
+        \ however\ngiven our modeling conventions of a course being in a single Bundle,\n\
+        that's not something that we need to implement immediately.\n\nWe currently\
+        \ return a summary of the things that were created, however\nwe may need to\
+        \ rethink this interface if the commit process is going to\ntake so long as\
+        \ to require async processing."
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Draft'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Draft'
+      tags:
+        - blockstore
+    parameters:
+      - name: uuid
+        in: path
+        required: true
+        type: string
+        format: uuid
+  /api/v1/index/blocks:
+    get:
+      operationId: index_blocks_list
+      description: View to GET documents list.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                uuid:
+                  title: Uuid
+                  type: string
+                  readOnly: true
+                  minLength: 1
+                url:
+                  title: Url
+                  type: string
+                  format: uri
+                  readOnly: true
+                entity:
+                  required:
+                    - type
+                    - id
+                  type: object
+                  properties:
+                    type:
+                      title: Type
+                      type: string
+                      minLength: 1
+                    id:
+                      title: Id
+                      type: string
+                      minLength: 1
+                summary:
+                  type: object
+                  properties:
+                    title:
+                      title: Title
+                      type: string
+                      minLength: 1
+                      x-nullable: true
+                    description:
+                      title: Description
+                      type: string
+                      minLength: 1
+                      x-nullable: true
+                    image:
+                      title: Image
+                      type: string
+                      format: uri
+                      minLength: 1
+                      x-nullable: true
+                ownership:
+                  type: object
+                  properties:
+                    org_id:
+                      title: Org id
+                      type: string
+                      minLength: 1
+                      x-nullable: true
+                authorship:
+                  type: object
+                  properties:
+                    author_ids:
+                      type: array
+                      items:
+                        type: string
+                        minLength: 1
+                tags:
+                  type: object
+                  properties:
+                    paths:
+                      type: array
+                      items:
+                        type: string
+                        minLength: 1
+                analytics:
+                  type: object
+                  properties:
+                    favorites:
+                      title: Favorites
+                      type: integer
+                      x-nullable: true
+                    remixes:
+                      title: Remixes
+                      type: integer
+                      x-nullable: true
+                    views:
+                      title: Views
+                      type: integer
+                      x-nullable: true
+      tags:
+        - blockstore
+    post:
+      operationId: index_blocks_create
+      description: View to POST a new document.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uuid:
+                title: Uuid
+                type: string
+                readOnly: true
+                minLength: 1
+              url:
+                title: Url
+                type: string
+                format: uri
+                readOnly: true
+              entity:
+                required:
+                  - type
+                  - id
+                type: object
+                properties:
+                  type:
+                    title: Type
+                    type: string
+                    minLength: 1
+                  id:
+                    title: Id
+                    type: string
+                    minLength: 1
+              summary:
+                type: object
+                properties:
+                  title:
+                    title: Title
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+                  description:
+                    title: Description
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+                  image:
+                    title: Image
+                    type: string
+                    format: uri
+                    minLength: 1
+                    x-nullable: true
+              ownership:
+                type: object
+                properties:
+                  org_id:
+                    title: Org id
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+              authorship:
+                type: object
+                properties:
+                  author_ids:
+                    type: array
+                    items:
+                      type: string
+                      minLength: 1
+              tags:
+                type: object
+                properties:
+                  paths:
+                    type: array
+                    items:
+                      type: string
+                      minLength: 1
+              analytics:
+                type: object
+                properties:
+                  favorites:
+                    title: Favorites
+                    type: integer
+                    x-nullable: true
+                  remixes:
+                    title: Remixes
+                    type: integer
+                    x-nullable: true
+                  views:
+                    title: Views
+                    type: integer
+                    x-nullable: true
+      responses:
+        '201':
+          description: ''
+          schema:
+            type: object
+            properties:
+              uuid:
+                title: Uuid
+                type: string
+                readOnly: true
+                minLength: 1
+              url:
+                title: Url
+                type: string
+                format: uri
+                readOnly: true
+              entity:
+                required:
+                  - type
+                  - id
+                type: object
+                properties:
+                  type:
+                    title: Type
+                    type: string
+                    minLength: 1
+                  id:
+                    title: Id
+                    type: string
+                    minLength: 1
+              summary:
+                type: object
+                properties:
+                  title:
+                    title: Title
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+                  description:
+                    title: Description
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+                  image:
+                    title: Image
+                    type: string
+                    format: uri
+                    minLength: 1
+                    x-nullable: true
+              ownership:
+                type: object
+                properties:
+                  org_id:
+                    title: Org id
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+              authorship:
+                type: object
+                properties:
+                  author_ids:
+                    type: array
+                    items:
+                      type: string
+                      minLength: 1
+              tags:
+                type: object
+                properties:
+                  paths:
+                    type: array
+                    items:
+                      type: string
+                      minLength: 1
+              analytics:
+                type: object
+                properties:
+                  favorites:
+                    title: Favorites
+                    type: integer
+                    x-nullable: true
+                  remixes:
+                    title: Remixes
+                    type: integer
+                    x-nullable: true
+                  views:
+                    title: Views
+                    type: integer
+                    x-nullable: true
+      tags:
+        - blockstore
+    parameters: []
+  /api/v1/index/blocks/search:
+    get:
+      operationId: index_blocks_search_read
+      summary: View to search the documents.
+      description: This does not do much right now. We can add a simplified version
+        of search with query parameters if needed.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                uuid:
+                  title: Uuid
+                  type: string
+                  readOnly: true
+                  minLength: 1
+                url:
+                  title: Url
+                  type: string
+                  format: uri
+                  readOnly: true
+                entity:
+                  required:
+                    - type
+                    - id
+                  type: object
+                  properties:
+                    type:
+                      title: Type
+                      type: string
+                      minLength: 1
+                    id:
+                      title: Id
+                      type: string
+                      minLength: 1
+                summary:
+                  type: object
+                  properties:
+                    title:
+                      title: Title
+                      type: string
+                      minLength: 1
+                      x-nullable: true
+                    description:
+                      title: Description
+                      type: string
+                      minLength: 1
+                      x-nullable: true
+                    image:
+                      title: Image
+                      type: string
+                      format: uri
+                      minLength: 1
+                      x-nullable: true
+                ownership:
+                  type: object
+                  properties:
+                    org_id:
+                      title: Org id
+                      type: string
+                      minLength: 1
+                      x-nullable: true
+                authorship:
+                  type: object
+                  properties:
+                    author_ids:
+                      type: array
+                      items:
+                        type: string
+                        minLength: 1
+                tags:
+                  type: object
+                  properties:
+                    paths:
+                      type: array
+                      items:
+                        type: string
+                        minLength: 1
+                analytics:
+                  type: object
+                  properties:
+                    favorites:
+                      title: Favorites
+                      type: integer
+                      x-nullable: true
+                    remixes:
+                      title: Remixes
+                      type: integer
+                      x-nullable: true
+                    views:
+                      title: Views
+                      type: integer
+                      x-nullable: true
+      tags:
+        - blockstore
+    post:
+      operationId: index_blocks_search_create
+      description: View to search the documents with ElasticSearch Query DSL.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uuid:
+                title: Uuid
+                type: string
+                readOnly: true
+                minLength: 1
+              url:
+                title: Url
+                type: string
+                format: uri
+                readOnly: true
+              entity:
+                required:
+                  - type
+                  - id
+                type: object
+                properties:
+                  type:
+                    title: Type
+                    type: string
+                    minLength: 1
+                  id:
+                    title: Id
+                    type: string
+                    minLength: 1
+              summary:
+                type: object
+                properties:
+                  title:
+                    title: Title
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+                  description:
+                    title: Description
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+                  image:
+                    title: Image
+                    type: string
+                    format: uri
+                    minLength: 1
+                    x-nullable: true
+              ownership:
+                type: object
+                properties:
+                  org_id:
+                    title: Org id
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+              authorship:
+                type: object
+                properties:
+                  author_ids:
+                    type: array
+                    items:
+                      type: string
+                      minLength: 1
+              tags:
+                type: object
+                properties:
+                  paths:
+                    type: array
+                    items:
+                      type: string
+                      minLength: 1
+              analytics:
+                type: object
+                properties:
+                  favorites:
+                    title: Favorites
+                    type: integer
+                    x-nullable: true
+                  remixes:
+                    title: Remixes
+                    type: integer
+                    x-nullable: true
+                  views:
+                    title: Views
+                    type: integer
+                    x-nullable: true
+      responses:
+        '201':
+          description: ''
+          schema:
+            type: object
+            properties:
+              uuid:
+                title: Uuid
+                type: string
+                readOnly: true
+                minLength: 1
+              url:
+                title: Url
+                type: string
+                format: uri
+                readOnly: true
+              entity:
+                required:
+                  - type
+                  - id
+                type: object
+                properties:
+                  type:
+                    title: Type
+                    type: string
+                    minLength: 1
+                  id:
+                    title: Id
+                    type: string
+                    minLength: 1
+              summary:
+                type: object
+                properties:
+                  title:
+                    title: Title
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+                  description:
+                    title: Description
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+                  image:
+                    title: Image
+                    type: string
+                    format: uri
+                    minLength: 1
+                    x-nullable: true
+              ownership:
+                type: object
+                properties:
+                  org_id:
+                    title: Org id
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+              authorship:
+                type: object
+                properties:
+                  author_ids:
+                    type: array
+                    items:
+                      type: string
+                      minLength: 1
+              tags:
+                type: object
+                properties:
+                  paths:
+                    type: array
+                    items:
+                      type: string
+                      minLength: 1
+              analytics:
+                type: object
+                properties:
+                  favorites:
+                    title: Favorites
+                    type: integer
+                    x-nullable: true
+                  remixes:
+                    title: Remixes
+                    type: integer
+                    x-nullable: true
+                  views:
+                    title: Views
+                    type: integer
+                    x-nullable: true
+      tags:
+        - blockstore
+    parameters: []
+  /api/v1/index/blocks/{uuid}:
+    get:
+      operationId: index_blocks_read
+      description: View to GET a document.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: object
+            properties:
+              uuid:
+                title: Uuid
+                type: string
+                readOnly: true
+                minLength: 1
+              url:
+                title: Url
+                type: string
+                format: uri
+                readOnly: true
+              entity:
+                required:
+                  - type
+                  - id
+                type: object
+                properties:
+                  type:
+                    title: Type
+                    type: string
+                    minLength: 1
+                  id:
+                    title: Id
+                    type: string
+                    minLength: 1
+              summary:
+                type: object
+                properties:
+                  title:
+                    title: Title
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+                  description:
+                    title: Description
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+                  image:
+                    title: Image
+                    type: string
+                    format: uri
+                    minLength: 1
+                    x-nullable: true
+              ownership:
+                type: object
+                properties:
+                  org_id:
+                    title: Org id
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+              authorship:
+                type: object
+                properties:
+                  author_ids:
+                    type: array
+                    items:
+                      type: string
+                      minLength: 1
+              tags:
+                type: object
+                properties:
+                  paths:
+                    type: array
+                    items:
+                      type: string
+                      minLength: 1
+              analytics:
+                type: object
+                properties:
+                  favorites:
+                    title: Favorites
+                    type: integer
+                    x-nullable: true
+                  remixes:
+                    title: Remixes
+                    type: integer
+                    x-nullable: true
+                  views:
+                    title: Views
+                    type: integer
+                    x-nullable: true
+      tags:
+        - blockstore
+    patch:
+      operationId: index_blocks_partial_update
+      description: View to PATCH a document.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uuid:
+                title: Uuid
+                type: string
+                readOnly: true
+                minLength: 1
+              url:
+                title: Url
+                type: string
+                format: uri
+                readOnly: true
+              entity:
+                required:
+                  - type
+                  - id
+                type: object
+                properties:
+                  type:
+                    title: Type
+                    type: string
+                    minLength: 1
+                  id:
+                    title: Id
+                    type: string
+                    minLength: 1
+              summary:
+                type: object
+                properties:
+                  title:
+                    title: Title
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+                  description:
+                    title: Description
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+                  image:
+                    title: Image
+                    type: string
+                    format: uri
+                    minLength: 1
+                    x-nullable: true
+              ownership:
+                type: object
+                properties:
+                  org_id:
+                    title: Org id
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+              authorship:
+                type: object
+                properties:
+                  author_ids:
+                    type: array
+                    items:
+                      type: string
+                      minLength: 1
+              tags:
+                type: object
+                properties:
+                  paths:
+                    type: array
+                    items:
+                      type: string
+                      minLength: 1
+              analytics:
+                type: object
+                properties:
+                  favorites:
+                    title: Favorites
+                    type: integer
+                    x-nullable: true
+                  remixes:
+                    title: Remixes
+                    type: integer
+                    x-nullable: true
+                  views:
+                    title: Views
+                    type: integer
+                    x-nullable: true
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: object
+            properties:
+              uuid:
+                title: Uuid
+                type: string
+                readOnly: true
+                minLength: 1
+              url:
+                title: Url
+                type: string
+                format: uri
+                readOnly: true
+              entity:
+                required:
+                  - type
+                  - id
+                type: object
+                properties:
+                  type:
+                    title: Type
+                    type: string
+                    minLength: 1
+                  id:
+                    title: Id
+                    type: string
+                    minLength: 1
+              summary:
+                type: object
+                properties:
+                  title:
+                    title: Title
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+                  description:
+                    title: Description
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+                  image:
+                    title: Image
+                    type: string
+                    format: uri
+                    minLength: 1
+                    x-nullable: true
+              ownership:
+                type: object
+                properties:
+                  org_id:
+                    title: Org id
+                    type: string
+                    minLength: 1
+                    x-nullable: true
+              authorship:
+                type: object
+                properties:
+                  author_ids:
+                    type: array
+                    items:
+                      type: string
+                      minLength: 1
+              tags:
+                type: object
+                properties:
+                  paths:
+                    type: array
+                    items:
+                      type: string
+                      minLength: 1
+              analytics:
+                type: object
+                properties:
+                  favorites:
+                    title: Favorites
+                    type: integer
+                    x-nullable: true
+                  remixes:
+                    title: Remixes
+                    type: integer
+                    x-nullable: true
+                  views:
+                    title: Views
+                    type: integer
+                    x-nullable: true
+      tags:
+        - blockstore
+    delete:
+      operationId: index_blocks_delete
+      description: View to DELETE a document.
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - blockstore
+    parameters:
+      - name: uuid
+        in: path
+        required: true
+        type: string
+  /tagstore/api/v1/entities/{entity_type}/{_id}:
+    get:
+      operationId: retrieve_entity
+      description: "Get a single entity. Never raises a 404, because Tagstore doesn't\
+        \ know\nwhich entities exist or not. If you want to know whether or not the\n\
+        entity is persisted in Tagstore's database, check the resulting\n\"persisted\"\
+        \ boolean field."
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Entity'
+      tags:
+        - tagstore
+    parameters:
+      - name: _id
+        in: path
+        description: A unique integer value identifying this entity.
+        required: true
+        type: integer
+      - name: entity_type
+        in: path
+        required: true
+        type: string
+  /tagstore/api/v1/entities/{entity_type}/{_id}/tags/{taxonomy_id}/{tag_name}:
+    get:
+      operationId: entities_tags_read
+      description: "Does this entity have the given tag?\nUse this if you need to\
+        \ check if an entity has one specific tag, as it\nwill be faster than loading\
+        \ the entity's entire tag list.\nRaises 404 if the tag does not exist."
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Entity'
+      tags:
+        - tagstore
+    post:
+      operationId: entities_tags_create
+      description: "Add the given tag to the entity. The entity will be auto-created\
+        \ if it\nisn't yet tracked (persisted) in Tagstore's database.\n\nOnly raises\
+        \ an error if the tag does not exist."
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Entity'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Entity'
+      tags:
+        - tagstore
+    delete:
+      operationId: entities_tags_delete
+      summary: Remove the given tag from the entity.
+      description: "Only raises an error if the tag does not exist.\n\nWe do not provide\
+        \ an option to auto-delete the tag from the taxonomy if\nit's not applied\
+        \ to any other entities, because tags can also be removed\nfrom entities when\
+        \ entities are deleted, and we want consistent behavior\nin both cases."
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - tagstore
+    parameters:
+      - name: _id
+        in: path
+        description: A unique integer value identifying this entity.
+        required: true
+        type: integer
+      - name: entity_type
+        in: path
+        required: true
+        type: string
+      - name: tag_name
+        in: path
+        required: true
+        type: string
+      - name: taxonomy_id
+        in: path
+        required: true
+        type: string
+  /tagstore/api/v1/taxonomies:
+    get:
+      operationId: taxonomies_list
+      description: Get a list of all taxonomies.
+      parameters:
+        - name: page
+          in: query
+          description: A page number within the paginated result set.
+          required: false
+          type: integer
+        - name: page_size
+          in: query
+          description: Number of results to return per page.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            required:
+              - count
+              - results
+            type: object
+            properties:
+              count:
+                type: integer
+              next:
+                type: string
+                format: uri
+                x-nullable: true
+              previous:
+                type: string
+                format: uri
+                x-nullable: true
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/Taxonomy'
+      tags:
+        - tagstore
+    post:
+      operationId: taxonomies_create
+      description: Create a new Taxonomy
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Taxonomy'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Taxonomy'
+      tags:
+        - tagstore
+    parameters: []
+  /tagstore/api/v1/taxonomies/{id}:
+    get:
+      operationId: taxonomies_read
+      description: Get a specific taxonomy.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Taxonomy'
+      tags:
+        - tagstore
+    delete:
+      operationId: taxonomies_delete
+      description: Delete a specific taxonomy and all of its tags.
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - tagstore
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this taxonomy.
+        required: true
+        type: integer
+  /tagstore/api/v1/taxonomies/{id}/tags:
+    get:
+      operationId: taxonomies_tags_list
+      summary: List the tags in this taxonomy.
+      description: It guarantees that parent tags will be returned before their children.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TagWithHierarchy'
+      tags:
+        - tagstore
+    post:
+      operationId: taxonomies_tags_create
+      description: Add a tag to the taxonomy, if it doesn't already exist
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TagWithHierarchy'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/TagWithHierarchy'
+      tags:
+        - tagstore
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this taxonomy.
+        required: true
+        type: integer
+  /tagstore/api/v1/taxonomies/{id}/tags/{tag_name}:
+    get:
+      operationId: taxonomies_tags_read
+      description: Get a specific tag in the taxonomy
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/TagWithHierarchy'
+      tags:
+        - tagstore
+    delete:
+      operationId: taxonomies_tags_delete
+      description: Delete a tag
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - tagstore
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this taxonomy.
+        required: true
+        type: integer
+      - name: tag_name
+        in: path
+        required: true
+        type: string
+definitions:
+  BundleVersion:
+    type: object
+    properties:
+      bundle:
+        title: Bundle
+        type: string
+        format: uri
+        readOnly: true
+      bundle_uuid:
+        title: Bundle uuid
+        type: string
+        format: uuid
+        readOnly: true
+      change_description:
+        title: Change description
+        type: string
+        maxLength: 1000
+      url:
+        title: Url
+        type: string
+        format: uri
+        readOnly: true
+      version_num:
+        title: Version num
+        type: integer
+        readOnly: true
+  BundleVersionWithFileData:
+    required:
+      - snapshot
+    type: object
+    properties:
+      bundle:
+        title: Bundle
+        type: string
+        format: uri
+        readOnly: true
+      bundle_uuid:
+        title: Bundle uuid
+        type: string
+        format: uuid
+        readOnly: true
+      change_description:
+        title: Change description
+        type: string
+        maxLength: 1000
+      url:
+        title: Url
+        type: string
+        format: uri
+        readOnly: true
+      version_num:
+        title: Version num
+        type: integer
+        readOnly: true
+      snapshot:
+        title: Snapshot
+        type: string
+  Bundle:
+    required:
+      - collection_uuid
+      - description
+      - slug
+      - title
+    type: object
+    properties:
+      collection:
+        title: Collection
+        type: string
+        format: uri
+        readOnly: true
+      collection_uuid:
+        title: Collection uuid
+        type: string
+        format: uuid
+      description:
+        title: Description
+        type: string
+        maxLength: 10000
+        minLength: 1
+      drafts:
+        title: Drafts
+        type: string
+        readOnly: true
+      slug:
+        title: Slug
+        type: string
+        format: slug
+        maxLength: 50
+        minLength: 1
+      title:
+        title: Title
+        type: string
+        maxLength: 180
+        minLength: 1
+      url:
+        title: Url
+        type: string
+        format: uri
+        readOnly: true
+      uuid:
+        title: Uuid
+        type: string
+        format: uuid
+        readOnly: true
+      versions:
+        type: array
+        items:
+          type: string
+          format: uri
+        readOnly: true
+        uniqueItems: true
+  Collection:
+    required:
+      - title
+    type: object
+    properties:
+      title:
+        title: Title
+        type: string
+        maxLength: 180
+        minLength: 1
+      url:
+        title: Url
+        type: string
+        format: uri
+        readOnly: true
+      uuid:
+        title: Uuid
+        type: string
+        format: uuid
+        readOnly: true
+  Draft:
+    required:
+      - bundle_uuid
+      - name
+    type: object
+    properties:
+      uuid:
+        title: Uuid
+        type: string
+        format: uuid
+        readOnly: true
+      url:
+        title: Url
+        type: string
+        format: uri
+        readOnly: true
+      bundle:
+        title: Bundle
+        type: string
+        format: uri
+        readOnly: true
+      bundle_uuid:
+        title: Bundle uuid
+        type: string
+        format: uuid
+      name:
+        title: Name
+        type: string
+        maxLength: 180
+        minLength: 1
+  DraftWithFileData:
+    required:
+      - bundle_uuid
+      - name
+      - staged_draft
+    type: object
+    properties:
+      uuid:
+        title: Uuid
+        type: string
+        format: uuid
+        readOnly: true
+      url:
+        title: Url
+        type: string
+        format: uri
+        readOnly: true
+      bundle:
+        title: Bundle
+        type: string
+        format: uri
+        readOnly: true
+      bundle_uuid:
+        title: Bundle uuid
+        type: string
+        format: uuid
+      name:
+        title: Name
+        type: string
+        maxLength: 180
+        minLength: 1
+      staged_draft:
+        title: Staged draft
+        type: string
+  Entity:
+    required:
+      - entity_type
+      - external_id
+    type: object
+    properties:
+      entity_type:
+        title: Entity type
+        type: string
+        minLength: 1
+      external_id:
+        title: External id
+        type: string
+        minLength: 1
+  Taxonomy:
+    required:
+      - name
+    type: object
+    properties:
+      id:
+        title: Id
+        type: integer
+        readOnly: true
+      name:
+        title: Name
+        type: string
+        maxLength: 180
+        minLength: 1
+      owner:
+        $ref: '#/definitions/Entity'
+  TagWithHierarchy:
+    required:
+      - name
+      - parent
+    type: object
+    properties:
+      taxonomy_id:
+        title: Taxonomy id
+        type: string
+        readOnly: true
+      name:
+        title: Name
+        description: Display name of this tag; also its identifier within the taxonomy.
+        type: string
+        minLength: 1
+      path:
+        title: Path
+        description: "\n        'path' is provided for use in\n        implementing\
+          \ searching by tag. It provides the following guarantees:\n        (1) 'path'\
+          \ is globally unique.\n        (2) any child tag's path string starts with\
+          \ its parent's tag's path.\n    "
+        type: string
+        readOnly: true
+        minLength: 1
+      parent:
+        title: Parent
+        type: string
+        minLength: 1

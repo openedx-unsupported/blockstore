@@ -3,6 +3,7 @@ Tagstore API Viewset for the "Entity" API
 '''
 import logging
 
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
@@ -34,6 +35,7 @@ class EntityViewSet(viewsets.GenericViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
 
+    @swagger_auto_schema(auto_schema=None)  # Exclude from API Specification
     def list(self, request, *args, **kwargs):  # pylint: disable=unused-argument
         """
         Listing entities is generally not going to be performant, so is not

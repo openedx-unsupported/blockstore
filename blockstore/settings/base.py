@@ -40,7 +40,7 @@ INSTALLED_APPS = (
 
 THIRD_PARTY_APPS = (
     'rest_framework',
-    'rest_framework_swagger',
+    'drf_yasg',
     'django_filters',
     'social_django',
     'waffle',
@@ -293,3 +293,16 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'blockstore.apps.api.paginators.DefaultPagination',
 }
 # END DJANGO REST FRAMEWORK CONFIGURATION
+
+
+# OPENAPI SPEC GENERATION & API BROWSER CONFIGURATION (DRF-YASG)
+SWAGGER_SETTINGS = {
+    'DEFAULT_INFO': 'blockstore.apps.api.urls.API_INFO',
+    # Currently our API doesn't use any authentication:
+    'SECURITY_DEFINITIONS': {},
+    # Customize the generated spec file a bit:
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'blockstore.apps.api.schema.BlockstoreAutoSchema',
+    # Set the default URL to one that works with Devstack:
+    'DEFAULT_API_URL': 'http://localhost:18250',
+}
+# END OPENAPI SPEC GENERATION & API BROWSER CONFIGURATION (DRF-YASG)

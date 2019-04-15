@@ -62,6 +62,15 @@ Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ p
 
 #. Run ``make`` to get a list of all available commands.
 
+REST API
+--------
+
+Blockstore includes a full REST API. The API is **not authenticated** by default, so you should
+always run Blockstore behind a firewall, and only allow trusted applications to access it.
+
+On a devstack, you can browse and test the API at http://localhost:18250/api/docs/
+
+
 Get Help
 --------
 

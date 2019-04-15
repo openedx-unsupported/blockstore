@@ -3,11 +3,11 @@ django>=1.11,<1.12
 django-cors-headers>=2.2.0,<2.3
 django-environ==0.4.5
 django-extensions
-django-rest-swagger
 django-waffle
 djangorestframework
 djangorestframework-expander
 django-filter==2.0.0
+drf-yasg[validation]>=1.15.0,<2.0
 git+https://github.com/alanjds/drf-nested-routers.git
 edx-auth-backends
 elasticsearch>=6.0.0,<7.0.0
