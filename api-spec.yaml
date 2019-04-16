@@ -1815,7 +1815,6 @@ definitions:
   TagWithHierarchy:
     required:
       - name
-      - parent
     type: object
     properties:
       taxonomy_id:
@@ -1840,3 +1839,4 @@ definitions:
         title: Parent
         type: string
         minLength: 1
+        x-nullable: true

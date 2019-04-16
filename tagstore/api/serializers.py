@@ -26,7 +26,7 @@ class TagWithHierarchySerializer(TagSerializer):
     Serializer for tags that also includes hierarchy information.
     """
     # pylint: disable=abstract-method
-    parent = serializers.CharField(allow_null=True, source='parent_tag_name')
+    parent = serializers.CharField(allow_null=True, allow_blank=False, default=None, source='parent_tag_name')
 
 
 class EntitySerializer(serializers.Serializer):
