@@ -3,17 +3,17 @@ Tagstore API Viewset for the "Entity" API
 '''
 import logging
 
-from drf_yasg.utils import swagger_auto_schema
+from drf_yasg.utils import swagger_auto_schema, no_body
 from rest_framework import viewsets
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
+from blockstore.apps.api.schema import api_method
 from tagstore.models import (
     Entity, EntityId,
     Tag,
 )
-
-from tagstore.api.serializers import EntitySerializer, EntityDetailSerializer, TagSerializer
+from tagstore.api.serializers import EntitySerializer, EntityDetailSerializer, TagSerializer, EmptyObjectSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +52,7 @@ class EntityViewSet(viewsets.GenericViewSet):
         # return self.get_paginated_response(serializer.data)
         return Response([])
 
+    @api_method(EntityDetailSerializer())
     def retrieve_entity(self, request, pk=None, entity_type=None):  # pylint: disable=unused-argument
         '''
         Get a single entity. Never raises a 404, because Tagstore doesn't know
@@ -63,9 +64,9 @@ class EntityViewSet(viewsets.GenericViewSet):
             entity = Entity.objects.get(external_id=pk, entity_type=entity_type)
         except Entity.DoesNotExist:
             entity = Entity(external_id=pk, entity_type=entity_type)
-        serializer = EntityDetailSerializer(entity)
-        return Response(serializer.data)
+        return entity
 
+    @api_method(TagSerializer())
     def entity_has_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
         """
         Does this entity have the given tag?
@@ -78,11 +79,11 @@ class EntityViewSet(viewsets.GenericViewSet):
         except Entity.DoesNotExist:
             raise NotFound("Entity has no tags")
         try:
-            tag = entity.tags.get(taxonomy_id=taxonomy_id, name=tag_name)
+            return entity.tags.get(taxonomy_id=taxonomy_id, name=tag_name)
         except Tag.DoesNotExist:
             raise NotFound("Entity does not have that tag")
-        return Response(TagSerializer(tag).data)
 
+    @api_method(TagSerializer(), request_body=no_body)
     def entity_add_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
         """
         Add the given tag to the entity. The entity will be auto-created if it
@@ -96,8 +97,9 @@ class EntityViewSet(viewsets.GenericViewSet):
         except Tag.DoesNotExist:
             raise NotFound("Tag does not exist")
         tag.add_to(EntityId(external_id=pk, entity_type=entity_type))
-        return Response(TagSerializer(tag).data)
+        return tag
 
+    @api_method(EmptyObjectSerializer())
     def entity_remove_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
         """
         Remove the given tag from the entity.
@@ -116,4 +118,4 @@ class EntityViewSet(viewsets.GenericViewSet):
         except Tag.DoesNotExist:
             raise NotFound("Tag does not exist")
         tag.remove_from(EntityId(external_id=pk, entity_type=entity_type))
-        return Response({})
+        return {}

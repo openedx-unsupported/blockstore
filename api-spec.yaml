@@ -1358,7 +1358,7 @@ paths:
         '200':
           description: ''
           schema:
-            $ref: '#/definitions/Entity'
+            $ref: '#/definitions/EntityDetail'
       tags:
         - tagstore
     parameters:
@@ -1382,7 +1382,7 @@ paths:
         '200':
           description: ''
           schema:
-            $ref: '#/definitions/Entity'
+            $ref: '#/definitions/Tag'
       tags:
         - tagstore
     post:
@@ -1390,17 +1390,12 @@ paths:
       description: "Add the given tag to the entity. The entity will be auto-created\
         \ if it\nisn't yet tracked (persisted) in Tagstore's database.\n\nOnly raises\
         \ an error if the tag does not exist."
-      parameters:
-        - name: data
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/Entity'
+      parameters: []
       responses:
-        '201':
+        '200':
           description: ''
           schema:
-            $ref: '#/definitions/Entity'
+            $ref: '#/definitions/Tag'
       tags:
         - tagstore
     delete:
@@ -1412,8 +1407,10 @@ paths:
         \ entities are deleted, and we want consistent behavior\nin both cases."
       parameters: []
       responses:
-        '204':
+        '200':
           description: ''
+          schema:
+            $ref: '#/definitions/EmptyObject'
       tags:
         - tagstore
     parameters:
@@ -1436,7 +1433,7 @@ paths:
         type: string
   /tagstore/api/v1/taxonomies:
     get:
-      operationId: taxonomies_list
+      operationId: get_taxonomies
       description: Get a list of all taxonomies.
       parameters:
         - name: page
@@ -1475,7 +1472,7 @@ paths:
       tags:
         - tagstore
     post:
-      operationId: taxonomies_create
+      operationId: create_taxonomy
       description: Create a new Taxonomy
       parameters:
         - name: data
@@ -1493,7 +1490,7 @@ paths:
     parameters: []
   /tagstore/api/v1/taxonomies/{id}:
     get:
-      operationId: taxonomies_read
+      operationId: get_taxonomy
       description: Get a specific taxonomy.
       parameters: []
       responses:
@@ -1504,7 +1501,7 @@ paths:
       tags:
         - tagstore
     delete:
-      operationId: taxonomies_delete
+      operationId: delete_taxonomy
       description: Delete a specific taxonomy and all of its tags.
       parameters: []
       responses:
@@ -1520,30 +1517,56 @@ paths:
         type: integer
   /tagstore/api/v1/taxonomies/{id}/tags:
     get:
-      operationId: taxonomies_tags_list
+      operationId: get_taxonomy_tags
       summary: List the tags in this taxonomy.
       description: It guarantees that parent tags will be returned before their children.
-      parameters: []
+      parameters:
+        - name: page
+          in: query
+          description: A page number within the paginated result set.
+          required: false
+          type: integer
+        - name: page_size
+          in: query
+          description: Number of results to return per page.
+          required: false
+          type: integer
       responses:
         '200':
           description: ''
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/TagWithHierarchy'
+            required:
+              - count
+              - results
+            type: object
+            properties:
+              count:
+                type: integer
+              next:
+                type: string
+                format: uri
+                x-nullable: true
+              previous:
+                type: string
+                format: uri
+                x-nullable: true
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/TagWithHierarchy'
       tags:
         - tagstore
     post:
-      operationId: taxonomies_tags_create
+      operationId: add_taxonomy_tag
       description: Add a tag to the taxonomy, if it doesn't already exist
       parameters:
         - name: data
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TagWithHierarchy'
+            $ref: '#/definitions/Tag'
       responses:
-        '201':
+        '200':
           description: ''
           schema:
             $ref: '#/definitions/TagWithHierarchy'
@@ -1557,7 +1580,7 @@ paths:
         type: integer
   /tagstore/api/v1/taxonomies/{id}/tags/{tag_name}:
     get:
-      operationId: taxonomies_tags_read
+      operationId: get_taxonomy_tag
       description: Get a specific tag in the taxonomy
       parameters: []
       responses:
@@ -1568,12 +1591,14 @@ paths:
       tags:
         - tagstore
     delete:
-      operationId: taxonomies_tags_delete
+      operationId: delete_taxonomy_tag
       description: Delete a tag
       parameters: []
       responses:
-        '204':
+        '200':
           description: ''
+          schema:
+            $ref: '#/definitions/EmptyObject'
       tags:
         - tagstore
     parameters:
@@ -1782,7 +1807,59 @@ definitions:
       staged_draft:
         title: Staged draft
         type: string
+  Tag:
+    required:
+      - name
+    type: object
+    properties:
+      taxonomy_id:
+        title: Taxonomy id
+        type: string
+        readOnly: true
+      name:
+        title: Name
+        description: Display name of this tag; also its identifier within the taxonomy.
+        type: string
+        minLength: 1
+      path:
+        title: Path
+        description: "\n        'path' is provided for use in\n        implementing\
+          \ searching by tag. It provides the following guarantees:\n        (1) 'path'\
+          \ is globally unique.\n        (2) any child tag's path string starts with\
+          \ its parent's tag's path.\n    "
+        type: string
+        readOnly: true
+        minLength: 1
+  EntityDetail:
+    required:
+      - entity_type
+      - external_id
+    type: object
+    properties:
+      entity_type:
+        title: Entity type
+        type: string
+        minLength: 1
+      external_id:
+        title: External id
+        type: string
+        minLength: 1
+      persisted:
+        title: Persisted
+        type: boolean
+        readOnly: true
+      tags:
+        description: "\n        The list of tags that this entity has applied.\n \
+          \       "
+        type: array
+        items:
+          $ref: '#/definitions/Tag'
+        readOnly: true
+  EmptyObject:
+    type: object
+    properties: {}
   Entity:
+    title: Owner
     required:
       - entity_type
       - external_id

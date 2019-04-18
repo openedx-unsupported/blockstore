@@ -1,6 +1,7 @@
 """
 Serializers for Entities.
 """
+from drf_yasg.utils import swagger_serializer_method
 from rest_framework import serializers
 
 from tagstore.models import Taxonomy
@@ -48,11 +49,13 @@ class EntityDetailSerializer(EntitySerializer):
     # ^ We don't use tags = serializers.TagSerializer(many=True, read_only=True)
     #   because it can't handle 'Entity' objects that aren't yet saved to the DB
 
+    @swagger_serializer_method(serializer_or_field=TagSerializer(many=True))
     def get_tags(self, obj):
         """
-        Support returning 'tags' relationship even if the Entity isn't saved
-        to the database
+        The list of tags that this entity has applied.
         """
+        # Support returning 'tags' relationship even if the Entity isn't saved
+        # to the database
         if obj.pk:
             return TagSerializer(obj.tags.all(), many=True, read_only=True).data
         return []
@@ -73,3 +76,8 @@ class TaxonomySerializer(serializers.ModelSerializer):
             'name',
             'owner',
         )
+
+
+class EmptyObjectSerializer(serializers.Serializer):
+    # pylint: disable=abstract-method
+    pass
