@@ -1348,7 +1348,7 @@ paths:
         type: string
   /tagstore/api/v1/entities/{entity_type}/{_id}:
     get:
-      operationId: retrieve_entity
+      operationId: get_entity
       description: "Get a single entity. Never raises a 404, because Tagstore doesn't\
         \ know\nwhich entities exist or not. If you want to know whether or not the\n\
         entity is persisted in Tagstore's database, check the resulting\n\"persisted\"\
@@ -1373,7 +1373,7 @@ paths:
         type: string
   /tagstore/api/v1/entities/{entity_type}/{_id}/tags/{taxonomy_id}/{tag_name}:
     get:
-      operationId: entities_tags_read
+      operationId: entity_has_tag
       description: "Does this entity have the given tag?\nUse this if you need to\
         \ check if an entity has one specific tag, as it\nwill be faster than loading\
         \ the entity's entire tag list.\nRaises 404 if the tag does not exist."
@@ -1386,7 +1386,7 @@ paths:
       tags:
         - tagstore
     post:
-      operationId: entities_tags_create
+      operationId: add_tag_to_entity
       description: "Add the given tag to the entity. The entity will be auto-created\
         \ if it\nisn't yet tracked (persisted) in Tagstore's database.\n\nOnly raises\
         \ an error if the tag does not exist."
@@ -1399,7 +1399,7 @@ paths:
       tags:
         - tagstore
     delete:
-      operationId: entities_tags_delete
+      operationId: remove_tag_from_entity
       summary: Remove the given tag from the entity.
       description: "Only raises an error if the tag does not exist.\n\nWe do not provide\
         \ an option to auto-delete the tag from the taxonomy if\nit's not applied\

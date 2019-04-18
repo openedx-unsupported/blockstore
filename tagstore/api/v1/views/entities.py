@@ -52,7 +52,7 @@ class EntityViewSet(viewsets.GenericViewSet):
         # return self.get_paginated_response(serializer.data)
         return Response([])
 
-    @api_method(EntityDetailSerializer())
+    @api_method(EntityDetailSerializer(), operation_id="get_entity")
     def retrieve_entity(self, request, pk=None, entity_type=None):  # pylint: disable=unused-argument
         '''
         Get a single entity. Never raises a 404, because Tagstore doesn't know
@@ -66,7 +66,7 @@ class EntityViewSet(viewsets.GenericViewSet):
             entity = Entity(external_id=pk, entity_type=entity_type)
         return entity
 
-    @api_method(TagSerializer(exclude_parent=True))
+    @api_method(TagSerializer(exclude_parent=True), operation_id="entity_has_tag")
     def entity_has_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
         """
         Does this entity have the given tag?
@@ -83,7 +83,7 @@ class EntityViewSet(viewsets.GenericViewSet):
         except Tag.DoesNotExist:
             raise NotFound("Entity does not have that tag")
 
-    @api_method(TagSerializer(exclude_parent=True), request_body=no_body)
+    @api_method(TagSerializer(exclude_parent=True), request_body=no_body, operation_id="add_tag_to_entity")
     def entity_add_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
         """
         Add the given tag to the entity. The entity will be auto-created if it
@@ -99,7 +99,7 @@ class EntityViewSet(viewsets.GenericViewSet):
         tag.add_to(EntityId(external_id=pk, entity_type=entity_type))
         return tag
 
-    @api_method(EmptyObjectSerializer())
+    @api_method(EmptyObjectSerializer(), operation_id="remove_tag_from_entity")
     def entity_remove_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
         """
         Remove the given tag from the entity.
