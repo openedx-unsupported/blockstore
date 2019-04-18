@@ -26,14 +26,15 @@ class EntityRouter(routers.DefaultRouter):
             initkwargs={'suffix': 'Detail'}
         ),
         Route(
-            url=r'^{prefix}/(?P<entity_type>[^/.]+)/{lookup}$',
+            url=r'^{prefix}/(?P<entity_type>[^/.]+)/(?P<external_id>[^/.]+)$',
             mapping={'get': 'retrieve_entity'},
             name='{basename}-detail',
             detail=True,
             initkwargs={'suffix': 'Detail'}
         ),
         Route(
-            url=r'^{prefix}/(?P<entity_type>[^/.]+)/{lookup}/tags/(?P<taxonomy_id>\d+)/(?P<tag_name>.*)$',
+            # pylint: disable=line-too-long
+            url=r'^{prefix}/(?P<entity_type>[^/.]+)/(?P<external_id>[^/.]+)/tags/(?P<taxonomy_id>\d+)/(?P<tag_name>.*)$',  # noqa
             mapping={'get': 'entity_has_tag', 'post': 'entity_add_tag', 'delete': 'entity_remove_tag'},
             name='{basename}-tag-change',
             detail=True,

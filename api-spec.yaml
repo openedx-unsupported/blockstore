@@ -1346,7 +1346,7 @@ paths:
         in: path
         required: true
         type: string
-  /tagstore/api/v1/entities/{entity_type}/{_id}:
+  /tagstore/api/v1/entities/{entity_type}/{external_id}:
     get:
       operationId: get_entity
       description: "Get a single entity. Never raises a 404, because Tagstore doesn't\
@@ -1362,16 +1362,15 @@ paths:
       tags:
         - tagstore
     parameters:
-      - name: _id
-        in: path
-        description: A unique integer value identifying this entity.
-        required: true
-        type: integer
       - name: entity_type
         in: path
         required: true
         type: string
-  /tagstore/api/v1/entities/{entity_type}/{_id}/tags/{taxonomy_id}/{tag_name}:
+      - name: external_id
+        in: path
+        required: true
+        type: string
+  /tagstore/api/v1/entities/{entity_type}/{external_id}/tags/{taxonomy_id}/{tag_name}:
     get:
       operationId: entity_has_tag
       description: "Does this entity have the given tag?\nUse this if you need to\
@@ -1414,12 +1413,11 @@ paths:
       tags:
         - tagstore
     parameters:
-      - name: _id
-        in: path
-        description: A unique integer value identifying this entity.
-        required: true
-        type: integer
       - name: entity_type
+        in: path
+        required: true
+        type: string
+      - name: external_id
         in: path
         required: true
         type: string
