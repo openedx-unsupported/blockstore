@@ -20,7 +20,6 @@ from tagstore.models import (
 from tagstore.api.serializers import (
     EmptyObjectSerializer,
     TagSerializer,
-    TagWithHierarchySerializer,
     TaxonomySerializer,
 )
 
@@ -42,7 +41,7 @@ class TaxonomyViewSet(viewsets.GenericViewSet):
         Otherwise, show the form for creating a taxonomy.
         """
         if self.action.endswith('tag') or self.action.endswith('tags'):
-            return TagWithHierarchySerializer
+            return TagSerializer
         return TaxonomySerializer
 
     @swagger_auto_schema(operation_id="get_taxonomies")
@@ -106,10 +105,10 @@ class TaxonomyViewSet(viewsets.GenericViewSet):
         taxonomy = get_object_or_404(self.queryset, pk=pk)
         tags_query = taxonomy.tags.order_by('path')
         page = self.paginate_queryset(tags_query)
-        return self.get_paginated_response(TagWithHierarchySerializer(page, many=True).data)
+        return self.get_paginated_response(TagSerializer(page, many=True).data)
 
     @action(detail=True, url_path=r'tags/(?P<tag_name>.+)')
-    @api_method(TagWithHierarchySerializer(), operation_id="get_taxonomy_tag")
+    @api_method(TagSerializer(), operation_id="get_taxonomy_tag")
     def tag(self, request, pk, tag_name: str):  # pylint: disable=unused-argument
         """
         Get a specific tag in the taxonomy
@@ -129,7 +128,7 @@ class TaxonomyViewSet(viewsets.GenericViewSet):
         return {}
 
     @tags.mapping.post
-    @api_method(TagWithHierarchySerializer(), operation_id="add_taxonomy_tag", request_body=TagSerializer)
+    @api_method(TagSerializer(), operation_id="add_taxonomy_tag", request_body=TagSerializer)
     def add_tag(self, request, pk):
         """
         Add a tag to the taxonomy, if it doesn't already exist

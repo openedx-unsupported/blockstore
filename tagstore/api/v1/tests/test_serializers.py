@@ -32,10 +32,20 @@ class TagSerializerTestCase(TestCase):
             "taxonomy_id": taxonomy.id,
             "name": "parent",
             "path": f"{taxonomy.id}:{parent_tag}:",
+            "parent": None,
         })
 
         child_out = TagSerializer(child_tag).data
         self.assertDictEqual(child_out, {
+            "taxonomy_id": taxonomy.id,
+            "name": "child",
+            "path": f"{taxonomy.id}:{parent_tag}:{child_tag}:",
+            "parent": parent_tag.name,
+        })
+        # Test that with the 'exclude_parent=True' flag, the serializer omits
+        # the 'parent' field, which is only needed when displaying a taxonomy
+        child_out_no_parent = TagSerializer(child_tag, exclude_parent=True).data
+        self.assertDictEqual(child_out_no_parent, {
             "taxonomy_id": taxonomy.id,
             "name": "child",
             "path": f"{taxonomy.id}:{parent_tag}:{child_tag}:",

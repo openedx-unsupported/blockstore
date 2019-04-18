@@ -1553,7 +1553,7 @@ paths:
               results:
                 type: array
                 items:
-                  $ref: '#/definitions/TagWithHierarchy'
+                  $ref: '#/definitions/Tag'
       tags:
         - tagstore
     post:
@@ -1569,7 +1569,7 @@ paths:
         '200':
           description: ''
           schema:
-            $ref: '#/definitions/TagWithHierarchy'
+            $ref: '#/definitions/Tag'
       tags:
         - tagstore
     parameters:
@@ -1587,7 +1587,7 @@ paths:
         '200':
           description: ''
           schema:
-            $ref: '#/definitions/TagWithHierarchy'
+            $ref: '#/definitions/Tag'
       tags:
         - tagstore
     delete:
@@ -1830,6 +1830,11 @@ definitions:
         type: string
         readOnly: true
         minLength: 1
+      parent:
+        title: Parent
+        type: string
+        minLength: 1
+        x-nullable: true
   EntityDetail:
     required:
       - entity_type
@@ -1889,31 +1894,3 @@ definitions:
         minLength: 1
       owner:
         $ref: '#/definitions/Entity'
-  TagWithHierarchy:
-    required:
-      - name
-    type: object
-    properties:
-      taxonomy_id:
-        title: Taxonomy id
-        type: string
-        readOnly: true
-      name:
-        title: Name
-        description: Display name of this tag; also its identifier within the taxonomy.
-        type: string
-        minLength: 1
-      path:
-        title: Path
-        description: "\n        'path' is provided for use in\n        implementing\
-          \ searching by tag. It provides the following guarantees:\n        (1) 'path'\
-          \ is globally unique.\n        (2) any child tag's path string starts with\
-          \ its parent's tag's path.\n    "
-        type: string
-        readOnly: true
-        minLength: 1
-      parent:
-        title: Parent
-        type: string
-        minLength: 1
-        x-nullable: true

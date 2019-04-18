@@ -66,7 +66,7 @@ class EntityViewSet(viewsets.GenericViewSet):
             entity = Entity(external_id=pk, entity_type=entity_type)
         return entity
 
-    @api_method(TagSerializer())
+    @api_method(TagSerializer(exclude_parent=True))
     def entity_has_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
         """
         Does this entity have the given tag?
@@ -83,7 +83,7 @@ class EntityViewSet(viewsets.GenericViewSet):
         except Tag.DoesNotExist:
             raise NotFound("Entity does not have that tag")
 
-    @api_method(TagSerializer(), request_body=no_body)
+    @api_method(TagSerializer(exclude_parent=True), request_body=no_body)
     def entity_add_tag(self, request, pk, entity_type, taxonomy_id, tag_name):  # pylint: disable=unused-argument
         """
         Add the given tag to the entity. The entity will be auto-created if it
