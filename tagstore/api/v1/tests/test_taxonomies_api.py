@@ -98,7 +98,7 @@ class TaxonomiesTestCase(TestCase):
         # Now add a tag:
         tag1 = self.client.add_taxonomy_tag(taxonomy["id"], {"name": "yellow"})
         self.assertEqual(tag1["name"], "yellow")
-        self.assertEqual(tag1["parent"], None)
+        self.assertEqual(tag1["parent"], "")
         self.assertIsInstance(tag1["path"], str)  # Exact value of "path" is an implementation detail
 
         # At first, the new taxonomy should not contain any tags:
@@ -204,9 +204,9 @@ class TaxonomiesTestCase(TestCase):
         expected_tags = [
             # The tags and their parents should be returned in alphabetical order,
             # parents always before children
-            ("animals", None),
+            ("animals", ""),
             ("human", "animals"),
-            ("plants", None),
+            ("plants", ""),
             ("flowers", "plants"),
             ("daisy", "flowers"),
             ("trees", "plants"),

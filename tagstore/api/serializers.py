@@ -21,14 +21,12 @@ class TagSerializer(serializers.Serializer):
         (2) any child tag's path string starts with its parent's tag's path.
     """))
     # The Taxonomy API views will include the 'parent' field, which specifies
-    # the name (ID) of the parent tag in the Taxonomy, or None/NULL if there is
-    # no parent. It is also used to specify the parent tag's name when creating
-    # a tag.
+    # the name (ID) of the parent tag in the Taxonomy, or an empty string if
+    # there is no parent. It is also used to specify the parent tag's name when
+    # creating a tag.
     # The Entity-related REST API omits this field, because hierarchy of tags is
     # not considered important when viewing an entity vs. viewing a taxonomy.
-    parent = serializers.CharField(
-        allow_null=True, allow_blank=False, source='parent_tag_name', required=False,
-    )
+    parent = serializers.CharField(allow_blank=True, source='parent_tag_name', required=False)
 
     def __init__(self, *args, **kwargs):
         exclude_parent = kwargs.pop('exclude_parent', False)

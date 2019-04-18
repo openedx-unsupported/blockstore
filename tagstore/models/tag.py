@@ -95,7 +95,7 @@ class Tag(models.Model):
 
     @property
     def parent_tag_name(self) -> Optional[str]:
-        return self.parent_tag_id.name if self.parent_tag_id else None
+        return self.parent_tag_id.name if self.parent_tag_id else ""
 
     @property
     def id(self) -> TagId:

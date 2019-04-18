@@ -32,7 +32,7 @@ class TagSerializerTestCase(TestCase):
             "taxonomy_id": taxonomy.id,
             "name": "parent",
             "path": f"{taxonomy.id}:{parent_tag}:",
-            "parent": None,
+            "parent": "",
         })
 
         child_out = TagSerializer(child_tag).data

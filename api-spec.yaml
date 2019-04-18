@@ -1831,8 +1831,6 @@ definitions:
       parent:
         title: Parent
         type: string
-        minLength: 1
-        x-nullable: true
   EntityDetail:
     required:
       - entity_type
