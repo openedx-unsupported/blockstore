@@ -77,11 +77,8 @@ class EntityViewSet(viewsets.GenericViewSet):
         """
         try:
             entity = Entity.objects.get(external_id=external_id, entity_type=entity_type)
-        except Entity.DoesNotExist:
-            raise NotFound("Entity has no tags")
-        try:
             return entity.tags.get(taxonomy_id=taxonomy_id, name=tag_name)
-        except Tag.DoesNotExist:
+        except (Entity.DoesNotExist, Tag.DoesNotExist):
             raise NotFound("Entity does not have that tag")
 
     @api_method(TagSerializer(exclude_parent=True), request_body=no_body, operation_id="add_tag_to_entity")

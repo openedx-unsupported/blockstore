@@ -40,6 +40,8 @@ class EntityRouter(routers.DefaultRouter):
             detail=True,
             initkwargs={'suffix': 'Tags'}
         ),
+        # We must include DynamicRoute to allow routes defined by the @action
+        # decorator to work, e.g. TaxonomyViewSet.tags
         DynamicRoute(
             url=r'^{prefix}/{lookup}/{url_path}$',
             name='{basename}-{url_name}',

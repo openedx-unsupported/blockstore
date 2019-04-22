@@ -260,7 +260,7 @@ class TaxonomiesTestCase(TestCase):
 
     # Update
 
-    # Not implemented yet... eventually we should have a method to change a Taxonomy's name and/or owner
+    # TODO: we should have a method to change a Taxonomy's name and/or owner
 
     # Delete
 
