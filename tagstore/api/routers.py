@@ -33,8 +33,7 @@ class EntityRouter(routers.DefaultRouter):
             initkwargs={'suffix': 'Detail'}
         ),
         Route(
-            # pylint: disable=line-too-long
-            url=r'^{prefix}/(?P<entity_type>[^/.]+)/(?P<external_id>[^/.]+)/tags/(?P<taxonomy_id>\d+)/(?P<tag_name>.*)$',  # noqa
+            url=r'^{prefix}/(?P<entity_type>[^/.]+)/(?P<external_id>[^/.]+)/tags/(?P<taxonomy_id>\d+)/(?P<name>.*)$',
             mapping={'get': 'entity_has_tag', 'post': 'entity_add_tag', 'delete': 'entity_remove_tag'},
             name='{basename}-tag-change',
             detail=True,

@@ -107,23 +107,23 @@ class TaxonomyViewSet(viewsets.GenericViewSet):
         page = self.paginate_queryset(tags_query)
         return self.get_paginated_response(TagSerializer(page, many=True).data)
 
-    @action(detail=True, url_path=r'tags/(?P<tag_name>.+)')
+    @action(detail=True, url_path=r'tags/(?P<name>.+)')
     @api_method(TagSerializer(), operation_id="get_taxonomy_tag")
-    def tag(self, request, pk, tag_name: str):  # pylint: disable=unused-argument
+    def tag(self, request, pk, name: str):  # pylint: disable=unused-argument
         """
         Get a specific tag in the taxonomy
         """
         taxonomy = get_object_or_404(self.queryset, pk=pk)
-        return get_object_or_404(taxonomy.tags, name__iexact=tag_name)
+        return get_object_or_404(taxonomy.tags, name__iexact=name)
 
     @tag.mapping.delete
     @api_method(EmptyObjectSerializer(), operation_id="delete_taxonomy_tag")
-    def delete_tag(self, request, pk, tag_name: str):  # pylint: disable=unused-argument
+    def delete_tag(self, request, pk, name: str):  # pylint: disable=unused-argument
         """
         Delete a tag
         """
         taxonomy = get_object_or_404(self.queryset, pk=pk)
-        tag = get_object_or_404(taxonomy.tags, name__iexact=tag_name)
+        tag = get_object_or_404(taxonomy.tags, name__iexact=name)
         tag.delete()
         return {}
 

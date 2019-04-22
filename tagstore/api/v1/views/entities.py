@@ -68,7 +68,7 @@ class EntityViewSet(viewsets.GenericViewSet):
         return entity
 
     @api_method(TagSerializer(exclude_parent=True), operation_id="entity_has_tag")
-    def entity_has_tag(self, request, entity_type, external_id, taxonomy_id, tag_name):
+    def entity_has_tag(self, request, entity_type, external_id, taxonomy_id, name):
         """
         Does this entity have the given tag?
         Use this if you need to check if an entity has one specific tag, as it
@@ -77,12 +77,12 @@ class EntityViewSet(viewsets.GenericViewSet):
         """
         try:
             entity = Entity.objects.get(external_id=external_id, entity_type=entity_type)
-            return entity.tags.get(taxonomy_id=taxonomy_id, name=tag_name)
+            return entity.tags.get(taxonomy_id=taxonomy_id, name=name)
         except (Entity.DoesNotExist, Tag.DoesNotExist):
             raise NotFound("Entity does not have that tag")
 
     @api_method(TagSerializer(exclude_parent=True), request_body=no_body, operation_id="add_tag_to_entity")
-    def entity_add_tag(self, request, entity_type, external_id, taxonomy_id, tag_name):
+    def entity_add_tag(self, request, entity_type, external_id, taxonomy_id, name):
         """
         Add the given tag to the entity. The entity will be auto-created if it
         isn't yet tracked (persisted) in Tagstore's database.
@@ -91,14 +91,14 @@ class EntityViewSet(viewsets.GenericViewSet):
         TODO: Add an option to auto-create the tag.
         """
         try:
-            tag = Tag.objects.get(taxonomy_id=taxonomy_id, name=tag_name)
+            tag = Tag.objects.get(taxonomy_id=taxonomy_id, name=name)
         except Tag.DoesNotExist:
             raise NotFound("Tag does not exist")
         tag.add_to(EntityId(external_id=external_id, entity_type=entity_type))
         return tag
 
     @api_method(EmptyObjectSerializer(), operation_id="remove_tag_from_entity")
-    def entity_remove_tag(self, request, entity_type, external_id, taxonomy_id, tag_name):
+    def entity_remove_tag(self, request, entity_type, external_id, taxonomy_id, name):
         """
         Remove the given tag from the entity.
 
@@ -112,7 +112,7 @@ class EntityViewSet(viewsets.GenericViewSet):
         tags.
         """
         try:
-            tag = Tag.objects.get(taxonomy_id=taxonomy_id, name=tag_name)
+            tag = Tag.objects.get(taxonomy_id=taxonomy_id, name=name)
         except Tag.DoesNotExist:
             raise NotFound("Tag does not exist")
         tag.remove_from(EntityId(external_id=external_id, entity_type=entity_type))

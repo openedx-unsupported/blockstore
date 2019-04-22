@@ -1370,7 +1370,7 @@ paths:
         in: path
         required: true
         type: string
-  /tagstore/api/v1/entities/{entity_type}/{external_id}/tags/{taxonomy_id}/{tag_name}:
+  /tagstore/api/v1/entities/{entity_type}/{external_id}/tags/{taxonomy_id}/{name}:
     get:
       operationId: entity_has_tag
       description: "Does this entity have the given tag?\nUse this if you need to\
@@ -1421,7 +1421,7 @@ paths:
         in: path
         required: true
         type: string
-      - name: tag_name
+      - name: name
         in: path
         required: true
         type: string
@@ -1576,7 +1576,7 @@ paths:
         description: A unique integer value identifying this taxonomy.
         required: true
         type: integer
-  /tagstore/api/v1/taxonomies/{id}/tags/{tag_name}:
+  /tagstore/api/v1/taxonomies/{id}/tags/{name}:
     get:
       operationId: get_taxonomy_tag
       description: Get a specific tag in the taxonomy
@@ -1605,7 +1605,7 @@ paths:
         description: A unique integer value identifying this taxonomy.
         required: true
         type: integer
-      - name: tag_name
+      - name: name
         in: path
         required: true
         type: string

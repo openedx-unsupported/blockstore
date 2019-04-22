@@ -59,31 +59,31 @@ class TagstoreAPIClient(APIClient):
     def get_taxonomy_tags(self, taxonomy_id: int):
         return self.get(f'{V1_API}/taxonomies/{taxonomy_id}/tags')
 
-    def get_taxonomy_tag(self, taxonomy_id: int, tag_name: str, **kwargs):
-        return self.get(f'{V1_API}/taxonomies/{taxonomy_id}/tags/{quote(tag_name)}', **kwargs)
+    def get_taxonomy_tag(self, taxonomy_id: int, name: str, **kwargs):
+        return self.get(f'{V1_API}/taxonomies/{taxonomy_id}/tags/{quote(name)}', **kwargs)
 
     def add_taxonomy_tag(self, taxonomy_id: int, data: dict, **kwargs):
         return self.post(f'{V1_API}/taxonomies/{taxonomy_id}/tags', data, **kwargs)
 
-    def delete_taxonomy_tag(self, taxonomy_id: int, tag_name: str):
-        return self.delete(f'{V1_API}/taxonomies/{taxonomy_id}/tags/{quote(tag_name)}')
+    def delete_taxonomy_tag(self, taxonomy_id: int, name: str):
+        return self.delete(f'{V1_API}/taxonomies/{taxonomy_id}/tags/{quote(name)}')
 
     def get_entity(self, entity_type: str, external_id: str):
         return self.get(f'{V1_API}/entities/{entity_type}/{quote(external_id)}')
 
-    def entity_has_tag(self, entity_type: str, external_id: str, taxonomy_id: int, tag_name: str, **kwargs):
+    def entity_has_tag(self, entity_type: str, external_id: str, taxonomy_id: int, name: str, **kwargs):
         return self.get(
-            f'{V1_API}/entities/{entity_type}/{quote(external_id)}/tags/{taxonomy_id}/{quote(tag_name)}',
+            f'{V1_API}/entities/{entity_type}/{quote(external_id)}/tags/{taxonomy_id}/{quote(name)}',
             **kwargs,
         )
 
-    def entity_add_tag(self, entity_type: str, external_id: str, taxonomy_id: int, tag_name: str, **kwargs):
+    def entity_add_tag(self, entity_type: str, external_id: str, taxonomy_id: int, name: str, **kwargs):
         return self.post(
-            f'{V1_API}/entities/{entity_type}/{quote(external_id)}/tags/{taxonomy_id}/{quote(tag_name)}',
+            f'{V1_API}/entities/{entity_type}/{quote(external_id)}/tags/{taxonomy_id}/{quote(name)}',
             **kwargs,
         )
 
-    def entity_remove_tag(self, entity_type: str, external_id: str, taxonomy_id: int, tag_name: str):
+    def entity_remove_tag(self, entity_type: str, external_id: str, taxonomy_id: int, name: str):
         return self.delete(
-            f'{V1_API}/entities/{entity_type}/{quote(external_id)}/tags/{taxonomy_id}/{quote(tag_name)}',
+            f'{V1_API}/entities/{entity_type}/{quote(external_id)}/tags/{taxonomy_id}/{quote(name)}',
         )

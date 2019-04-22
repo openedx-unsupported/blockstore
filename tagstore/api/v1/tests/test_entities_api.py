@@ -62,7 +62,7 @@ class EntitiesTestCase(TestCase):
         """
         self.client.entity_add_tag(
             entity_type="course", external_id="Calc101",
-            taxonomy_id=self.taxonomy["id"], tag_name="child tag",
+            taxonomy_id=self.taxonomy["id"], name="child tag",
         )
 
         data = self.client.get_entity("course", "Calc101")
@@ -88,11 +88,11 @@ class EntitiesTestCase(TestCase):
         args = dict(entity_type="course", external_id="Bio350", taxonomy_id=self.taxonomy["id"])
         for tag_name in VALID_TAG_NAMES:
             # At first, has_tag should return a 404 (the entity does not have that tag)
-            self.client.entity_has_tag(**args, tag_name=tag_name, expect=404)
+            self.client.entity_has_tag(**args, name=tag_name, expect=404)
             # Then tag the entity:
-            self.client.entity_add_tag(**args, tag_name=tag_name)
+            self.client.entity_add_tag(**args, name=tag_name)
             # Now the we should be able to retrieve just that tag:
-            data = self.client.entity_has_tag(**args, tag_name=tag_name)
+            data = self.client.entity_has_tag(**args, name=tag_name)
             self.assertEqual(data["name"], tag_name)
             self.assertEqual(data["taxonomy_id"], self.taxonomy["id"])
             self.assertIsInstance(data["path"], str)
@@ -104,7 +104,7 @@ class EntitiesTestCase(TestCase):
         """
         self.client.entity_add_tag(
             entity_type="course", external_id="Calc101",
-            taxonomy_id=self.taxonomy["id"], tag_name="This tag does not exist.",
+            taxonomy_id=self.taxonomy["id"], name="This tag does not exist.",
             expect=404,
         )
 
@@ -114,7 +114,7 @@ class EntitiesTestCase(TestCase):
         """
         entity_args = dict(entity_type="person", external_id="Alex")
         tag_name = "parent tag"
-        tag_args = dict(taxonomy_id=self.taxonomy["id"], tag_name=tag_name)
+        tag_args = dict(taxonomy_id=self.taxonomy["id"], name=tag_name)
         # First add a tag to the entity
         self.client.entity_add_tag(**entity_args, **tag_args)
         # Now the entity has that tag:
