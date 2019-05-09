@@ -69,6 +69,7 @@ def isolate_test_storage(cls):
     # Decorate the setUp method so that files written during setUp end up in the
     # right place. The override will persist until after tearDown() is called.
     original_setUp = cls.setUp
+
     @wraps(cls.setUp)
     def setUp(self):
         # TestCase.id() returns a string value for the currently executing test
