@@ -2,7 +2,6 @@
 
 from django.conf.urls import url, include
 
-from ...search.views import BlockDocumentsViewSet
 from ..routers import DefaultRouter
 from .views.bundles import BundleViewSet, BundleVersionViewSet
 from .views.collections import CollectionViewSet
@@ -14,7 +13,6 @@ root_router.register(r'bundles', BundleViewSet)
 root_router.register(r'bundle_versions', BundleVersionViewSet)
 root_router.register(r'collections', CollectionViewSet)
 root_router.register(r'drafts', DraftViewSet)
-root_router.register(r'index/blocks', BlockDocumentsViewSet, basename='index-blocks')
 
 urlpatterns = [
     url(r'^', include(root_router.urls)),

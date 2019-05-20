@@ -52,7 +52,6 @@ PROJECT_APPS = (
     'blockstore.apps.core',
     'blockstore.apps.api',
     'blockstore.apps.bundles.apps.BundlesConfig',
-    'blockstore.apps.search.apps.SearchConfig',
     'tagstore.backends.tagstore_django',
     'tagstore.tagstore_rest',
 )
@@ -100,12 +99,6 @@ DATABASES = {
     }
 }
 
-# ELASTICSEARCH CONFIGURATION
-ELASTICSEARCH = {
-    'default': {
-        'hosts': os.environ.get('ELASTICSEARCH_URL'),
-    },
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/

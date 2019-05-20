@@ -14,7 +14,6 @@ jobs:
 
     docker:
       - image: python:3.6-alpine
-      - image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
       - image: mysql:5.6
         command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
         environment:
@@ -22,7 +21,6 @@ jobs:
           MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
 
     environment:
-      ELASTICSEARCH_URL: "localhost:9200"
       MYSQL_DATABASE: "blockstore_db"
       MYSQL_USER: "root"
       MYSQL_HOST: "127.0.0.1"

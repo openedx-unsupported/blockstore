@@ -2,16 +2,6 @@ version: '3'
 
 services:
 
-  elasticsearch:
-    container_name: edx.devstack.blockstore-elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
-    ports:
-       - "18255:9200"
-       - "18256:9300"
-    volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
-      - elasticsearch_data:/usr/share/elasticsearch/logs
-
   blockstore:
     container_name: edx.devstack.blockstore
     image: opencraft/blockstore:latest
@@ -30,7 +20,6 @@ services:
       - ./:/blockstore/app/:cached
       - blockstore_venv:/blockstore/venv/
     environment:
-      - ELASTICSEARCH_URL=edx.devstack.blockstore-elasticsearch:9200
       - MYSQL_DATABASE=blockstore_db
       - MYSQL_USER=root
       - MYSQL_HOST=mysql
@@ -43,4 +32,3 @@ networks:
 
 volumes:
   blockstore_venv:
-  elasticsearch_data:
