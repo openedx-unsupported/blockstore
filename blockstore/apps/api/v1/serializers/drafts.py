@@ -6,14 +6,15 @@ vs. detail, and an entirely different one for writes.
 """
 import base64
 import binascii
+import uuid
 
 from django.core.files.base import ContentFile
 from rest_framework import relations, serializers
+from rest_framework.serializers import ValidationError
 
-from blockstore.apps.bundles.models import Bundle, Draft
-from blockstore.apps.bundles.store import (
-    DraftRepo, SnapshotRepo, is_safe_file_path
-)
+from blockstore.apps.bundles.links import Dependency
+from blockstore.apps.bundles.models import Bundle, BundleVersion, Draft
+from blockstore.apps.bundles.store import DraftRepo, SnapshotRepo, is_safe_file_path
 
 
 class DraftSerializer(serializers.ModelSerializer):
@@ -78,9 +79,29 @@ class DraftWithFileDataSerializer(DraftSerializer):
                     "hash_digest": file_info.hash_digest.hex(),
                     "modified": path in staged_draft.files_to_overwrite
                 }
-                for path, file_info in staged_draft.files.items()
+                for path, file_info in staged_draft.composed_files().items()
             }
+            basic_info['links'] = {
+                link.name: {
+                    "direct": self._serialized_dep(link.direct_dependency),
+                    "indirect": [
+                        self._serialized_dep(dep)
+                        for dep in link.indirect_dependencies
+                    ],
+                    "modified": link.name in staged_draft.links_to_overwrite.modified_set
+                }
+                for link in staged_draft.composed_links()
+                if link.direct_dependency
+            }
+
             return basic_info
+
+        def _serialized_dep(self, dependency):
+            return {
+                "bundle_uuid": dependency.bundle_uuid,
+                "version": dependency.version,
+                "snapshot_digest": dependency.snapshot_digest.hex(),
+            }
 
         def to_internal_value(self, _data):
             raise NotImplementedError()
@@ -96,12 +117,21 @@ class DraftFileUpdateSerializer(serializers.BaseSerializer):
         """
         Convert file names -> b64 strings into file names -> ContentFiles.
 
-        `data` is a  dict of file names to base64 encoded data representations.
+        `data` has two dicts:
+          1. 'files' - file names to base64 encoded data representations.
+          2. 'links' - snapshots that we have as dependencies.
         """
-        if 'files' not in data or not isinstance(data['files'], dict):
-            raise serializers.ValidationError('Missing "files" dict')
+        files = self._parse_files(data.get('files', {}))
+        links = self._parse_links(data.get('links', {}))
 
-        for file_name in data['files']:
+        return {
+            'files': files,
+            'links': links,
+        }
+
+    def _parse_files(self, files):
+        """Parse file dict from client PATCH JSON."""
+        for file_name in files:
             if not is_safe_file_path(file_name):
                 raise serializers.ValidationError(u'"{}" is not a valid file name'.format(file_name))
 
@@ -115,7 +145,7 @@ class DraftFileUpdateSerializer(serializers.BaseSerializer):
             try:
                 binary_file_data = base64.b64decode(b64_encoded_str)
             except binascii.Error as err:
-                raise serializers.ValidationError(
+                raise ValidationError(
                     u"Error decoding file {}: {} (check if it's base64 encoded?)".format(file_path, err)
                 )
             return ContentFile(binary_file_data)
@@ -123,5 +153,84 @@ class DraftFileUpdateSerializer(serializers.BaseSerializer):
         # TODO: make sure they can't write outside the draft space
         return {
             file_path: _parse_file_data(file_path, file_data)
-            for file_path, file_data in data['files'].items()
+            for file_path, file_data in files.items()
         }
+
+    def _parse_links(self, links):
+        """
+        Parse link information supplied by the user.
+
+        We expect links to come to us in a format that looks like:
+
+        "links": {
+            "algebra_problem_bank": {
+                "bundle_uuid": "408d549c-2ebf-4bae-9350-d72109a54163",
+                "version": 1
+            },
+            "link_to_delete": None
+        }
+
+        Once we have this information, we need to verify that the linked Bundles
+        actually exist, and then return a dict of link names to direct
+        Dependencies.
+        """
+        names_to_dependencies = {}
+        for name, bv_info in links.items():
+            # If bv_info is None, we want to delete this Link (set to None)
+            if name and bv_info is None:
+                names_to_dependencies[name] = None
+                continue
+
+            # Check that our fields exist.
+            if 'bundle_uuid' not in bv_info:
+                raise ValidationError(
+                    "Link {} has no 'bundle_uuid' specified.".format(name)
+                )
+            if 'version' not in bv_info:
+                raise ValidationError(
+                    "Link {} has no 'version' specified.".format(name)
+                )
+
+            # Check that our field values make sense (proper types).
+            if not isinstance(name, str):
+                raise ValidationError(
+                    "{} is not a valid Link name.".format(name)
+                )
+            version = bv_info['version']
+            # Python's bool is a subclass of int
+            if (not isinstance(version, int)) or isinstance(version, bool):
+                raise ValidationError(
+                    "Link {}: {} must be an integer.".format(name, version)
+                )
+            try:
+                bundle_uuid_str = bv_info['bundle_uuid']
+                bundle_uuid = uuid.UUID(bundle_uuid_str)
+            except ValueError:
+                raise ValidationError(
+                    "Link {}: {} is not a valid UUID.".format(name, bundle_uuid_str)
+                )
+
+            # At this point it's syntactically correct, but it might be pointing
+            # to a BundleVersion that doesn't really exist.
+            bundle_version = BundleVersion.get_bundle_version(
+                bundle_uuid=bundle_uuid,
+                version_num=version,
+            )
+            if not bundle_version:
+                raise ValidationError(
+                    (
+                        "BundleVersion ({}, {}) referenced in Link {} does not exist."
+                        .format(bundle_uuid, version, name)
+                    )
+                )
+
+            # If everything checks out, create a Dependency. We can't make a
+            # Link yet because we don't know the indirect Dependencies (i.e.
+            # this Dependency's dependencies).
+            names_to_dependencies[name] = Dependency(
+                bundle_uuid=bundle_uuid,
+                version=version,
+                snapshot_digest=bundle_version.snapshot_digest_bytes,
+            )
+
+        return names_to_dependencies

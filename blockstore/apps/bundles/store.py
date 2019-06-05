@@ -21,18 +21,19 @@ import pytz
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile, File
 from django.dispatch import Signal
-
 import attr
 from pyblake2 import blake2b
+
+from .links import Dependency, Link, LinkCollection, LinkChangeSet
+
+logger = logging.getLogger(__name__)
+snapshot_created = Signal(providing_args=["bundle_uuid", "hash_digest"])
+
 
 # Pylint doesn't know how to introspect attr.s() structs, and can't tell that
 # Snapshot.files or StagedDraft.files_to_overwrite are in fact dicts and can do
 # all of the things listed below:
 # pylint: disable=unsubscriptable-object,unsupported-membership-test,not-an-iterable
-
-logger = logging.getLogger(__name__)
-snapshot_created = Signal(providing_args=["bundle_uuid", "hash_digest"])
-
 
 @attr.s(frozen=True)
 class FileInfo:
@@ -94,6 +95,9 @@ class Snapshot:
     # Map of paths to FileInfo objects
     files = attr.ib(type=dict)
 
+    # Captures our direct and indirect dependencies.
+    links = attr.ib(type=LinkCollection)
+
     # 20-byte BLAKE2 hash
     hash_digest = attr.ib(type=bytes)
 
@@ -101,11 +105,14 @@ class Snapshot:
     created_at = attr.ib(type=datetime)
 
     @classmethod
-    def create(cls, bundle_uuid, files, created_at=None):
+    def create(cls, bundle_uuid, files, links=None, created_at=None):
         """Create a Snapshot."""
+        if links is None:
+            links = LinkCollection(bundle_uuid, [])
+
         created_at = created_at or datetime.now(timezone.utc)
         str_to_be_hashed = json.dumps(
-            [bundle_uuid, created_at, sorted(files.items())],
+            [bundle_uuid, created_at, sorted(files.items()), sorted(links)],
             cls=BundleDataJSONEncoder,
             indent=None,
             separators=(',', ':'),
@@ -114,6 +121,7 @@ class Snapshot:
         return cls(
             bundle_uuid=bundle_uuid,
             files=files,
+            links=links,
             hash_digest=hash_digest,
             created_at=created_at,
         )
@@ -140,6 +148,8 @@ class StagedDraft:
     created_at = attr.ib(type=datetime)
     updated_at = attr.ib(type=datetime)
 
+    links_to_overwrite = attr.ib(type=LinkChangeSet)
+
     @property
     def files(self):
         """Convenience property to mimic Snapshot.files"""
@@ -160,8 +170,6 @@ class StagedDraft:
         else:
             files_to_overwrite = self.files_to_overwrite
 
-        # Pylint doesn't understand that StagedDraft.base_snapshot is a Snapshot
-        # pylint: disable=no-member
         base_snapshot_files = self.base_snapshot.files if self.base_snapshot else {}
         merged_files = {**base_snapshot_files, **files_to_overwrite}
         return {
@@ -169,6 +177,17 @@ class StagedDraft:
             for path, file_info in merged_files.items()
             if file_info is not None
         }
+
+    def composed_links(self):
+        """
+        Return a LinkCollection that combines overrides with the base Snapshot.
+        """
+        if not self.base_snapshot:
+            base_links = LinkCollection(self.bundle_uuid, [])
+        else:
+            base_links = self.base_snapshot.links
+
+        return self.links_to_overwrite.apply_to(base_links)
 
     def is_deleted(self, path):
         return (path in self.files_to_overwrite) and (self.files_to_overwrite[path] is None)
@@ -258,19 +277,25 @@ class SnapshotRepo:
         return Snapshot(
             bundle_uuid=bundle_uuid,
             files=FileInfo.from_json_dict(snapshot_json['files']),
+            links=LinkCollection.from_json_dict(
+                bundle_uuid, snapshot_json.get('links', {})
+            ),
             hash_digest=bytes_from_hex_str(snapshot_json['hash_digest']),
             created_at=parse_utc_iso8601_datetime(snapshot_json['created_at']),
         )
 
-    def create(self, bundle_uuid, paths_to_files):
+    def create(self, bundle_uuid, paths_to_files, links=None):
         """
         Save the files, create a Snapshot object and save its JSON serialization to storage.
         """
-        files = {}
-        for path, file in paths_to_files.items():
-            files[str(path)] = self._save_file(bundle_uuid, path, file)
+        if links is None:
+            links = LinkCollection(bundle_uuid, [])
 
-        return self._create(bundle_uuid, files)
+        files = {}
+        for path, file_obj in paths_to_files.items():
+            files[str(path)] = self._save_file(bundle_uuid, path, file_obj)
+
+        return self._create(bundle_uuid, files, links)
 
     def url(self, snapshot, path):
         """Return a user-accessible URL to download a path from this Snapshot."""
@@ -303,11 +328,11 @@ class SnapshotRepo:
             path=path, public=public, size=data.size, hash_digest=file_hash.digest()
         )
 
-    def _create(self, bundle_uuid, files):
+    def _create(self, bundle_uuid, files, links):
         """
         Create a Snapshot object and save its JSON serialization to storage.
         """
-        snapshot = Snapshot.create(bundle_uuid=bundle_uuid, files=files)
+        snapshot = Snapshot.create(bundle_uuid=bundle_uuid, files=files, links=links)
         summary_json_str = json.dumps(snapshot, cls=BundleDataJSONEncoder, indent=2, sort_keys=True)
         summary_path = self._summary_path(bundle_uuid, snapshot.hash_digest)
 
@@ -320,7 +345,9 @@ class SnapshotRepo:
             hash_digest=snapshot.hash_digest,
         )
         logger.info(
-            "Created Snapshot %s for Bundle %s", snapshot.hash_digest, bundle_uuid
+            "Created Snapshot %s for Bundle %s",
+            snapshot.hash_digest.hex(),
+            bundle_uuid
         )
 
         return snapshot
@@ -359,6 +386,9 @@ class DraftRepo:
         return self.storage.save(path, file_obj)
 
     def _save_summary_file(self, draft):
+        # Before we save the Draft, create a LinkCollection to ensure that we
+        # haven't introduced a cycle:
+        _new_link_collection = draft.composed_links()
         summary_path = self._summary_path(draft.uuid)
         draft_summary_json = self.serialized_draft_summary(draft)
         self._overwrite(summary_path, ContentFile(draft_summary_json))
@@ -387,12 +417,18 @@ class DraftRepo:
             base_snapshot_digest = bytes_from_hex_str(draft_summary_json['base_snapshot'])
             base_snapshot = self.snapshot_repo.get(bundle_uuid, base_snapshot_digest)
 
+        # Assemble the LinkCollection information from the Draft Summary JSON
+        links_to_overwrite = LinkChangeSet.from_json_dict(
+            draft_summary_json.get("links_to_overwrite", {})
+        )
+
         return StagedDraft(
             uuid=UUID(draft_summary_json['uuid']),
             bundle_uuid=bundle_uuid,
             name=draft_summary_json['name'],
             base_snapshot=base_snapshot,
             files_to_overwrite=FileInfo.from_json_dict(draft_summary_json['files_to_overwrite']),
+            links_to_overwrite=links_to_overwrite,
             created_at=parse_utc_iso8601_datetime(draft_summary_json['created_at']),
             updated_at=parse_utc_iso8601_datetime(draft_summary_json['updated_at']),
         )
@@ -407,6 +443,7 @@ class DraftRepo:
             name=name,
             base_snapshot=base_snapshot,
             files_to_overwrite={},
+            links_to_overwrite=LinkChangeSet([], []),
             created_at=created_at,
             updated_at=created_at,
         )
@@ -452,7 +489,11 @@ class DraftRepo:
         If `paths` is provided, we will commit only those files.
         """
         with self.file_mapping(draft, paths) as draft_files:
-            new_snapshot = self.snapshot_repo.create(draft.bundle_uuid, draft_files)
+            new_snapshot = self.snapshot_repo.create(
+                draft.bundle_uuid,
+                draft_files,
+                draft.composed_links(),
+            )
 
         # Update the Draft to reflect the committed changes, keeping in mind
         # that we might have only committed a subset of files.
@@ -466,6 +507,7 @@ class DraftRepo:
             for path, file_info in draft.files_to_overwrite.items()
             if file_info != new_snapshot.files.get(path)
         }
+
         updated_draft = attr.evolve(
             draft,
             base_snapshot=new_snapshot,
@@ -516,19 +558,81 @@ class DraftRepo:
             for open_file in paths_to_files.values():
                 open_file.close()
 
-    def update_files(self, draft_uuid: UUID, updated_files: dict, updated_at=None) -> StagedDraft:
+    def update(self, draft_uuid, files, dependencies=None, updated_at=None) -> StagedDraft:
         """
-        Update the draft with some number of files.
+        Update the draft.
 
-        `updated_files` is a dict with paths for keys and Files for values.
+        `files` is a dict with paths for keys and Files for values.
+
+        `dependencies` is a mapping of Link names to direct Dependencies. A full
+        Link is name + direct dependencies + indirect dependencies. So we have
+        to verify that the requested direct dependency actually exists and then
+        retrieve the indirect dependencies.
+
+        This method has to figure out what the indirect dependencies are.
+        """
+        if dependencies is None:
+            dependencies = {}
+
+        existing_draft = self.get(draft_uuid)
+        new_files = self._new_files_for_update(existing_draft, files)
+        new_link_changeset = self._new_links_for_update(existing_draft, dependencies)
+        new_draft = attr.evolve(
+            existing_draft,
+            files_to_overwrite={**existing_draft.files_to_overwrite, **new_files},
+            links_to_overwrite=new_link_changeset,
+            updated_at=updated_at or datetime.now(timezone.utc)
+        )
+        self._save_summary_file(new_draft)
+
+        return new_draft
+
+    def _new_links_for_update(self, existing_draft, dependencies):
+        """
+        Return updated LinkChangeSet based on new dependencies.
+
+        `dependencies` is a dict of names to Dependency objects that represents
+        direct dependencies. The value can be None for wanting to delete that
+        Dependency.
+        """
+        # First, let's only find the dependencies we actually need to update...
+        composed_links = existing_draft.composed_links()
+        dependency_updates = {
+            name: dep
+            for name, dep in dependencies.items()
+            if dep != composed_links.get_direct_dep(name)
+        }
+
+        # Now we find the indirect dependencies for all of these
+        puts = []
+        deletes = []
+        for name, dep in dependency_updates.items():
+            if dep is None:
+                deletes.append(name)
+            else:
+                puts.append(Link(name, dep, self._get_indirects(dep)))
+
+        return LinkChangeSet(puts, deletes)
+
+    def _get_indirects(self, dep):
+        """
+        Given a direct dependency, find and return all indirect dependencies.
+
+        This requires accessing the Snapshot for the dependency.
+        """
+        dep_snapshot = self.snapshot_repo.get(dep.bundle_uuid, dep.snapshot_digest)
+        return dep_snapshot.links.all_dependencies()
+
+    def _new_files_for_update(self, existing_draft, files):
+        """
+        Write new files and return a mapping of names to FileInfo for them.
         """
         # First write all the files out in their appropriate draft space.
         new_files_written = {}
-        existing_draft = self.get(draft_uuid)
-        for path, django_file in updated_files.items():
+        for path, django_file in files.items():
             if not is_safe_file_path(path):
                 raise DraftRepo.SaveError(u'"{}" is not a valid file name'.format(path))
-            storage_path = self._data_file_path(draft_uuid, path)
+            storage_path = self._data_file_path(existing_draft.uuid, path)
 
             # If the django_file is None, it means we want a delete
             if django_file is None:
@@ -545,15 +649,7 @@ class DraftRepo:
                 self._overwrite(storage_path, django_file)
 
             new_files_written[path] = file_info
-
-        new_draft = attr.evolve(
-            existing_draft,
-            files_to_overwrite={**existing_draft.files_to_overwrite, **new_files_written},
-            updated_at=updated_at or datetime.now(timezone.utc)
-        )
-        self._save_summary_file(new_draft)
-
-        return new_draft
+        return new_files_written
 
     def url(self, draft, path):
         """Return URL of Draft file, fallback to Snapshot if unmodified."""
@@ -581,6 +677,7 @@ class BundleDataJSONEncoder(json.JSONEncoder):
                 'bundle_uuid': o.bundle_uuid,
                 'hash_digest': o.hash_digest.hex(),
                 'files': o.files,
+                'links': o.links,
                 'created_at': o.created_at,
                 '_type': 'snapshot',
                 '_version': 1,
@@ -596,11 +693,44 @@ class BundleDataJSONEncoder(json.JSONEncoder):
                 'name': o.name,
                 'base_snapshot': base_snapshot,
                 'files_to_overwrite': o.files_to_overwrite,
+                'links_to_overwrite': o.links_to_overwrite,
                 'created_at': o.created_at,
                 'updated_at': o.updated_at,
                 '_type': 'draft',
                 '_version': 1,
             }
+        elif isinstance(o, LinkCollection):
+            return {
+                link.name: {
+                    "direct": link.direct_dependency,
+                    "indirect": link.indirect_dependencies
+                }
+                for link in o
+            }
+        elif isinstance(o, LinkChangeSet):
+            change_set_dict = {
+                link.name: {
+                    "direct": link.direct_dependency,
+                    "indirect": link.indirect_dependencies
+                }
+                for link in o.puts
+            }
+            for name in o.deletes:
+                change_set_dict[name] = None
+            return change_set_dict
+        elif isinstance(o, Link):
+            return {
+                "name": o.name,
+                "direct": o.direct_dependency,
+                "indirect": o.indirect_dependencies,
+            }
+        elif isinstance(o, Dependency):
+            return {
+                "bundle_uuid": o.bundle_uuid,
+                "version": o.version,
+                "snapshot_digest": o.snapshot_digest.hex(),
+            }
+
         return json.JSONEncoder.default(self, o)
 
 
