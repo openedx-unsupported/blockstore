@@ -47,7 +47,7 @@ class Tagstore:
         if any(char in name for char in ':,;\n\r\\'):
             raise ValueError("Tag name contains an invalid character.")
 
-        parent_tag_str: Optional[str] = None
+        parent_tag_str = None
         if parent_tag is not None:
             if parent_tag.taxonomy_uid != taxonomy_uid:
                 raise ValueError("A tag cannot have a parent from another taxonomy")

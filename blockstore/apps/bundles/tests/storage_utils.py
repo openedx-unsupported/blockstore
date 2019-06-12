@@ -33,7 +33,7 @@ def create_timestamped_path(prefix):
     now = datetime.now()
     path = Path(prefix, now.strftime("%Y-%m-%d.%H_%M_%S"))
     Path.mkdir(path, parents=True)
-    return path
+    return str(path)
 
 
 def isolate_class_storage(cls):
@@ -51,7 +51,7 @@ def isolate_class_storage(cls):
     test_class_name = ".".join([cls.__module__, cls.__qualname__])
     cls_media_path = Path(settings.MEDIA_ROOT, test_class_name)
     Path.mkdir(cls_media_path)
-    override_fn = override_settings(MEDIA_ROOT=cls_media_path)
+    override_fn = override_settings(MEDIA_ROOT=str(cls_media_path))
     return override_fn(cls)
 
 
@@ -75,7 +75,7 @@ def isolate_test_storage(cls):
         # TestCase.id() returns a string value for the currently executing test
         media_root = Path(settings.MEDIA_ROOT, self.id())
         Path.mkdir(media_root)
-        storage_override = override_settings(MEDIA_ROOT=media_root)
+        storage_override = override_settings(MEDIA_ROOT=str(media_root))
         storage_override.enable()
         self.addCleanup(storage_override.disable)
         return original_setUp(self)

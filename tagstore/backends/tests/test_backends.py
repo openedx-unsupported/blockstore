@@ -17,7 +17,7 @@ some_user = UserId(EntityId(entity_type='user', external_id='janedoe'))
 
 class AbstractBackendTest:
     """ Abstract test that tests any backend implementation """
-    tagstore: Tagstore
+    tagstore = None
 
     def get_tagstore(self) -> Tagstore:
         raise NotImplementedError()
@@ -178,7 +178,7 @@ class AbstractBackendTest:
         self.assertEqual(tax.get_tag('testing'), tag)
 
     def _create_taxonomy_with_tags(self, tags: Iterable[str]) -> Taxonomy:
-        tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
+        tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)  # type: ignore
         for tag in tags:
             tax.add_tag(tag)
         return tax

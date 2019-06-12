@@ -17,7 +17,7 @@ class DjangoTagstore(Tagstore):
 
     def create_taxonomy(self, name: str, owner_id: Optional[UserId] = None) -> Taxonomy:
         """ Create a new taxonomy with the specified name and owner. """
-        owner_obj: Optional[UserId] = None
+        owner_obj = None
         if owner_id is not None:
             (owner_obj, _created) = EntityModel.objects.get_or_create(
                 entity_type=owner_id.entity_type,
@@ -89,13 +89,13 @@ class DjangoTagstore(Tagstore):
             ]}
         ]}.
         """
-        root: dict = {'children': []}
-        all_nodes: dict = {None: root}
+        root = {'children': []}  # type: ignore
+        all_nodes = {None: root}
         taxonomy_uid_as_int = int(taxonomy_uid)
         for tag in TagModel.objects.filter(taxonomy_id=taxonomy_uid_as_int).order_by('path'):
             node = {'name': tag.name, 'id': tag.id, 'children': []}
             as_tuple = Tag(taxonomy_uid=taxonomy_uid_as_int, name=tag.name)
-            all_nodes[as_tuple] = node
+            all_nodes[as_tuple] = node  # type: ignore
             all_nodes[tag.parent_tag_tuple]['children'].append(node)
         return root
 

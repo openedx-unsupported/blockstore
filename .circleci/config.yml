@@ -13,7 +13,7 @@ jobs:
     working_directory: /blockstore/app/
 
     docker:
-      - image: python:3.6-alpine
+      - image: python:3.5.7-alpine3.9
       - image: mysql:5.6
         command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
         environment:
@@ -35,7 +35,7 @@ jobs:
           command: |
             apk update && apk upgrade
             apk add bash bash-completion build-base git perl mariadb-dev
-            python3.6 -m venv /blockstore/venv
+            python3.5 -m venv /blockstore/venv
             source /blockstore/venv/bin/activate
             make requirements
 
@@ -50,7 +50,7 @@ jobs:
     working_directory: /blockstore/app/
 
     docker:
-      - image: python:3.6-alpine
+      - image: python:3.5.7-alpine3.9
 
     steps:
 
@@ -61,7 +61,7 @@ jobs:
           command: |
             apk update && apk upgrade
             apk add bash bash-completion build-base git perl mariadb-dev
-            python3.6 -m venv /blockstore/venv
+            python3.5 -m venv /blockstore/venv
             source /blockstore/venv/bin/activate
             make requirements
 

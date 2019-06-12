@@ -10,7 +10,7 @@ help:
 	@echo "  dev.up                    Start Blockstore container"
 	@echo "  dev.provision             Provision Blockstore service"
 	@echo "  stop                      Stop Blockstore container"
-	@echo "  down                      Remove Blockstore container and network. Destructive."
+	@echo "  destroy                   Remove Blockstore container, network and volumes. Destructive."
 	@echo "  blockstore-shell          Run a shell on Blockstore container."
 	@echo ""
 	@echo "These should be run from blockstore-shell:"
@@ -31,8 +31,8 @@ dev.provision:
 stop:
 	docker-compose --project-name blockstore -f docker-compose.yml stop
 
-down:
-	docker-compose --project-name blockstore -f docker-compose.yml down
+destroy:
+	docker-compose --project-name blockstore -f docker-compose.yml down -v
 
 blockstore-shell:
 	docker exec -e COLUMNS="`tput cols`" -e LINES="`tput lines`" -it edx.devstack.blockstore /bin/bash

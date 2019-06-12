@@ -1,7 +1,7 @@
 # Packages required for testing
 -r base.txt
 
-mypy
+astroid<1.6
 coverage
 ddt
 diff-cover
@@ -9,6 +9,7 @@ django_dynamic_fixture
 edx-lint
 factory_boy
 mock
+mypy
 pycodestyle
 pytest
 pytest-cov
