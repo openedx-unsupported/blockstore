@@ -96,7 +96,7 @@ class Bundle(models.Model):
     )
 
     slug = models.SlugField(allow_unicode=True)  # For pretty URLs
-    description = models.TextField(max_length=10_000)
+    description = models.TextField(max_length=10000)
 
     def __str__(self):
         return "Bundle {} - {}".format(self.uuid, self.slug)
@@ -128,7 +128,7 @@ class BundleVersion(models.Model):
     )
     version_num = models.PositiveIntegerField(editable=False)
     snapshot_digest = models.CharField(max_length=40, db_index=True, editable=False)
-    change_description = models.TextField(max_length=1_000, blank=True)
+    change_description = models.TextField(max_length=1000, blank=True)
 
     class Meta:
         unique_together = (
@@ -212,7 +212,7 @@ class Draft(models.Model):
         )
 
     def __str__(self):
-        return f"{self.name} ({self.uuid})"
+        return u"{} ({})".format(self.name, self.uuid)
 
 
 class BundleLink(models.Model):

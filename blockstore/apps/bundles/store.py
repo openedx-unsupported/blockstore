@@ -14,15 +14,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from uuid import UUID
 import codecs
-import hashlib
 import logging
 import json
+import pytz
 
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile, File
 from django.dispatch import Signal
 
 import attr
+from pyblake2 import blake2b
 
 # Pylint doesn't know how to introspect attr.s() structs, and can't tell that
 # Snapshot.files or StagedDraft.files_to_overwrite are in fact dicts and can do
@@ -241,7 +242,7 @@ class SnapshotRepo:
         """
         storage_path = self._summary_path(bundle_uuid, snapshot_digest)
         try:
-            with self.storage.open(storage_path) as snapshot_file:
+            with self.storage.open(storage_path, mode='r') as snapshot_file:
                 snapshot_json = json.load(snapshot_file)
         except FileNotFoundError:
             logger.error(
@@ -251,7 +252,7 @@ class SnapshotRepo:
                 storage_path,
             )
             raise Snapshot.NotFoundError(
-                f"Snapshot {snapshot_digest.hex()} for Bundle {bundle_uuid} not found"
+                u"Snapshot {} for Bundle {} not found".format(snapshot_digest.hex(), bundle_uuid)
             )
 
         return Snapshot(
@@ -284,11 +285,11 @@ class SnapshotRepo:
 
     @classmethod
     def _summary_path(cls, bundle_uuid, snapshot_digest):
-        return f'{bundle_uuid}/snapshots/{snapshot_digest.hex()}.json'
+        return u'{}/snapshots/{}.json'.format(bundle_uuid, snapshot_digest.hex())
 
     @classmethod
     def _file_data_path(cls, bundle_uuid, file_hash):
-        return f'{bundle_uuid}/snapshot_data/{file_hash}'
+        return u'{}/snapshot_data/{}'.format(bundle_uuid, file_hash)
 
     def _save_file(self, bundle_uuid, path, data, public=False):
         """
@@ -345,11 +346,11 @@ class DraftRepo:
     @classmethod
     def _data_file_path(cls, draft_uuid, file_path):
         """Path to a file that we've edited in our Draft."""
-        return f'{draft_uuid}/data/{file_path}'
+        return u'{}/data/{}'.format(draft_uuid, file_path)
 
     @classmethod
     def _summary_path(cls, draft_uuid):
-        return f'{draft_uuid}/summary.json'
+        return u'{}/summary.json'.format(draft_uuid)
 
     def _overwrite(self, path, file_obj):
         # There's gotta be a better way, but for now...
@@ -374,9 +375,9 @@ class DraftRepo:
         """
         summary_path = self._summary_path(draft_uuid)
         if not self.storage.exists(summary_path):
-            raise StagedDraft.NotFoundError(f"Draft {draft_uuid} not found in {self}")
+            raise StagedDraft.NotFoundError(u"Draft {} not found in {}".format(draft_uuid, self))
 
-        with self.storage.open(summary_path) as draft_summary_file:
+        with self.storage.open(summary_path, mode='r') as draft_summary_file:
             draft_summary_json = json.load(draft_summary_file)
 
         bundle_uuid = UUID(draft_summary_json['bundle_uuid'])
@@ -526,7 +527,7 @@ class DraftRepo:
         existing_draft = self.get(draft_uuid)
         for path, django_file in updated_files.items():
             if not is_safe_file_path(path):
-                raise DraftRepo.SaveError(f'"{path}" is not a valid file name')
+                raise DraftRepo.SaveError(u'"{}" is not a valid file name'.format(path))
             storage_path = self._data_file_path(draft_uuid, path)
 
             # If the django_file is None, it means we want a delete
@@ -647,7 +648,7 @@ def is_safe_file_path(path):
 
 def create_hash(start_data=b''):
     """Whenever there's a need for hashing, we use 20-byte BLAKE2b."""
-    return hashlib.blake2b(start_data, digest_size=20)  # pylint: disable=no-member
+    return blake2b(start_data, digest_size=20)
 
 
 def parse_utc_iso8601_datetime(datetime_str):
@@ -664,7 +665,7 @@ def parse_utc_iso8601_datetime(datetime_str):
     replaced with datetime.fromisoformat().
     """
     parsed_dt = datetime.strptime(datetime_str, r'%Y-%m-%dT%H:%M:%S.%f+00:00')
-    return parsed_dt.astimezone(timezone.utc)
+    return pytz.utc.localize(parsed_dt).astimezone(timezone.utc)
 
 
 def bytes_from_hex_str(hex_str):

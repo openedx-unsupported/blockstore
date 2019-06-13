@@ -103,7 +103,7 @@ class DraftFileUpdateSerializer(serializers.BaseSerializer):
 
         for file_name in data['files']:
             if not is_safe_file_path(file_name):
-                raise serializers.ValidationError(f'"{file_name}" is not a valid file name')
+                raise serializers.ValidationError(u'"{}" is not a valid file name'.format(file_name))
 
         def _parse_file_data(file_path, b64_encoded_str):
             """Parse base64 encoded file data into ContentFile if valid."""
@@ -116,7 +116,7 @@ class DraftFileUpdateSerializer(serializers.BaseSerializer):
                 binary_file_data = base64.b64decode(b64_encoded_str)
             except binascii.Error as err:
                 raise serializers.ValidationError(
-                    f"Error decoding file {file_path}: {err} (check if it's base64 encoded?)"
+                    u"Error decoding file {}: {} (check if it's base64 encoded?)".format(file_path, err)
                 )
             return ContentFile(binary_file_data)
 

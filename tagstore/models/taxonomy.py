@@ -1,26 +1,30 @@
 """
 A taxonomy is a collection of tags that can be applied to content.
 """
-from typing import Any, Iterator, NamedTuple, NewType, Optional, Tuple
+from collections import namedtuple
+from typing import Iterator, NewType, Optional, Tuple
 
 from .tag import Tag
-from .user import UserId
+
 
 TaxonomyId = NewType('TaxonomyId', int)
 
+TaxonomyPrivate = namedtuple('TaxonomyPrivate', ['uid', 'name', 'owner_id', 'tagstore'])
 
-class Taxonomy(NamedTuple):
+
+class Taxonomy(TaxonomyPrivate):
     """
     A taxonomy is a collection of tags that can be applied to content.
 
     Is a NamedTuple for performance, simplicity, and immutability, but
     we can change it to a full class at some point if needed.
-    """
+
     uid: TaxonomyId
     name: str
     owner_id: Optional[UserId]
 
     tagstore: Any  # Type is Tagstore but we can't define that without circular import
+    """
 
     # Convenience methods:
 

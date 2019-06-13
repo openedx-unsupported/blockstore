@@ -157,14 +157,14 @@ class BundlesMetadataTestCase(TestCase):
         )
         assert create_response.status_code == status.HTTP_201_CREATED
         create_data = response_data(create_response)
-        assert create_data['collection'] == f'http://testserver/api/v1/collections/{self.collection_uuid_str}'
+        assert create_data['collection'] == u'http://testserver/api/v1/collections/{}'.format(self.collection_uuid_str)
         assert create_data['collection_uuid'] == self.collection_uuid_str
         assert create_data['description'] == "This is a 😀😀😀😀 Bundle"
         assert create_data['drafts'] == {}
         assert create_data['slug'] == 'happy'
         assert create_data['title'] == "Happy Bundle 😀"
         assert re.match(UUID4_REGEX, create_data['uuid'])
-        assert create_data['url'] == f"http://testserver/api/v1/bundles/{create_data['uuid']}"
+        assert create_data['url'] == u"http://testserver/api/v1/bundles/{}".format(create_data['uuid'])
         assert create_data['versions'] == []
 
         # Check that the GET returns the same thing
@@ -179,9 +179,9 @@ class BundlesMetadataTestCase(TestCase):
                 '/api/v1/bundles',
                 data={
                     'collection_uuid': self.collection_uuid_str,
-                    'description': f"Happy Bundle {i} 😀 is Happy!",
-                    'slug': f'happy_{i}',
-                    'title': f"Happy Bundle {i} 😀"
+                    'description': u"Happy Bundle {} 😀 is Happy!".format(i),
+                    'slug': u'happy_{}'.format(i),
+                    'title': u"Happy Bundle {} 😀".format(i)
                 }
             )
         list_response = self.client.get('/api/v1/bundles')
@@ -228,7 +228,7 @@ class DraftsTest(TestCase):
         assert create_draft_response.status_code == status.HTTP_201_CREATED
         draft_data = response_data(create_draft_response)
         assert re.match(UUID4_REGEX, draft_data['uuid'])
-        assert draft_data['url'] == f'http://testserver/api/v1/drafts/{draft_data["uuid"]}'
+        assert draft_data['url'] == u'http://testserver/api/v1/drafts/{}'.format(draft_data["uuid"])
         assert draft_data['bundle_uuid'] == self.bundle_data['uuid']
         assert draft_data['bundle'] == self.bundle_data['url']
         assert draft_data['name'] == 'studio_draft'
@@ -246,7 +246,7 @@ class DraftsTest(TestCase):
         assert staged_draft_data['base_snapshot'] is None  # No commit yet.
 
         # Bundle should show our draft, but no versions (no commits yet)
-        bundle_detail_response = self.client.get(f'/api/v1/bundles/{draft_data["bundle_uuid"]}')
+        bundle_detail_response = self.client.get(u'/api/v1/bundles/{}'.format(draft_data["bundle_uuid"]))
         bundle_detail_data = response_data(bundle_detail_response)
         assert bundle_detail_data['drafts'] == {'studio_draft': draft_data['url']}
         assert bundle_detail_data['versions'] == []
@@ -264,11 +264,11 @@ class DraftsTest(TestCase):
         assert draft_patch_response.status_code == status.HTTP_204_NO_CONTENT
 
         # Now commit it
-        commit_response = self.client.post(f'/api/v1/drafts/{draft_data["uuid"]}/commit')
+        commit_response = self.client.post(u'/api/v1/drafts/{}/commit'.format(draft_data["uuid"]))
         assert commit_response.status_code == status.HTTP_201_CREATED
 
         # Now grab the Bundle again and check that a new version exists...
-        bundle_detail_response = self.client.get(f'/api/v1/bundles/{draft_data["bundle_uuid"]}')
+        bundle_detail_response = self.client.get(u'/api/v1/bundles/{}'.format(draft_data["bundle_uuid"]))
         bundle_detail_data = response_data(bundle_detail_response)
         assert len(bundle_detail_data['versions']) == 1
 
@@ -334,7 +334,7 @@ class DraftsTest(TestCase):
             },
             format='json',
         )
-        commit_data = response_data(self.client.post(f'{draft_url}/commit'))
+        commit_data = response_data(self.client.post(u'{}/commit'.format(draft_url)))
         bundle_version_url = commit_data['bundle_version']
         bundle_version_data = response_data(self.client.get(bundle_version_url))
         snapshot_files = bundle_version_data['snapshot']['files']
@@ -367,7 +367,7 @@ class DraftsTest(TestCase):
         assert draft_files['korea.txt']['modified'] is False
 
         # Now commit...
-        commit_data = response_data(self.client.post(f'{draft_url}/commit'))
+        commit_data = response_data(self.client.post(u'{}/commit'.format(draft_url)))
         bundle_version_url = commit_data['bundle_version']
         bundle_version_data = response_data(self.client.get(bundle_version_url))
         snapshot_files = bundle_version_data['snapshot']['files']
@@ -403,4 +403,4 @@ def response_data(response):
     can be represented in multiple ways and parse the same, but if we
     suddenly change the output format, we've broken backwards compatibility.
     """
-    return json.loads(response.content)
+    return json.loads(response.content.decode('utf-8'))

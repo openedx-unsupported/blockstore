@@ -1,9 +1,7 @@
 """
 This is how we model any external entity that can be tagged.
 """
-from typing import NamedTuple
+from collections import namedtuple
 
 
-class EntityId(NamedTuple):
-    entity_type: str
-    external_id: str
+EntityId = namedtuple('EntityId', ['entity_type', 'external_id'])
