@@ -64,13 +64,6 @@ INTERNAL_IPS = ('127.0.0.1',)
 # Use a non-SSL URL for authorization redirects
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
 
-# Set these to the correct values for your OAuth2/OpenID Connect provider (e.g., devstack)
-SOCIAL_AUTH_EDX_OIDC_KEY = 'replace-me'
-SOCIAL_AUTH_EDX_OIDC_SECRET = 'replace-me'
-SOCIAL_AUTH_EDX_OIDC_URL_ROOT = 'replace-me'
-SOCIAL_AUTH_EDX_OIDC_LOGOUT_URL = 'replace-me'
-SOCIAL_AUTH_EDX_OIDC_ID_TOKEN_DECRYPTION_KEY = SOCIAL_AUTH_EDX_OIDC_SECRET
-
 ENABLE_AUTO_AUTH = True
 
 #####################################################################
