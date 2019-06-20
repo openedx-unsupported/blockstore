@@ -64,17 +64,19 @@ Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ p
 
 #. To log in to Blockstore, you'll need to configure SSO with your devstack.
 
-    #. Go to http://localhost:18000/admin/oauth2_provider/application/ and add a new application
-    #. Set "Client id" to ``blockstore-sso-key``
-    #. Set "Redirect uris" to ``http://localhost:18250/complete/edx-oauth2/``
-    #. Set "Client type" to "Confidential"
-    #. Set "Authorization grant type" to "Authorization code"
-    #. Set "Name" to `blockstore-sso`
-    #. Check "Skip authorization"
-    #. Press "Save and continue editing"
-    #. Copy ``blockstore/settings/private.py.example`` to ``blockstore/settings/private.py``
-    #. In ``private.py``, set ``SOCIAL_AUTH_EDX_OAUTH2_SECRET`` to the random "Client secret" value.
-    #. Now you can login at http://localhost:18250/login/
+   #. Go to http://localhost:18000/admin/oauth2_provider/application/ and add a new application
+   #. Set "Client id" to ``blockstore-sso-key``
+   #. Set "Redirect uris" to ``http://localhost:18250/complete/edx-oauth2/``
+   #. Set "Client type" to "Confidential"
+   #. Set "Authorization grant type" to "Authorization code"
+   #. Set "Name" to ``blockstore-sso``
+   #. Check "Skip authorization"
+   #. Press "Save and continue editing"
+   #. Go to http://localhost:18000/admin/oauth_dispatch/applicationaccess/
+   #. Click "Add Application Access +", choose Application: ``blockstore-sso`` and set Scopes to ``user_id``, then hit "Save"
+   #. Copy ``blockstore/settings/private.py.example`` to ``blockstore/settings/private.py``
+   #. In ``private.py``, set ``SOCIAL_AUTH_EDX_OAUTH2_SECRET`` to the random "Client secret" value.
+   #. Now you can login at http://localhost:18250/login/
 
 Get Help
 --------

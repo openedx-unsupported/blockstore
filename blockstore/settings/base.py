@@ -200,10 +200,6 @@ SOCIAL_AUTH_EDX_OAUTH2_KEY = 'replace-me'
 SOCIAL_AUTH_EDX_OAUTH2_SECRET = 'replace-me'
 SOCIAL_AUTH_EDX_OAUTH2_URL_ROOT = 'http://edx.devstack.lms:18000'
 SOCIAL_AUTH_EDX_OAUTH2_PUBLIC_URL_ROOT = 'http://localhost:18000'
-# For some reason the 'user_id' scope which is included by default is giving an invalid_scope error
-# so these two settings temporarily remove it:
-SOCIAL_AUTH_EDX_OAUTH2_SCOPE = ['profile', 'email']
-SOCIAL_AUTH_EDX_OAUTH2_IGNORE_DEFAULT_SCOPE = True
 
 # CORS Config
 CORS_ORIGIN_ALLOW_ALL = env('DJANGO_CORS_ORIGIN_ALLOW_ALL', default=False)
