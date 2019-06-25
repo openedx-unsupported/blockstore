@@ -21,21 +21,35 @@ import base64
 import json
 import re
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
 from blockstore.apps.bundles.tests.storage_utils import isolate_test_storage
 from blockstore.apps.api.constants import UUID4_REGEX
 
+User = get_user_model()
+
 
 @isolate_test_storage
-class CollectionsTestCase(TestCase):
-    """Test basic Collections CRUD operations."""
+class ApiTestCase(TestCase):
+    """
+    Base class for REST API test cases
+    """
 
     def setUp(self):
         super().setUp()
         self.client = APIClient()
+        # Authenticate (this can't be done via the REST API for security reasons)
+        test_user = User.objects.create(username='test-service-user')
+        token = Token.objects.create(user=test_user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+
+
+class CollectionsTestCase(ApiTestCase):
+    """Test basic Collections CRUD operations."""
 
     def test_list_of_one(self):
         """
@@ -130,14 +144,11 @@ class CollectionsTestCase(TestCase):
         assert update_data == detail_data
 
 
-@isolate_test_storage
-class BundlesMetadataTestCase(TestCase):
+class BundlesMetadataTestCase(ApiTestCase):
     """Test basic Bundles Metadata (not content)"""
 
     def setUp(self):
         super().setUp()
-        self.client = APIClient()
-
         collection_response = self.client.post(
             '/api/v1/collections',
             data={'title': 'Bundle Default Collection 😀'}
@@ -190,14 +201,11 @@ class BundlesMetadataTestCase(TestCase):
         assert len(list_data) == 10
 
 
-@isolate_test_storage
-class DraftsTest(TestCase):
+class DraftsTest(ApiTestCase):
     """Test creation, editing, and commits of content to Bundles."""
 
     def setUp(self):
         super().setUp()
-        self.client = APIClient()
-
         collection_response = self.client.post(
             '/api/v1/collections',
             data={'title': 'Bundle Default Collection 😀'}

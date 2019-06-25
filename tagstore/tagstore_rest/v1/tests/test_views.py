@@ -1,12 +1,16 @@
 """ Tests for api v1 views. """
 from future.moves.urllib.parse import urlencode
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
+from rest_framework.authtoken.models import Token
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
 
 from tagstore.backends.django import DjangoTagstore
 from tagstore.models import EntityId
+
+User = get_user_model()
 
 
 class ViewsBaseTestCase(TestCase):
@@ -17,6 +21,9 @@ class ViewsBaseTestCase(TestCase):
         super().setUp()
 
         self.client = APIClient()
+        test_user = User.objects.create(username='test-service-user')
+        token = Token.objects.create(user=test_user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
         self.tagstore = DjangoTagstore()
 
