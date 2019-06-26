@@ -15,7 +15,7 @@ class IsSuperUserOrAuthorizedApplication(permissions.BasePermission):
       service user account. Tokens can be created at /admin/authtoken/token/
 
     Blockstore does not handle detailed (object-level/bundle-level)
-    authorization because it can rely on many details (enrollment, due dates,
+    authorization because it relies on many details (enrollment, due dates,
     cohorts, etc.) that Blockstore is not aware of. Instead, applications like
     the Open edX LMS have full access to Blockstore and are responsible for
     providing a limited subset of Blockstore functionality to authorized users
@@ -36,5 +36,5 @@ class IsSuperUserOrAuthorizedApplication(permissions.BasePermission):
             # This is a service user account for an app like the LMS.
             # It's allowed to do anything using the REST API.
             return True
-        # Nobody else is allowed to user the API:
+        # Nobody else is allowed to use the API:
         return False
