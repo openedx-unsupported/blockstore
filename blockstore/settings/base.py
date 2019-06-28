@@ -40,9 +40,10 @@ INSTALLED_APPS = (
 
 THIRD_PARTY_APPS = (
     'rest_framework',
+    'rest_framework.authtoken',  # For authenticating API clients
     'rest_framework_swagger',
     'django_filters',
-    'social_django',
+    'social_django',  # To let admin users log in using their LMS user account
     'waffle',
     'corsheaders',
 )
@@ -100,6 +101,7 @@ DATABASES = {
 }
 
 
+################################################################################
 # Internationalization
 # https://docs.djangoproject.com/en/dev/topics/i18n/
 
@@ -118,6 +120,7 @@ LOCALE_PATHS = (
 )
 
 
+################################################################################
 # MEDIA CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT = root('media')
@@ -127,6 +130,7 @@ MEDIA_URL = '/media/'
 # END MEDIA CONFIGURATION
 
 
+################################################################################
 # STATIC FILE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
 STATIC_ROOT = root('assets')
@@ -137,6 +141,7 @@ STATIC_URL = '/static/'
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = []
 
+################################################################################
 # TEMPLATE CONFIGURATION
 # See: https://docs.djangoproject.com/en/1.11/ref/settings/#templates
 TEMPLATES = [
@@ -164,6 +169,7 @@ TEMPLATES = [
 # END TEMPLATE CONFIGURATION
 
 
+################################################################################
 # COOKIE CONFIGURATION
 # The purpose of customizing the cookie names is to avoid conflicts when
 # multiple Django services are running behind the same hostname.
@@ -173,6 +179,7 @@ CSRF_COOKIE_NAME = 'blockstore_csrftoken'
 LANGUAGE_COOKIE_NAME = 'blockstore_language'
 # END COOKIE CONFIGURATION
 
+################################################################################
 # AUTHENTICATION CONFIGURATION
 LOGIN_URL = '/login/'
 LOGOUT_URL = '/logout/'
@@ -211,10 +218,32 @@ CORS_ORIGIN_REGEX_WHITELIST = (r'^(https?://)?localhost:.+$', )
 LOGIN_REDIRECT_URL = '/admin/'
 # END AUTHENTICATION CONFIGURATION
 
+################################################################################
+# REST FRAMEWORK CONFIGURATION
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # We use token authentication to secure the API. We can't use OAuth2
+        # because django-oauth-toolkit is currently incompatible with utf8mb4
+        # (requires a small upstream fix to their DB migrations, to make the
+        # index length configurable like python-social-auth does.)
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        # Only superusers or authorized applications that authenticate with a
+        # token are allowed to use the API.
+        'blockstore.apps.api.permissions.IsSuperUserOrAuthorizedApplication',
+    ),
+}
+
+################################################################################
 # OPENEDX-SPECIFIC CONFIGURATION
+
 PLATFORM_NAME = 'Your Platform Name Here'
-# END OPENEDX-SPECIFIC CONFIGURATION
+
+################################################################################
+# LOGGING CONFIGURATION
 
 hostname = platform.node().split(".")[0]
 
