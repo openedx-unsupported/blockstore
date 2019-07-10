@@ -7,14 +7,14 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class User(AbstractUser):
-    """Custom user model for use with OpenID Connect."""
+    """Custom user model for use with python-social-auth via edx-auth-backends."""
     full_name = models.CharField(_('Full Name'), max_length=255, blank=True, null=True)
 
     @property
     def access_token(self):
         """ Returns an OAuth2 access token for this user, if one exists; otherwise None.
 
-        Assumes user has authenticated at least once with edX Open ID Connect.
+        Assumes user has authenticated at least once with the OAuth2 provider (LMS).
         """
         try:
             return self.social_auth.first().extra_data[u'access_token']
