@@ -46,6 +46,7 @@ THIRD_PARTY_APPS = (
     'social_django',  # To let admin users log in using their LMS user account
     'waffle',
     'corsheaders',
+    'release_util',
 )
 
 PROJECT_APPS = (
