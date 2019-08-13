@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('uuid', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
                 ('title', models.CharField(db_index=True, max_length=180)),
                 ('slug', models.SlugField(allow_unicode=True)),
-                ('description', models.TextField(max_length=10000)),
+                ('description', models.TextField(max_length=10000, blank=True)),
             ],
         ),
         migrations.CreateModel(
