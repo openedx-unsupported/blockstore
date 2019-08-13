@@ -401,6 +401,30 @@ class DraftsTest(ApiTestCase):
         )
         assert korea_text == "안녕하세요!"
 
+    def test_deleting_draft(self):
+        create_response = self.client.post(
+            '/api/v1/drafts',
+            {
+                'bundle_uuid': self.bundle_data['uuid'],
+                'name': 'temp_draft',
+                'title': "For DraftsTest.test_deleting_draft 😀",
+            }
+        )
+        create_data = response_data(create_response)
+        draft_url = create_data['url']
+
+        # Create some files so we're not just testing deletion of an empty draft...
+        self.client.patch(
+            draft_url,
+            data={'files': {'hawaii.txt': encode_str_for_draft("Aloha!")}},
+            format='json',
+        )
+        delete_response = self.client.delete(draft_url)
+        assert delete_response.status_code == status.HTTP_204_NO_CONTENT
+        # Now confirm the draft is deleted
+        get_response = self.client.get(draft_url)
+        assert get_response.status_code == status.HTTP_404_NOT_FOUND
+
 
 def encode_str_for_draft(input_str):
     """Given a string, return UTF-8 representation that is then base64 encoded."""

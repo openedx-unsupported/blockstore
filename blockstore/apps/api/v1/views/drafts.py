@@ -75,7 +75,7 @@ class DraftViewSet(viewsets.ModelViewSet):
     queryset = Draft.objects.all().select_related('bundle')
     lookup_field = 'uuid'
     page_size = 20
-    http_method_names = ['get', 'head', 'options', 'patch', 'post']
+    http_method_names = ['get', 'head', 'options', 'patch', 'post', 'delete']
 
     def get_serializer_class(self):
         """
