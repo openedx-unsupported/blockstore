@@ -96,7 +96,7 @@ class Bundle(models.Model):
     )
 
     slug = models.SlugField(allow_unicode=True)  # For pretty URLs
-    description = models.TextField(max_length=10000)
+    description = models.TextField(max_length=10000, blank=True)
 
     def __str__(self):
         return "Bundle {} - {}".format(self.uuid, self.slug)

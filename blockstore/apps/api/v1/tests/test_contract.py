@@ -184,6 +184,18 @@ class BundlesMetadataTestCase(ApiTestCase):
         detail_data = response_data(detail_response)
         assert detail_data == create_data
 
+    def test_create_no_description(self):
+        """ Test that description is not required """
+        create_response = self.client.post(
+            '/api/v1/bundles',
+            data={
+                'collection_uuid': self.collection_uuid_str,
+                'slug': 'happy',
+                'title': "Happy Bundle 😀"
+            }
+        )
+        assert create_response.status_code == status.HTTP_201_CREATED
+
     def test_list(self):
         for i in range(10):
             self.client.post(
