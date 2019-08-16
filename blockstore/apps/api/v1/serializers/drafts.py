@@ -58,6 +58,12 @@ class DraftWithFileDataSerializer(DraftSerializer):
     class StagedDraftField(serializers.Field):
         """Read-only field for a StagedDraft."""
 
+        def _expand_url(self, url):
+            """Ensure that the given URL is an absolute URL"""
+            if not url.startswith('http'):
+                url = self.context['request'].build_absolute_uri(url)
+            return url
+
         def to_representation(self, value):
             """StagedDraft JSON serialization."""
             staged_draft = value
@@ -74,7 +80,7 @@ class DraftWithFileDataSerializer(DraftSerializer):
             }
             basic_info['files'] = {
                 path: {
-                    "url": draft_repo.url(staged_draft, path),
+                    "url": self._expand_url(draft_repo.url(staged_draft, path)),
                     "size": file_info.size,
                     "hash_digest": file_info.hash_digest.hex(),
                     "modified": path in staged_draft.files_to_overwrite

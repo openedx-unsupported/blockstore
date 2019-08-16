@@ -128,6 +128,12 @@ class BundleVersionWithFileDataSerializer(BundleVersionSerializer):
                 "snapshot_digest": dependency.snapshot_digest.hex(),
             }
 
+        def _expand_url(self, url):
+            """Ensure that the given URL is an absolute URL"""
+            if not url.startswith('http'):
+                url = self.context['request'].build_absolute_uri(url)
+            return url
+
         def to_representation(self, value):
             """Snapshot JSON serialization."""
             snapshot = value
@@ -139,7 +145,7 @@ class BundleVersionWithFileDataSerializer(BundleVersionSerializer):
 
             info['files'] = {
                 path: {
-                    "url": snapshot_repo.url(snapshot, path),
+                    "url": self._expand_url(snapshot_repo.url(snapshot, path)),
                     "size": file_info.size,
                     "hash_digest": file_info.hash_digest.hex(),
                 }
