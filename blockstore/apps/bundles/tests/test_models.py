@@ -22,7 +22,6 @@ class TestBundleVersionCreation(TestCase):
 
     def test_create_and_rollback(self):
         """Snapshot + BundleVersion creation and rollback."""
-        # pylint: disable=no-member
         bundle_uuid = uuid.UUID('10000000000000000000000000000000')
 
         # First make sure the Bundles doesn't already exist.

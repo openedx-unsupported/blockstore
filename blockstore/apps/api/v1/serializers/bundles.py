@@ -121,17 +121,23 @@ class BundleVersionWithFileDataSerializer(BundleVersionSerializer):
 
     class SnapshotField(serializers.Field):
         """Helper read-only field for a Snapshot."""
+        def _serialized_dep(self, dependency):
+            return {
+                "bundle_uuid": dependency.bundle_uuid,
+                "version": dependency.version,
+                "snapshot_digest": dependency.snapshot_digest.hex(),
+            }
 
         def to_representation(self, value):
             """Snapshot JSON serialization."""
             snapshot = value
             snapshot_repo = SnapshotRepo()
-            basic_info = {
+            info = {
                 'hash_digest': snapshot.hash_digest.hex(),
                 'created_at': snapshot.created_at,
             }
 
-            basic_info['files'] = {
+            info['files'] = {
                 path: {
                     "url": snapshot_repo.url(snapshot, path),
                     "size": file_info.size,
@@ -140,7 +146,18 @@ class BundleVersionWithFileDataSerializer(BundleVersionSerializer):
                 for path, file_info in snapshot.files.items()
             }
 
-            return basic_info
+            info['links'] = {
+                link.name: {
+                    "direct": self._serialized_dep(link.direct_dependency),
+                    "indirect": [
+                        self._serialized_dep(dep)
+                        for dep in link.indirect_dependencies
+                    ]
+                }
+                for link in snapshot.links
+            }
+
+            return info
 
         def to_internal_value(self, _data):
             raise NotImplementedError()

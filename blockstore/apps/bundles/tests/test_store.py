@@ -10,7 +10,17 @@ from django.test import SimpleTestCase
 from django.core.files.base import ContentFile
 
 from blockstore.apps.bundles.tests.storage_utils import isolate_test_storage
-from ..store import create_hash, DraftRepo, FileInfo, Snapshot, SnapshotRepo, StagedDraft
+from ..store import (
+    create_hash,
+    DraftRepo,
+    Dependency,
+    FileInfo,
+    Link,
+    LinkCollection,
+    Snapshot,
+    SnapshotRepo,
+    StagedDraft,
+)
 
 
 HTML_CONTENT_BYTES = b"<p>I am an HTML file!</p>"
@@ -179,9 +189,9 @@ class TestDrafts(SimpleTestCase):
 
     def test_basic_commit(self):
         """Make modifications and commit them."""
-        modified_draft = self.draft_repo.update_files(
+        modified_draft = self.draft_repo.update(
             draft_uuid=self.draft.uuid,
-            updated_files={
+            files={
                 'test.txt': ContentFile(b"This is draft text content")
             }
         )
@@ -219,9 +229,9 @@ class TestDrafts(SimpleTestCase):
         self.assertEqual(new_snapshot.files['test.txt'].size, 26)
 
     def test_partial_commit(self):
-        modified_draft = self.draft_repo.update_files(
+        modified_draft = self.draft_repo.update(
             draft_uuid=self.draft.uuid,
-            updated_files={
+            files={
                 'sample/committed.txt': ContentFile(b"This will be committed."),
                 'sample/also_committed.txt': ContentFile(b"This will be committed."),
                 'sample/uncomitted.txt': ContentFile(b"This won't be committed."),
@@ -240,15 +250,15 @@ class TestDrafts(SimpleTestCase):
         self.assertNotIn('sample/also_committed.txt', updated_draft.files_to_overwrite)
 
     def test_delete_file(self):
-        self.draft_repo.update_files(
+        self.draft_repo.update(
             draft_uuid=self.draft.uuid,
-            updated_files={
+            files={
                 'new_file.txt': ContentFile(b"We're just going to delete this.")
             }
         )
-        new_draft = self.draft_repo.update_files(
+        new_draft = self.draft_repo.update(
             draft_uuid=self.draft.uuid,
-            updated_files={
+            files={
                 'test.txt': None,      # Stage delete from underlying Snapshot
                 'new_file.txt': None,  # Delete the draft-only file.
             }
@@ -259,12 +269,96 @@ class TestDrafts(SimpleTestCase):
         self.assertIsNone(self.draft_repo.url(new_draft, 'new_file.txt'))
 
     def test_delete_draft(self):
-        self.draft_repo.update_files(
+        self.draft_repo.update(
             draft_uuid=self.draft.uuid,
-            updated_files={
+            files={
                 "will_also_be_deleted.txt": ContentFile(b"File to delete.")
             }
         )
         self.draft_repo.delete(self.draft.uuid)
         with self.assertRaises(StagedDraft.NotFoundError):
             self.draft_repo.get(self.draft.uuid)
+
+
+class TestTransitiveLinks(unittest.TestCase):
+    """Test multiple levels of linking..."""
+
+    def _create_dep(self, bundle_uuid, version=1):
+        return Dependency(
+            bundle_uuid=bundle_uuid,
+            version=version,
+            snapshot_digest=create_hash(
+                bundle_uuid.bytes + version.to_bytes(2, byteorder='big')
+            )
+        )
+
+    def setUp(self):
+        """
+        The dependencies set up here look like:
+
+        Course >
+            Content Lib >
+                Problem Lib
+                Video Lib
+        """
+        super().setUp()
+        self.video_lib_bundle_uuid = uuid.UUID(int=1)
+        self.problem_lib_bundle_uuid = uuid.UUID(int=2)
+        self.content_lib_bundle_uuid = uuid.UUID(int=3)
+        self.course_bundle_uuid = uuid.UUID(int=4)
+
+        # Structures for Content Library that wants to Link to Videos Library
+        self.video_lib_dep = self._create_dep(self.video_lib_bundle_uuid)
+        self.link_to_video_lib = Link(
+            name='videos',
+            direct_dependency=self.video_lib_dep,
+            indirect_dependencies=[],
+        )
+        self.problem_lib_dep = self._create_dep(self.problem_lib_bundle_uuid)
+        self.link_to_problem_lib = Link(
+            name='problems',
+            direct_dependency=self.problem_lib_dep,
+            indirect_dependencies=[],
+        )
+        # This is the LinkCollection that lives in the Content Library
+        self.links_for_content_lib = LinkCollection(
+            bundle_uuid=self.content_lib_bundle_uuid,
+            links=[self.link_to_video_lib, self.link_to_problem_lib],
+        )
+
+        # Course will pull in Content Library, which will pull in other deps
+        self.content_lib_dep = self._create_dep(self.content_lib_bundle_uuid)
+        self.link_to_content_lib = Link(
+            name="content_lib",
+            direct_dependency=self.content_lib_dep,
+            indirect_dependencies=self.links_for_content_lib.all_dependencies(),
+        )
+        self.links_for_course = LinkCollection(
+            bundle_uuid=self.course_bundle_uuid,
+            links=[self.link_to_content_lib],
+        )
+
+    def test_transitive_dependencies(self):
+        indirect_dependencies = self.links_for_course["content_lib"].indirect_dependencies
+        assert self.video_lib_dep in indirect_dependencies
+        assert self.problem_lib_dep in indirect_dependencies
+        assert self.content_lib_dep not in indirect_dependencies
+        assert self.content_lib_dep == self.links_for_course["content_lib"].direct_dependency
+
+    def test_link_version_bump(self):
+        content_lib_dep_v2 = self._create_dep(self.content_lib_bundle_uuid, 2)
+        Link(
+            name=self.link_to_content_lib.name,
+            direct_dependency=content_lib_dep_v2,
+            indirect_dependencies=self.link_to_content_lib.indirect_dependencies,
+        )
+
+    def test_cycle_detection(self):
+        with self.assertRaises(ValueError):
+            self.links_for_course.with_updated_link(
+                Link(
+                    name="circular_link",
+                    direct_dependency=self.course_bundle_uuid,
+                    indirect_dependencies=[],
+                )
+            )

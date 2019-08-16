@@ -127,6 +127,8 @@ class BundleVersion(models.Model):
         Bundle, related_name="versions", related_query_name="version", editable=False
     )
     version_num = models.PositiveIntegerField(editable=False)
+    # This is a CharField only because Django ORM doens't support indexed binary
+    # fields in MySQL
     snapshot_digest = models.CharField(max_length=40, db_index=True, editable=False)
     change_description = models.TextField(max_length=1000, blank=True)
 
@@ -134,6 +136,10 @@ class BundleVersion(models.Model):
         unique_together = (
             ("bundle", "version_num"),
         )
+
+    @property
+    def snapshot_digest_bytes(self):
+        return bytes_from_hex_str(self.snapshot_digest)
 
     @classmethod
     def create_new_version(cls, bundle_uuid, snapshot_digest):
@@ -177,6 +183,8 @@ class Draft(models.Model):
     """
     Drafts create Snapshots and (optionally) BundleVersions that point to
     Snapshots.
+
+    Target Scale: 100M rows (some low, fixed N * Bundles)
     """
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
@@ -224,7 +232,7 @@ class BundleLink(models.Model):
     reporting purposes. We track things at the Bundle level of granularity
     because doing so at the BundleVersion level would take up much more space
     with limited benefits. All precise version dependencies are captured at
-    the BundleData layer, where it can be represented more cheaply.
+    the Snapshot/Draft layer, where it can be represented more cheaply.
     """
     id = models.BigAutoField(primary_key=True)
 

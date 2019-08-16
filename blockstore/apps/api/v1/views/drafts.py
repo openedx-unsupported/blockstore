@@ -52,10 +52,13 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
+from blockstore.apps.bundles.links import LinkCycleError
 from blockstore.apps.bundles.store import DraftRepo, SnapshotRepo
 from blockstore.apps.bundles.models import BundleVersion, Draft
 from ..serializers.drafts import (
-    DraftSerializer, DraftWithFileDataSerializer, DraftFileUpdateSerializer
+    DraftFileUpdateSerializer,
+    DraftSerializer,
+    DraftWithFileDataSerializer,
 )
 
 
@@ -120,10 +123,14 @@ class DraftViewSet(viewsets.ModelViewSet):
         """
         serializer = DraftFileUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        files_to_write = serializer.validated_data
+        files_to_write = serializer.validated_data['files']
+        dependencies_to_write = serializer.validated_data['links']
 
         draft_repo = DraftRepo(SnapshotRepo())
-        draft_repo.update_files(uuid, files_to_write)
+        try:
+            draft_repo.update(uuid, files_to_write, dependencies_to_write)
+        except LinkCycleError:
+            raise serializers.ValidationError("Link cycle detected: Cannot create draft.")
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -148,7 +155,7 @@ class DraftViewSet(viewsets.ModelViewSet):
 
         # Is this the appropriate response when trying to commit a Draft with
         # no changes?
-        if not staged_draft.files_to_overwrite:
+        if not staged_draft.files_to_overwrite and not staged_draft.links_to_overwrite:
             raise serializers.ValidationError("Draft has no changes to commit.")
 
         new_snapshot, _updated_draft = draft_repo.commit(staged_draft)

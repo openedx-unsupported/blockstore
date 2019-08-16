@@ -17,8 +17,6 @@ result in breaking these tests. To that end:
 This file has many 😀 emojis in strings to test for Unicode encoding/decoding
 related issues.
 """
-import base64
-import json
 import re
 
 from django.contrib.auth import get_user_model
@@ -29,6 +27,9 @@ from rest_framework.test import APIClient
 
 from blockstore.apps.bundles.tests.storage_utils import isolate_test_storage
 from blockstore.apps.api.constants import UUID4_REGEX
+from .helpers import (
+    create_bundle_with_history, encode_str_for_draft, response_str_file, response_data
+)
 
 User = get_user_model()
 
@@ -312,12 +313,6 @@ class DraftsTest(ApiTestCase):
         create_data = response_data(create_response)
         draft_url = create_data['url']
 
-        # This won't work because there's no "files" dict.
-        patch_response = self.client.patch(
-            draft_url, data={'hello.txt': encode_str_for_draft("Hello!")}, format='json',
-        )
-        assert patch_response.status_code == status.HTTP_400_BAD_REQUEST
-
         # This won't work because the input is not base64 encoded.
         patch_response = self.client.patch(
             draft_url, data={'files': {'hello.txt': b"I'm Not Base64!"}}, format='json',
@@ -426,25 +421,181 @@ class DraftsTest(ApiTestCase):
         assert get_response.status_code == status.HTTP_404_NOT_FOUND
 
 
-def encode_str_for_draft(input_str):
-    """Given a string, return UTF-8 representation that is then base64 encoded."""
-    return base64.b64encode(input_str.encode('utf8'))
+class LinksTest(ApiTestCase):
+    """Test creating and following Links."""
 
+    def setUp(self):
+        """
+        We need to build up a little history to make the Links tests meaningful.
 
-def response_str_file(response):
-    """Return a String by parsing a response's streaming content as UTF-8."""
-    return b''.join(response.streaming_content).decode('utf8')
+        Here, we're going to set up a Course Bundle that Links to a Library
+        Bundle in a different Collection.
+        """
+        super().setUp()
 
+        self.library_collection_data = response_data(
+            self.client.post(
+                '/api/v1/collections', data={'title': 'Links Library Collection'}
+            )
+        )
+        self.course_collection_data = response_data(
+            self.client.post(
+                '/api/v1/collections', data={'title': 'Links Course Collection'}
+            )
+        )
 
-def response_data(response):
-    """
-    Parse data from the response into Python primitives.
+        self.library_bundle_data = create_bundle_with_history(
+            self.client,
+            self.library_collection_data['uuid'],
+            "Dogs Library Bundle 🐶",
+            [
+                {'dog.txt': encode_str_for_draft("Rusty! 🐕")},
+                {'dog.txt': encode_str_for_draft("Jack! 🐕")},
+                {'dog.txt': encode_str_for_draft("Clyde! 🐕")},
+            ]
+        )
+        self.course_bundle_data = create_bundle_with_history(
+            self.client,
+            self.course_collection_data['uuid'],
+            "Course Bundle",
+            [
+                {
+                    'overview.md': encode_str_for_draft(
+                        "## TODO: 🤫 Make this an RST file instead!"
+                    )
+                }
+            ]
+        )
 
-    We need this because response.data is too smart about deserializing
-    (e.g. it will automatically parse UUID strings into a UUID object.), and
-    we want the basic primitives exactly as the REST API returns them so
-    that we can be more confident about compatibility. For instance, UUIDs
-    can be represented in multiple ways and parse the same, but if we
-    suddenly change the output format, we've broken backwards compatibility.
-    """
-    return json.loads(response.content.decode('utf-8'))
+    def test_simple_links(self):
+        """
+        Links: Create (in Draft), Commit, Delete
+        """
+        course_draft_url = self.course_bundle_data['drafts']['test_draft']
+        new_link_data = {
+            "dog_library": {
+                "bundle_uuid": self.library_bundle_data['uuid'],
+                "version": 3  # Use the latest -- TODO: should we default to latest?
+            }
+        }
+        self.client.patch(
+            course_draft_url, data={'links': new_link_data}, format='json'
+        )
+        draft_data = response_data(self.client.get(course_draft_url))
+        draft_link_data = draft_data['staged_draft']['links']['dog_library']
+
+        assert draft_link_data['modified'] is True
+        assert draft_link_data['direct']['bundle_uuid'] == self.library_bundle_data['uuid']
+        assert draft_link_data['direct']['version'] == 3
+        assert draft_link_data['direct'].get('snapshot_digest') is not None
+        assert draft_link_data['indirect'] == []
+
+        commit_resp_data = response_data(
+            self.client.post(course_draft_url + '/commit')
+        )
+        new_bv_url = commit_resp_data['bundle_version']
+        new_bv_data = response_data(self.client.get(new_bv_url))
+        bv_link_data = new_bv_data['snapshot']['links']['dog_library']
+
+        # The link data should be identical except that only Drafts have a
+        # 'modified' key...
+        draft_link_data.pop('modified')
+        assert draft_link_data == bv_link_data
+
+        self.client.patch(
+            course_draft_url, data={'links': {'dog_library': None}}, format='json'
+        )
+        deleted_link_data = response_data(self.client.get(course_draft_url))
+
+        assert deleted_link_data['staged_draft']['links'] == {}
+        commit_resp_data = response_data(
+            self.client.post(course_draft_url + '/commit')
+        )
+        deleted_link_bv_url = commit_resp_data['bundle_version']
+        deleted_link_bv_data = response_data(self.client.get(deleted_link_bv_url))
+        assert 'dog_library' not in deleted_link_bv_data['snapshot']['links']
+
+    def test_link_cycle(self):
+        # First link from Course to Library
+        # Course -> Lib
+        course_draft_url = self.course_bundle_data['drafts']['test_draft']
+        link_to_lib_data = {
+            "link_to_lib": {
+                "bundle_uuid": self.library_bundle_data['uuid'],
+                "version": 3
+            }
+        }
+        self.client.patch(
+            course_draft_url, data={'links': link_to_lib_data}, format='json'
+        )
+        # This creates BundleVersion 2 of our Course
+        response_data(self.client.post(course_draft_url + '/commit'))
+
+        # Now link back in the other direction. This should fail...
+        # Course <-> Lib
+        lib_draft_resp = self.client.post(
+            '/api/v1/drafts',
+            {
+                'bundle_uuid': self.library_bundle_data['uuid'],
+                'name': 'cycle_test_draft',
+                'title': "For LinksTest.test_link_cycle 😀 (lib)",
+            }
+        )
+        lib_draft_data = response_data(lib_draft_resp)
+        link_to_course_data = {
+            "link_to_course": {
+                "bundle_uuid": self.course_bundle_data['uuid'],
+                "version": 2
+            }
+        }
+        patch_resp = self.client.patch(
+            lib_draft_data['url'], data={'links': link_to_course_data}, format='json'
+        )
+        assert patch_resp.status_code == status.HTTP_400_BAD_REQUEST
+
+        # Now set up an extended dependency link. This should also fail.
+        # Target: Course -> Lib -> Tutorial -> Course
+        # What exists so far: Course -> Lib
+        # Next step: (new) Tutorial -> Course
+        tutorial_bundle_data = response_data(
+            self.client.post(
+                '/api/v1/bundles',
+                data={
+                    'collection_uuid': self.library_collection_data['uuid'],
+                    'description': "Tutorial 😀😀😀😀 Bundle",
+                    'slug': 'links_test',
+                    'title': "LinksTest Tutorial Bundle 😀"
+                }
+            )
+        )
+        tutorial_draft_data = response_data(
+            self.client.post(
+                '/api/v1/drafts',
+                {
+                    'bundle_uuid': tutorial_bundle_data['uuid'],
+                    'name': 'cycle_test_draft',
+                    'title': "For LinksTest.test_link_cycle 😀 (tutorial)",
+                }
+            )
+        )
+        patch_resp = self.client.patch(
+            tutorial_draft_data['url'], data={'links': link_to_course_data}, format='json'
+        )
+        assert patch_resp.status_code == status.HTTP_204_NO_CONTENT
+        self.client.post(tutorial_draft_data['url'] + '/commit')
+
+        # Now we have Course -> Lib, Tutorial -> Course
+        # Next Step: Lib -> Tutorial, which should fail because of the extended
+        #            link cycle that introduces.
+        link_to_tutorial_data = {
+            "link_to_tutorial": {
+                "bundle_uuid": tutorial_bundle_data['uuid'],
+                "version": 1,
+            }
+        }
+
+        # This tries to create Course -> Lib -> Tutorial -> Course, which fails
+        patch_resp = self.client.patch(
+            lib_draft_data['url'], data={'links': link_to_tutorial_data}, format='json'
+        )
+        assert patch_resp.status_code == status.HTTP_400_BAD_REQUEST
