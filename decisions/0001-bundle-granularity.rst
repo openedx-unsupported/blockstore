@@ -46,36 +46,127 @@ XBlock Directories are a client convention and not a core Blockstore primitive.
 Each directory represents a single XBlock and its associated assets. The naming
 scheme is::
 
-    /{definition-key}/
-                     {tag-type}.xml
-                     static/
+    /{block-type}/{definition-id}/
+                                  definition.xml
+                                  static/
 
 The ``static`` directory is optional. For a concrete example::
 
-    /problem+blockstore_granularity/
-                                    problem.xml
+    /problem/blockstore_granularity/
+                                    definition.xml
                                     static/
                                            diagram.png
 
-Meanwhile, a container looks like:
+Meanwhile, a container looks like::
 
-    /unit+blockstore_big_questions/problem.xml
+    /unit/blockstore_big_questions/definition.xml
 
 When containers reference their children, it's done via a new tag. So a
 particular ``unit.xml`` might look like::
 
     <unit display_name="">
         <!-- Normal usage -->
-        <xblock-include definition="unit+blockstore_big_questions" />
+        <xblock-include definition="unit/blockstore_big_questions" />
 
         <!-- If we want to include the same content with a modifier to the usage
              key so that we can include it multiple times with different state
              storage. -->
-        <xblock-include definition="unit+blockstore_big_questions" usage="alternate" />
+        <xblock-include definition="unit/blockstore_big_questions" usage="alternate" />
 
         <!-- XBlock that exists in a Linked Bundle aliased to "arch_hangout_vidoes" -->
-        <xblock-include definition="arch_hangout_videos/video+blockstore_overview"/>
+        <xblock-include definition="arch_hangout_videos/video/blockstore_overview" />
     </unit>
+
+When referencing an XBlock definition from a linked bundle, the linked bundle
+must follow the OLX Bundle conventions, but may be any type of OLX bundle:
+course, library, or other future types.
+
+The ``usage="..."`` attribute on an ``<xblock-include />`` directive in an
+XBlock definition file is considered a hint that will be used by the learning
+context (the course, library, web page, etc.) to build a "usage key" for the
+XBlock against which user state is stored. Exactly how the ``usage="..."`` hint
+is ultimately used to construct the key depends on the learning context. For
+example, an HTML block included with ``<xblock-include ... usage="bob" />`` in a
+library might have a usage key like ``lb:lib1:html:bob`` when accessed directly
+in the library, but may have a usage key like
+``block:SchoolX+course1+run:html:parent3-bob6734`` when included in a course.
+This helps with separation of concerns (bundles store definitions, which are
+OLX files; learning contexts deal with usages which are specific instantiations
+of a definition) and preserves flexibility for future learning context types.
+
+In particular, note that a learning context will almost always transform the
+usage keys of any children of an included block, in order to ensure they are
+unique. Consider this case::
+
+    <unit display_name="Example">
+        <!-- A unit in an external problem bank library, containing 3 problems -->
+        <xblock-include definition="prob_bank5/unit/3problems" usage="first_set" />
+        <!-- A second usage of the same problem bank -->
+        <xblock-include definition="prob_bank5/unit/3problems" usage="second_set" />
+    </unit>
+
+In this example, if the included ``3problems`` unit contains child includes
+like::
+
+    <xblock-include definition="problem/problem1" usage="p1" />
+    ...
+
+Then in the original example, the usage ID ``p1`` would not be unique, because
+its parent unit is included twice. So the learning context will have to prefix
+the usage hint ``p1`` in this case, producing unique usage keys like
+``first_set-p1`` for the first usage and ``second_set-p1`` for the second.
+
+---------------------------------
+Proposal: Content Library Bundles
+---------------------------------
+
+A content library bundle is an OLX bundle with additional constraints, that is
+used to represent the OLX data of a content library.
+
+As with OLX Bundles in general, the conventions defined here are not implemented
+nor enforced by Blockstore in any way, however they are documented here for the
+sake of having a central reference.
+
+A content library bundle is an OLX bundle that holds a collection of one or more
+XBlocks. Each XBlock definition (OLX ``definition.xml`` file) in the content
+library is either a "top-level block" or is a child of exactly one other XBlock
+definition in the same bundle. A content library bundle does not allow a single
+definition to have multiple different usages (multiple <xblock-include />
+elements referencing the same definition). However, an XBlock definitions from
+any other linked OLX bundle, such as another content library, may be used
+multiple times::
+
+    <unit display_name="">
+        <!-- Normal usage of a definition in the same library bundle -->
+        <xblock-include definition="problem/problem1" />
+
+        <!-- The following is not allowed in a content library because each
+        definition in a content library may only be used once:
+        <xblock-include definition="problem/problem1" usage="other-usage" />
+        -->
+
+        <!-- However, XBlock definitions from linked bundles may be used freely -->
+        <xblock-include definition="linked_problem_bank/problem/problemB" usage="probB" />
+        <xblock-include definition="linked_problem_bank/problem/problemB" usage="probB-alt" />
+    </unit>
+
+In a content library bundle, the ``usage="..."`` attribute must not be specified
+when including an XBlock definition from the same bundle, but must be specified
+when including an XBlock definition from a linked bundle. This makes the
+implementation of content libraries considerably simpler.
+
+------------------------
+Proposal: Course Bundles
+------------------------
+
+The format of course bundles has not yet been finalized but will likely be
+an OLX bundle that includes some sort of additional "outline" file, such as
+``course-outline.json`` which specifies how the various XBlock definitions it
+contains or links to are related to each other in a hierarchical course tree.
+
+----------------------------------------
+General Blockstore/Bundle Considerations
+----------------------------------------
 
 Links
 =====
@@ -83,19 +174,17 @@ Links
 Link information is stored at the Snapshot level. Since the human-readable
 format is going to be a transform, we don't have to make symlink analogies to
 make the data easier to work with in authoring. Instead, Links are a mapping of
-names to Bundle Snapshots::
+names to Bundle Versions::
 
     {
         "links": {
             "arch_hangout_videos": {
-                "bundle_uuid": "3fcf5f61-bc23-41ec-9452-26d12dc3b13c",
-                "snapshot": "8f7bc6e89581591fa925fefa3819d382fd793839"
-                "dependencies": [
-                    {
-                        "bundle_uuid": "fd7ee4b3-0540-406c-98b9-dd050b7ddcb2",
-                        "snapshot": "c0c0940e4b3151908b60cecd1ef5e2aa19904676"
-                    }
-                ]
+                "direct": {
+                    "bundle_uuid": "3fcf5f61-bc23-41ec-9452-26d12dc3b13c",
+                    "version": 20,
+                    "snapshot_digest": "617608446daa448c94a09fd7ae70bf67ef4efc94"
+                },
+                "indirect": []
             }
         }
     }
@@ -137,7 +226,7 @@ changes for any given set of XBlocks. Once the Snapshot successfully completes,
 a new BundleVersion of the Course would be created to point to that Snapshot. An
 interruption in the publishing process during Snapshot creation could result in
 an orphaned Snapshot that's not pointed to by a BundleVersion, but shouldn't
-result in a broken or inconsitent state.
+result in a broken or inconsistent state.
 
 Hierarchy Representation
 ========================
@@ -154,7 +243,7 @@ To re-use a Unit, you would first make a Link to the Bundle where that Unit came
 from, and then specify the Link prefix before the directory where the Unit comes
 from::
 
-    <xblock-include definition="arch_hangout_videos/video+blockstore_overview"/>
+    <xblock-include definition="arch_hangout_videos/video/blockstore_overview"/>
 
 This allows for arbitrary reuse at varying levels of granularity.
 
@@ -166,8 +255,8 @@ course design in order for its BundleVersion dependency tracking to be
 meaningful. You could borrow a single leaf block or container block from another
 Course, but Blockstore itself would only know that the link between the
 BundleVersions existed, not the specific items that were used. This problem is
-significantly lessened in the case of Content Libraries, since each problem has
-its own Bundle there.
+significantly lessened in the case of Content Libraries where each problem has
+its own Bundle (but many content libraries will have more than one problem).
 
 Another way to look at it is that Blockstore's tracking of reuse is for
 update notifications, dependency checking, and licensing enforcement. Finer
