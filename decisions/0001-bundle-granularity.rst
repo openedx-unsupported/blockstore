@@ -73,8 +73,8 @@ particular ``unit.xml`` might look like::
              storage. -->
         <xblock-include definition="unit/blockstore_big_questions" usage="alternate" />
 
-        <!-- XBlock that exists in a Linked Bundle aliased to "arch_hangout_vidoes" -->
-        <xblock-include definition="arch_hangout_videos/video/blockstore_overview" />
+        <!-- XBlock that exists in a Linked Bundle aliased to "arch_hangout_videos" -->
+        <xblock-include source="arch_hangout_videos" definition="video/blockstore_overview" />
     </unit>
 
 When referencing an XBlock definition from a linked bundle, the linked bundle
@@ -100,9 +100,9 @@ unique. Consider this case::
 
     <unit display_name="Example">
         <!-- A unit in an external problem bank library, containing 3 problems -->
-        <xblock-include definition="prob_bank5/unit/3problems" usage="first_set" />
+        <xblock-include source="prob_bank5" definition="unit/3problems" usage="first_set" />
         <!-- A second usage of the same problem bank -->
-        <xblock-include definition="prob_bank5/unit/3problems" usage="second_set" />
+        <xblock-include source="prob_bank5" definition="unit/3problems" usage="second_set" />
     </unit>
 
 In this example, if the included ``3problems`` unit contains child includes
@@ -146,8 +146,8 @@ multiple times::
         -->
 
         <!-- However, XBlock definitions from linked bundles may be used freely -->
-        <xblock-include definition="linked_problem_bank/problem/problemB" usage="probB" />
-        <xblock-include definition="linked_problem_bank/problem/problemB" usage="probB-alt" />
+        <xblock-include source="linked_problem_bank" definition="problem/problemB" usage="probB" />
+        <xblock-include source="linked_problem_bank" definition="problem/problemB" usage="probB-alt" />
     </unit>
 
 In a content library bundle, the ``usage="..."`` attribute must not be specified
@@ -240,10 +240,9 @@ Reusing Containers
 ==================
 
 To re-use a Unit, you would first make a Link to the Bundle where that Unit came
-from, and then specify the Link prefix before the directory where the Unit comes
-from::
+from, and then specify the Link name in the ``source`` attribute::
 
-    <xblock-include definition="arch_hangout_videos/video/blockstore_overview"/>
+    <xblock-include source="arch_hangout_videos" definition="video/blockstore_overview"/>
 
 This allows for arbitrary reuse at varying levels of granularity.
 
