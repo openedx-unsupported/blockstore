@@ -10,7 +10,4 @@ To facilitate the authoring, storage, and reuse of learning content.
 .. toctree::
    :maxdepth: 2
 
-   getting_started
-   testing
-   features
-   internationalization
+   placeholder
