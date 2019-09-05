@@ -7,34 +7,30 @@ help:
 	@echo ""
 	@echo "These should be run from outside the container:"
 	@echo ""
-	@echo "  dev.up                    Start Blockstore container"
-	@echo "  dev.provision             Provision Blockstore service"
-	@echo "  stop                      Stop Blockstore container"
-	@echo "  destroy                   Remove Blockstore container, network and volumes. Destructive."
-	@echo "  blockstore-shell          Run a shell on Blockstore container."
+	@perl -nle'print $& if m{^[\.a-zA-Z_-]+:.*? # .*$$}' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.* # "}; {printf "\033[36m  %-25s\033[0m %s\n", $$1, $$2}'
 	@echo ""
 	@echo "These should be run from blockstore-shell:"
 	@echo ""
-	@perl -nle'print $& if m{^[\.a-zA-Z_-]+:.*?## .*$$}' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m  %-25s\033[0m %s\n", $$1, $$2}'
+	@perl -nle'print $& if m{^[\.a-zA-Z_-]+:.*?## .*$$}' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.* ## "}; {printf "\033[36m  %-25s\033[0m %s\n", $$1, $$2}'
 	@echo ""
 
 VIRTUAL_ENV?=/blockstore/venv
 VENV_BIN=${VIRTUAL_ENV}/bin
 
-dev.up:
+dev.up:  # Start Blockstore container
 	docker-compose --project-name blockstore -f docker-compose.yml up -d
 
-dev.provision:
+dev.provision:  # Provision Blockstore service
 	docker exec -t edx.devstack.mysql /bin/bash -c 'mysql -uroot <<< "create database if not exists blockstore_db;"'
 	docker exec -t edx.devstack.blockstore /bin/bash -c 'source ~/.bashrc && make requirements && make migrate'
 
-stop:
+stop:  # Stop Blockstore container
 	docker-compose --project-name blockstore -f docker-compose.yml stop
 
-destroy:
+destroy:  # Remove Blockstore container, network and volumes. Destructive.
 	docker-compose --project-name blockstore -f docker-compose.yml down -v
 
-blockstore-shell:
+blockstore-shell:  # Open a shell on the running Blockstore container
 	docker exec -e COLUMNS="`tput cols`" -e LINES="`tput lines`" -it edx.devstack.blockstore /bin/bash
 
 clean: ## Remove all generated files
@@ -66,7 +62,13 @@ test: clean ## Run tests and generate coverage report
 	${VENV_BIN}/coverage xml
 	${VENV_BIN}/diff-cover coverage.xml --html-report diff-cover.html
 
-testserver:  ## Run an isolated ephemeral instance of Blockstore for use by edx-platform tests
+easyserver: dev.up dev.provision  # Start and provision a Blockstore container and run the server until CTRL-C, then stop it
+	# Now run blockstore until the user hits CTRL-C:
+	docker-compose --project-name blockstore -f docker-compose.yml exec blockstore /blockstore/venv/bin/python /blockstore/app/manage.py runserver 0.0.0.0:18250
+	# Then stop the container:
+	docker-compose --project-name blockstore -f docker-compose.yml stop
+
+testserver:  # Run an isolated ephemeral instance of Blockstore for use by edx-platform tests
 	docker-compose --project-name blockstore-testserver -f docker-compose-testserver.yml up -d
 	docker exec -t edx.devstack.mysql /bin/bash -c 'mysql -uroot <<< "create database if not exists blockstore_test_db;"'
 	docker exec -t edx.devstack.blockstore-test /bin/bash -c 'source ~/.bashrc && make requirements && make migrate && ./manage.py shell < provision-testserver-data.py'

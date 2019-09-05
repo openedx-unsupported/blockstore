@@ -27,40 +27,16 @@ Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ p
 
 #. Clone this repo and ``cd`` into it.
 
-#. Start the service.
+#. To start the django development server inside a docker container, run this on
+   your host machine:
 
    .. code::
 
-       make dev.up
+       make easyserver
 
+   Then you'll be able to access Blockstore at http://localhost:18250/
 
-#. Run the provision command to install dependencies, migrate databases etc.
-
-   .. code::
-
-       make dev.provision
-
-#. Run a shell on the container
-
-   .. code::
-
-       make blockstore-shell
-
-#. To start the django developement server, from the shell on the container run:
-
-   .. code::
-
-       make runserver
-
-#. The blockstore container is also added to the ``devstack_default`` docker network.
-   This allows it to be accessed from any of the devstack containers as ``edx.devstack.blockstore``.
-   Test this by running the following command from any devstack container shell:
-
-   .. code::
-
-       curl edx.devstack.blockstore:18250/api/v1/ -v
-
-#. Run ``make`` to get a list of all available commands.
+#. Run ``make`` to get a list of other available commands.
 
 #. To log in to Blockstore, you'll need to configure SSO with your devstack.
 
