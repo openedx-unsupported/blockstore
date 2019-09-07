@@ -1,6 +1,7 @@
 """
 Serializers for Bundles and BundleVersions.
 """
+from django.core.validators import validate_unicode_slug
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.reverse import reverse
@@ -57,6 +58,9 @@ class BundleSerializer(serializers.ModelSerializer):
         slug_field='uuid',
         queryset=Collection.objects.all(),
     )
+
+    # DRF slug fields don't support unicode by default, so override it:
+    slug = serializers.CharField(validators=(validate_unicode_slug, ))
 
     url = relations.HyperlinkedIdentityField(
         lookup_field='uuid',
