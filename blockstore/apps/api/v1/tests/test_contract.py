@@ -163,7 +163,7 @@ class BundlesMetadataTestCase(ApiTestCase):
             data={
                 'collection_uuid': self.collection_uuid_str,
                 'description': "This is a 😀😀😀😀 Bundle",
-                'slug': 'happy',
+                'slug': 'Ηαρργ',  # Unicode slugs are allowed
                 'title': "Happy Bundle 😀"
             }
         )
@@ -173,7 +173,7 @@ class BundlesMetadataTestCase(ApiTestCase):
         assert create_data['collection_uuid'] == self.collection_uuid_str
         assert create_data['description'] == "This is a 😀😀😀😀 Bundle"
         assert create_data['drafts'] == {}
-        assert create_data['slug'] == 'happy'
+        assert create_data['slug'] == 'Ηαρργ'
         assert create_data['title'] == "Happy Bundle 😀"
         assert re.match(UUID4_REGEX, create_data['uuid'])
         assert create_data['url'] == u"http://testserver/api/v1/bundles/{}".format(create_data['uuid'])
