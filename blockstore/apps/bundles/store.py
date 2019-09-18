@@ -337,7 +337,10 @@ class SnapshotRepo:
         summary_path = self._summary_path(bundle_uuid, snapshot.hash_digest)
 
         if not self.storage.exists(summary_path):
-            self.storage.save(summary_path, ContentFile(summary_json_str))
+            self.storage.save(
+                summary_path,
+                ContentFile(summary_json_str.encode('utf-8'))
+            )
 
         snapshot_created.send(
             SnapshotRepo,
@@ -391,7 +394,7 @@ class DraftRepo:
         _new_link_collection = draft.composed_links()
         summary_path = self._summary_path(draft.uuid)
         draft_summary_json = self.serialized_draft_summary(draft)
-        self._overwrite(summary_path, ContentFile(draft_summary_json))
+        self._overwrite(summary_path, ContentFile(draft_summary_json.encode('utf-8')))
 
     @classmethod
     def serialized_draft_summary(cls, draft):
