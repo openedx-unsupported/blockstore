@@ -1,6 +1,7 @@
 # Packages required in a production environment
 -r base.txt
 
+boto3<2.0
 django-storages<2.0
 gevent
 gunicorn
