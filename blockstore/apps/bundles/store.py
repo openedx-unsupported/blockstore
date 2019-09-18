@@ -261,8 +261,9 @@ class SnapshotRepo:
         """
         storage_path = self._summary_path(bundle_uuid, snapshot_digest)
         try:
-            with self.storage.open(storage_path, mode='r') as snapshot_file:
-                snapshot_json = json.load(snapshot_file)
+            with self.storage.open(storage_path, mode='rb') as snapshot_file:
+                snapshot_raw_data = snapshot_file.read()
+                snapshot_json = json.loads(snapshot_raw_data.decode('utf-8'))
         except FileNotFoundError:
             logger.error(
                 "Snapshot %s,%s not found at: %s",
@@ -410,8 +411,9 @@ class DraftRepo:
         if not self.storage.exists(summary_path):
             raise StagedDraft.NotFoundError(u"Draft {} not found in {}".format(draft_uuid, self))
 
-        with self.storage.open(summary_path, mode='r') as draft_summary_file:
-            draft_summary_json = json.load(draft_summary_file)
+        with self.storage.open(summary_path, mode='rb') as draft_summary_file:
+            draft_summary_raw_data = draft_summary_file.read()
+            draft_summary_json = json.loads(draft_summary_raw_data.decode('utf-8'))
 
         bundle_uuid = UUID(draft_summary_json['bundle_uuid'])
         if draft_summary_json['base_snapshot'] is None:
