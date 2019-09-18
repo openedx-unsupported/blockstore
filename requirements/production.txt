@@ -1,6 +1,7 @@
 # Packages required in a production environment
 -r base.txt
 
+django-storages<2.0
 gevent
 gunicorn
 newrelic
