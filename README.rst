@@ -7,11 +7,15 @@ For Open edX, Blockstore is designed to facilitate a much greater level of conte
 
 See DESIGN_ for more details.
 
-Blockstore includes Tagstore, which is a system for storing taxonomies and applying tags to content. See `its README`_ for more details.
+Blockstore has been developed by Harvard's LabXchange_ and the `Amgen Foundation`_, with significant in-kind contributions from edX_.
 
 .. _DESIGN: https://openedx.atlassian.net/wiki/spaces/AC/pages/737149430/Blockstore+Design
 
-.. _`its README`: tagstore/README.rst
+.. _LabXchange: https://about.labxchange.org
+
+.. _`Amgen Foundation`: https://www.amgen.com/responsibility/amgen-foundation/
+
+.. _edX: https://www.edx.org
 
 .. Documentation
 .. -------------
