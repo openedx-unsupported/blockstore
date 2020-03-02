@@ -30,14 +30,14 @@ class EntityViewSet(viewsets.ViewSet):
     queryset = Entity.objects.all()
     serializer_class = EntitySerializer
 
-    def list(self, request, *args, **kwargs):  # pylint: disable=unused-argument
+    def list(self, request, *args, **kwargs):
         '''
         Get a list of all entities.
         '''
         serializer = EntitySerializer(self.queryset, many=True)
         return Response(serializer.data)
 
-    def retrieve(self, request, pk=None, entity_type=None):  # pylint: disable=unused-argument
+    def retrieve(self, request, pk=None, entity_type=None):
         '''
         Get a single entity.
         '''

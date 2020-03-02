@@ -30,11 +30,6 @@ logger = logging.getLogger(__name__)
 snapshot_created = Signal(providing_args=["bundle_uuid", "hash_digest"])
 
 
-# Pylint doesn't know how to introspect attr.s() structs, and can't tell that
-# Snapshot.files or StagedDraft.files_to_overwrite are in fact dicts and can do
-# all of the things listed below:
-# pylint: disable=unsubscriptable-object,unsupported-membership-test,not-an-iterable
-
 @attr.s(frozen=True)
 class FileInfo:
     """
@@ -390,6 +385,9 @@ class DraftRepo:
         return self.storage.save(path, file_obj)
 
     def _save_summary_file(self, draft):
+        """
+        Save this draft's summary file
+        """
         # Before we save the Draft, create a LinkCollection to ensure that we
         # haven't introduced a cycle:
         _new_link_collection = draft.composed_links()

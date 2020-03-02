@@ -107,7 +107,9 @@ class TestToString(TestCase):
 
 @isolate_test_storage
 class TestDraftCreation(TestCase):
-
+    """
+    Test creation of a new draft
+    """
     def test_save_creates_staged_draft(self):
         collection = Collection.objects.create(title="Collection 1")
         bundle = Bundle.objects.create(

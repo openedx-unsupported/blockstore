@@ -31,7 +31,9 @@ TEXT_FILE = ContentFile(TEXT_CONTENT_BYTES)
 
 
 class TestFileInfo(unittest.TestCase):
-
+    """
+    Basic tests of the FileInfo structure
+    """
     def test_serialization(self):
         """
         Test creation from Python primitives (that you'd get from JSON parsing).
@@ -126,8 +128,8 @@ class TestSnapshots(SimpleTestCase):
         self.assertNotEqual(snapshot_1, snapshot_2)
         self.assertNotEqual(snapshot_1.hash_digest, snapshot_2.hash_digest)
         self.assertEqual(
-            snapshot_1.files['test.txt'].hash_digest,  # pylint: disable=unsubscriptable-object
-            snapshot_2.files['renamed.txt'].hash_digest,  # pylint: disable=unsubscriptable-object
+            snapshot_1.files['test.txt'].hash_digest,
+            snapshot_2.files['renamed.txt'].hash_digest,
         )
 
     def test_snapshot_not_found(self):

@@ -1,7 +1,7 @@
 # Packages required for testing
 -r base.txt
 
-astroid<1.6
+astroid
 coverage
 ddt
 diff-cover
