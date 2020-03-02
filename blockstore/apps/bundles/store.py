@@ -580,21 +580,25 @@ class DraftRepo:
             dependencies = {}
 
         existing_draft = self.get(draft_uuid)
+        # New files: the dict of files in the draft changed by this update only
         new_files = self._new_files_for_update(existing_draft, files)
-        new_link_changeset = self._new_links_for_update(existing_draft, dependencies)
+        updated_draft_files = {**existing_draft.files_to_overwrite, **new_files}
+        updated_draft_links = self._merge_links_for_update(existing_draft, dependencies)
         new_draft = attr.evolve(
             existing_draft,
-            files_to_overwrite={**existing_draft.files_to_overwrite, **new_files},
-            links_to_overwrite=new_link_changeset,
+            files_to_overwrite=updated_draft_files,
+            links_to_overwrite=updated_draft_links,
             updated_at=updated_at or datetime.now(timezone.utc)
         )
         self._save_summary_file(new_draft)
 
         return new_draft
 
-    def _new_links_for_update(self, existing_draft, dependencies):
+    def _merge_links_for_update(self, existing_draft, dependencies):
         """
-        Return updated LinkChangeSet based on new dependencies.
+        Return updated LinkChangeSet based on new dependencies. The new
+        dependencies will be merged into the existing LinkChangeSet in the
+        draft.
 
         `dependencies` is a dict of names to Dependency objects that represents
         direct dependencies. The value can be None for wanting to delete that
@@ -608,9 +612,12 @@ class DraftRepo:
             if dep != composed_links.get_direct_dep(name)
         }
 
+        # Start by determining the base puts/deletes for the updated LinkChangeSet
+        # This consists of all the existing puts/deletes that are staged in the
+        # draft and which aren't being modified by this new dependencies list.
+        puts = [p for p in existing_draft.links_to_overwrite.puts if p.name not in dependencies]
+        deletes = [d for d in existing_draft.links_to_overwrite.deletes if d not in dependencies]
         # Now we find the indirect dependencies for all of these
-        puts = []
-        deletes = []
         for name, dep in dependency_updates.items():
             if dep is None:
                 deletes.append(name)
