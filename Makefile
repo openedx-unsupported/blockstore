@@ -39,10 +39,10 @@ clean: ## Remove all generated files
 	rm -f diff-cover.html
 
 requirements: ## Install requirements for development
-	${VENV_BIN}/pip install -qr requirements/local.txt --exists-action w
+	${VENV_BIN}/pip install -r requirements/local.txt --exists-action w
 
 requirements-test: ## Install requirements for testing
-	${VENV_BIN}/pip install -qr requirements/test.txt --exists-action w
+	${VENV_BIN}/pip install -r requirements/test.txt --exists-action w
 
 production-requirements:
 	pip install -r requirements/production.txt --exists-action w
