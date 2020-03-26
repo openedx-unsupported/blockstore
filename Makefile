@@ -27,6 +27,9 @@ dev.provision:  # Provision Blockstore service
 stop:  # Stop Blockstore container
 	docker-compose --project-name blockstore -f docker-compose.yml stop
 
+pull:  # Update docker images that this depends on.
+	docker pull python:3.5.7-alpine3.9
+
 destroy:  # Remove Blockstore container, network and volumes. Destructive.
 	docker-compose --project-name blockstore -f docker-compose.yml down -v
 
@@ -62,7 +65,7 @@ test: clean ## Run tests and generate coverage report
 	${VENV_BIN}/coverage xml
 	${VENV_BIN}/diff-cover coverage.xml --html-report diff-cover.html
 
-easyserver: dev.up dev.provision  # Start and provision a Blockstore container and run the server until CTRL-C, then stop it
+easyserver: pull dev.up dev.provision  # Start and provision a Blockstore container and run the server until CTRL-C, then stop it
 	# Now run blockstore until the user hits CTRL-C:
 	docker-compose --project-name blockstore -f docker-compose.yml exec blockstore /blockstore/venv/bin/python /blockstore/app/manage.py runserver 0.0.0.0:18250
 	# Then stop the container:
