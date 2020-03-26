@@ -27,6 +27,9 @@ dev.provision:  # Provision Blockstore service
 stop:  # Stop Blockstore container
 	docker-compose --project-name blockstore -f docker-compose.yml stop
 
+pull:  # Update docker images that this depends on.
+	docker pull python:3.5.7-alpine3.9
+
 destroy:  # Remove Blockstore container, network and volumes. Destructive.
 	docker-compose --project-name blockstore -f docker-compose.yml down -v
 
@@ -39,10 +42,10 @@ clean: ## Remove all generated files
 	rm -f diff-cover.html
 
 requirements: ## Install requirements for development
-	${VENV_BIN}/pip install -qr requirements/local.txt --exists-action w
+	${VENV_BIN}/pip install -r requirements/local.txt --exists-action w
 
 requirements-test: ## Install requirements for testing
-	${VENV_BIN}/pip install -qr requirements/test.txt --exists-action w
+	${VENV_BIN}/pip install -r requirements/test.txt --exists-action w
 
 production-requirements:
 	pip install -r requirements/production.txt --exists-action w
