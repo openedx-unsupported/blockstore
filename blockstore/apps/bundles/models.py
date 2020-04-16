@@ -143,6 +143,9 @@ class BundleVersion(models.Model):
 
     @classmethod
     def create_new_version(cls, bundle_uuid, snapshot_digest):
+        """
+        Create a new BundleVersion for the specified Bundle.
+        """
         bundle = Bundle.objects.get(uuid=bundle_uuid)
         versions = list(bundle.versions.order_by('-version_num')[:1])
         next_version_num = versions[0].version_num + 1 if versions else 1

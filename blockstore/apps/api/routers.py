@@ -6,7 +6,9 @@ from rest_framework_nested import routers
 
 
 class DefaultRouter(routers.DefaultRouter):
-
+    """
+    Customized version of DefaultRouter used for the Blockstore REST API
+    """
     def get_lookup_regex(self, viewset, lookup_prefix=''):
         """
         Given a viewset, return the portion of URL regex that is used

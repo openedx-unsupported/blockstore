@@ -53,9 +53,9 @@ class AbstractBackendTest:
     def test_add_tag_to_taxonomy(self):
         """ add_tag_to_taxonomy will add a tag to the given taxonomy """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
-        self.assertEqual(len([t for t in tax.list_tags()]), 0)
+        self.assertEqual(len(list(tax.list_tags())), 0)
         tag = tax.add_tag('testing')
-        tags = [t for t in tax.list_tags()]
+        tags = list(tax.list_tags())
         self.assertEqual(len(tags), 1)
         self.assertEqual(tags[0], tag)
         tag2 = tax.add_tag('testing 2')
@@ -69,11 +69,11 @@ class AbstractBackendTest:
         Searching for tags is always case-insensitive.
         """
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
-        self.assertEqual(len([t for t in tax.list_tags()]), 0)
+        self.assertEqual(len(list(tax.list_tags())), 0)
         tag1 = tax.add_tag('testing')
         tag2 = tax.add_tag('Testing')
         self.assertEqual(tag2.name, 'testing')  # It should have returned the existing tag's case
-        tags = set([t for t in tax.list_tags()])
+        tags = set(tax.list_tags())
         self.assertEqual(len(tags), 1)
         self.assertEqual(tags, {tag1, tag2})
         # get_tag should also respect the original case:
@@ -94,7 +94,7 @@ class AbstractBackendTest:
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
         for tag in valid_tags:
             tax.add_tag(tag)
-        tags_created = set([t.name for t in tax.list_tags()])
+        tags_created = set(t.name for t in tax.list_tags())
         self.assertEqual(tags_created, set(valid_tags))
 
     def test_forbidden_tag_names(self):
@@ -120,7 +120,7 @@ class AbstractBackendTest:
         tag1 = tax.add_tag('testing')
         tag2 = tax.add_tag('testing')
         self.assertEqual(tag1, tag2)
-        tags = [t for t in tax.list_tags()]
+        tags = list(tax.list_tags())
         self.assertEqual(tags, [tag1])
 
     def test_add_tag_to_taxonomy_idempotent_parent(self):
@@ -133,8 +133,7 @@ class AbstractBackendTest:
         child1 = tax.add_tag('child', parent_tag=parent)
         child2 = tax.add_tag('child', parent_tag=parent)
         self.assertEqual(child1, child2)
-        tags = [t for t in tax.list_tags()]
-        self.assertEqual(len(tags), 2)  # the 2 tags are 'parent' and 'child'
+        self.assertEqual(len(list(tax.list_tags())), 2)  # the 2 tags are 'parent' and 'child'
 
     def test_add_tag_to_taxonomy_exists_elsewhere(self):
         """ add_tag_to_taxonomy will not allow a child that exists elsewhere """
@@ -374,7 +373,7 @@ class AbstractBackendTest:
         self.assertEqual(result, {elephant})
 
         # large mammals:
-        result = set([e for e in self.tagstore.get_entities_tagged_with_all({large, mammal})])
+        result = set(self.tagstore.get_entities_tagged_with_all({large, mammal}))
         self.assertEqual(result, {elephant})
 
     def test_get_entities_tagged_with_all_invalid(self):

@@ -59,7 +59,6 @@ class Link:
 
 class LinkCycleError(ValueError):
     """Raise when an action would create a cycle between two BundleVersions."""
-    pass
 
 
 class LinkCollection:
@@ -144,6 +143,10 @@ class LinkCollection:
                 )
 
     def _check_for_cycles(self, bundle_uuid, links):
+        """
+        Check for link cycles (when a bundle's links have links [that have
+        links...] that point back to the bundle.)
+        """
         for link in links:
             if link.direct_dependency == bundle_uuid:
                 raise LinkCycleError(

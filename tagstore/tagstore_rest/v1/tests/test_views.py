@@ -1,5 +1,5 @@
 """ Tests for api v1 views. """
-from future.moves.urllib.parse import urlencode
+from urllib.parse import urlencode
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase

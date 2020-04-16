@@ -500,11 +500,25 @@ class LinksTest(ApiTestCase):
 
         # The link data should be identical except that only Drafts have a
         # 'modified' key...
-        draft_link_data.pop('modified')
+        bv_link_data['modified'] = True
         assert draft_link_data == bv_link_data
 
+        # Now test updating the draft, adding a second link
         self.client.patch(
-            course_draft_url, data={'links': {'dog_library': None}}, format='json'
+            course_draft_url, data={'links': {
+                "dog_library_old": {"bundle_uuid": self.library_bundle_data['uuid'], "version": 1},
+            }}, format='json',
+        )
+        draft_data2 = response_data(self.client.get(course_draft_url))
+        assert draft_data2['staged_draft']['links']['dog_library'] == draft_link_data
+        draft_link2_data = draft_data2['staged_draft']['links']['dog_library_old']
+        assert draft_link2_data['modified'] is True
+        assert draft_link2_data['direct']['bundle_uuid'] == self.library_bundle_data['uuid']
+        assert draft_link2_data['direct']['version'] == 1
+
+        # Now test deleting the links:
+        self.client.patch(
+            course_draft_url, data={'links': {'dog_library': None, 'dog_library_old': None}}, format='json'
         )
         deleted_link_data = response_data(self.client.get(course_draft_url))
 

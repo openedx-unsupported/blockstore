@@ -14,4 +14,4 @@ def tag_hierarchy(taxonomy_uid):
         tags = tagstore.get_tags_in_taxonomy_hierarchically_as_dict(taxonomy_uid)
         return {'tags': tags, 'taxonomy_uid': taxonomy_uid}
     else:
-        return
+        return None

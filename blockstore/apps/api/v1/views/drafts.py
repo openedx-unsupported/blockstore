@@ -185,4 +185,4 @@ class DraftViewSet(viewsets.ModelViewSet):
         """
         draft_repo = DraftRepo(SnapshotRepo())
         draft_repo.delete(uuid)
-        return super().destroy(request, uuid)
+        return super().destroy(request, uuid)  # pylint: disable=no-member

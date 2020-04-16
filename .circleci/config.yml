@@ -34,7 +34,7 @@ jobs:
           name: Install requirements
           command: |
             apk update && apk upgrade
-            apk add bash bash-completion build-base git perl mariadb-dev
+            apk add bash bash-completion build-base git perl mariadb-dev libffi-dev
             python3.5 -m venv /blockstore/venv
             source /blockstore/venv/bin/activate
             make requirements
@@ -60,7 +60,7 @@ jobs:
           name: Install requirements
           command: |
             apk update && apk upgrade
-            apk add bash bash-completion build-base git perl mariadb-dev
+            apk add bash bash-completion build-base git perl mariadb-dev libffi-dev
             python3.5 -m venv /blockstore/venv
             source /blockstore/venv/bin/activate
             make requirements
