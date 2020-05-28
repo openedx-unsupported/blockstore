@@ -236,6 +236,8 @@ REST_FRAMEWORK = {
         # token are allowed to use the API.
         'blockstore.apps.api.permissions.IsSuperUserOrAuthorizedApplication',
     ),
+    # TODO: Remove once we move to edx/api-doc-tools
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
 
 ################################################################################

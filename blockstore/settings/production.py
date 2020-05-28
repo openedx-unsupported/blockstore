@@ -16,6 +16,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
     ),
+    # TODO: Remove once we move to edx/api-doc-tools
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
 
 CONFIG_FILE = get_env_setting('BLOCKSTORE_CFG')
