@@ -1,19 +1,23 @@
-version: 2
+version: 2.1
 
 workflows:
-  version: 2
+  version: 2.1
   validate:
     jobs:
-      - tests
+      - tests:
+          matrix:
+            parameters:
+              python_version: ["3.5", "3.8"]
       - quality
-
 jobs:
   tests:
-
+    parameters:
+      python_version:
+        type: string
+        default: "3.5"
     working_directory: /blockstore/app/
-
     docker:
-      - image: python:3.5.7-alpine3.9
+      - image: python:<< parameters.python_version >>-alpine
       - image: mysql:5.6
         command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
         environment:
@@ -35,7 +39,7 @@ jobs:
           command: |
             apk update && apk upgrade
             apk add bash bash-completion build-base git perl mariadb-dev libffi-dev
-            python3.5 -m venv /blockstore/venv
+            python<< parameters.python_version >> -m venv /blockstore/venv
             source /blockstore/venv/bin/activate
             make requirements
 
@@ -50,7 +54,7 @@ jobs:
     working_directory: /blockstore/app/
 
     docker:
-      - image: python:3.5.7-alpine3.9
+      - image: python:3.5-alpine
 
     steps:
 
