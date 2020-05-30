@@ -1,0 +1,10 @@
+# Packages required in a production environment
+-r base.txt
+
+boto3
+django-storages
+gevent
+gunicorn
+newrelic
+PyYAML
+python-memcached
