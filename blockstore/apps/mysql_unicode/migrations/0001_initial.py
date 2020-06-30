@@ -10,7 +10,7 @@
 # Django has no supported way to change the character set and collation
 # so we change it here in a migration.
 # By specifying "run_before", we can force this to be the first migration.
-from __future__ import unicode_literals
+
 
 from django.db import migrations, models
 
