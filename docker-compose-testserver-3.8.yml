@@ -6,7 +6,7 @@ version: '3'
 services:
 
   blockstore:
-    container_name: edx.devstack.blockstore-test
+    container_name: edx.${OPENEDX_PROJECT_NAME:-devstack}.blockstore-test
     image: opencraft/blockstore:latest
     build:
       context: .
@@ -15,8 +15,10 @@ services:
     tty: true
     entrypoint: ["/bin/bash"]
     networks:
-      - default
-      - devstack
+      default:
+      devstack:
+        aliases:
+          - edx.devstack.blockstore-test
     ports:
       - "18251:18251"
     volumes:
@@ -32,7 +34,7 @@ services:
 networks:
   devstack:
     external:
-      name: devstack_default
+      name: ${OPENEDX_PROJECT_NAME:-devstack}_default
 
 volumes:
   blockstore_venv_3_8_5:
