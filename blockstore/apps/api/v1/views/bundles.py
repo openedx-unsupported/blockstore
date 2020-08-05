@@ -2,7 +2,10 @@
 Views for Bundles and BundleVersions.
 """
 
-from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Q
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet
+from django_filters.widgets import CSVWidget
+from django_filters.filters import AllValuesMultipleFilter, CharFilter
 from rest_framework import viewsets, mixins
 from rest_framework.generics import get_object_or_404
 
@@ -12,16 +15,36 @@ from ...constants import UUID4_REGEX, VERSION_NUM_REGEX
 from ..serializers.bundles import BundleSerializer, BundleVersionSerializer, BundleVersionWithFileDataSerializer
 
 
+class BundleFilter(FilterSet):
+    """
+    Filter for BundleViewSet.
+    """
+    uuid = AllValuesMultipleFilter(widget=CSVWidget)  # Accepts multiple comma-separated UUIDs
+    text_search = CharFilter(method='search')
+
+    def search(self, queryset, name, value):
+        return queryset.filter(Q(title__icontains=value) | Q(description__icontains=value) | Q(slug__icontains=value))
+
+    class Meta:
+        model = Bundle
+        fields = ('collection__uuid',)
+
+
 class BundleViewSet(viewsets.ModelViewSet):
     """
     ViewSet for Bundle model.
+
+    Filters available as query params:
+        uuid: Accepts a comma-separated list of UUIDs and filters the bundles by them.
+        text_search: Takes a string and searches its inclusion in the title, description or slug.
+        collection__uuid: Filters bundles belonging to the specified collection.
     """
     lookup_field = 'uuid'
     lookup_url_kwarg = 'bundle_uuid'
     lookup_value_regex = UUID4_REGEX
 
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('collection__uuid',)
+    filterset_class = BundleFilter
 
     queryset = Bundle.objects.all() \
                      .select_related('collection') \

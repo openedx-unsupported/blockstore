@@ -198,7 +198,7 @@ class BundlesMetadataTestCase(ApiTestCase):
         assert create_response.status_code == status.HTTP_201_CREATED
 
     def test_list(self):
-        for i in range(10):
+        for i in range(1, 11):
             self.client.post(
                 '/api/v1/bundles',
                 data={
@@ -210,8 +210,27 @@ class BundlesMetadataTestCase(ApiTestCase):
             )
         list_response = self.client.get('/api/v1/bundles')
         assert list_response.status_code == status.HTTP_200_OK
+        bundles_list = response_data(list_response)
+        assert len(bundles_list) == 10
+
+        uuids = [bundle['uuid'] for bundle in bundles_list[:2]]
+        list_response = self.client.get('/api/v1/bundles?uuid={}'.format(','.join(uuids)))
+        assert list_response.status_code == status.HTTP_200_OK
         list_data = response_data(list_response)
-        assert len(list_data) == 10
+        assert len(list_data) == 2
+
+        # This should return Happy Bundle 1 and Happy Hundle 10
+        list_response = self.client.get('/api/v1/bundles?text_search=happy bundle 1')
+        assert list_response.status_code == status.HTTP_200_OK
+        list_data = response_data(list_response)
+        assert len(list_data) == 2
+
+        # This should return Happy Bundle 1, as it's searching only in the first two bundles
+        uuids = [bundle['uuid'] for bundle in bundles_list[:2]]
+        list_response = self.client.get('/api/v1/bundles?uuid={}&text_search=Happy bundle 1'.format(','.join(uuids)))
+        assert list_response.status_code == status.HTTP_200_OK
+        list_data = response_data(list_response)
+        assert len(list_data) == 1
 
 
 class DraftsTest(ApiTestCase):
