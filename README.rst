@@ -37,17 +37,17 @@ Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ p
 
 #. Run these commands on your host computer:
 
-    .. code::
+   .. code::
 
-        # Create a service user for the edx-platform to use when authenticating and making API calls
-        docker exec -t edx.devstack.blockstore bash -c "source ~/.bashrc && echo \"from django.contrib.auth import get_user_model; from rest_framework.authtoken.models import Token; User = get_user_model(); edxapp_user, _ = User.objects.get_or_create(username='edxapp'); Token.objects.get_or_create(user=edxapp_user, key='edxapp-insecure-devstack-key')\" | ./manage.py shell"
-        # Configure the LMS and Studio to use the key
-        docker exec -t edx.devstack.lms bash -c "grep BLOCKSTORE_API_AUTH_TOKEN /edx/app/edxapp/edx-platform/lms/envs/private.py || echo BLOCKSTORE_API_AUTH_TOKEN = \'edxapp-insecure-devstack-key\' >> /edx/app/edxapp/edx-platform/lms/envs/private.py"
-        docker exec -t edx.devstack.lms bash -c "grep BLOCKSTORE_API_AUTH_TOKEN /edx/app/edxapp/edx-platform/cms/envs/private.py || echo BLOCKSTORE_API_AUTH_TOKEN = \'edxapp-insecure-devstack-key\' >> /edx/app/edxapp/edx-platform/cms/envs/private.py"
-        # Create a "Collection" that new content libraries / xblocks can be created within:
-        docker exec -t edx.devstack.blockstore bash -c "source ~/.bashrc && echo \"from blockstore.apps.bundles.models import Collection; coll, _ = Collection.objects.get_or_create(title='Devstack Content Collection', uuid='11111111-2111-4111-8111-111111111111')\" | ./manage.py shell"
-        # Create an "Organization":
-        docker exec -t edx.devstack.lms bash -c "source /edx/app/edxapp/edxapp_env && echo \"from organizations.models import Organization; Organization.objects.get_or_create(short_name='DeveloperInc', defaults={'name': 'DeveloperInc', 'active': True})\" | python /edx/app/edxapp/edx-platform/manage.py lms shell"
+      # Create a service user for the edx-platform to use when authenticating and making API calls
+      docker exec -t edx.devstack.blockstore bash -c "source ~/.bashrc && echo \"from django.contrib.auth import get_user_model; from rest_framework.authtoken.models import Token; User = get_user_model(); edxapp_user, _ = User.objects.get_or_create(username='edxapp'); Token.objects.get_or_create(user=edxapp_user, key='edxapp-insecure-devstack-key')\" | ./manage.py shell"
+      # Configure the LMS and Studio to use the key
+      docker exec -t edx.devstack.lms bash -c "grep BLOCKSTORE_API_AUTH_TOKEN /edx/app/edxapp/edx-platform/lms/envs/private.py || echo BLOCKSTORE_API_AUTH_TOKEN = \'edxapp-insecure-devstack-key\' >> /edx/app/edxapp/edx-platform/lms/envs/private.py"
+      docker exec -t edx.devstack.lms bash -c "grep BLOCKSTORE_API_AUTH_TOKEN /edx/app/edxapp/edx-platform/cms/envs/private.py || echo BLOCKSTORE_API_AUTH_TOKEN = \'edxapp-insecure-devstack-key\' >> /edx/app/edxapp/edx-platform/cms/envs/private.py"
+      # Create a "Collection" that new content libraries / xblocks can be created within:
+      docker exec -t edx.devstack.blockstore bash -c "source ~/.bashrc && echo \"from blockstore.apps.bundles.models import Collection; coll, _ = Collection.objects.get_or_create(title='Devstack Content Collection', uuid='11111111-2111-4111-8111-111111111111')\" | ./manage.py shell"
+      # Create an "Organization":
+      docker exec -t edx.devstack.lms bash -c "source /edx/app/edxapp/edxapp_env && echo \"from organizations.models import Organization; Organization.objects.get_or_create(short_name='DeveloperInc', defaults={'name': 'DeveloperInc', 'active': True})\" | python /edx/app/edxapp/edx-platform/manage.py lms shell"
 
    Then restart Studio and the LMS (``make lms-restart studio-restart``).
 
@@ -78,10 +78,10 @@ Running integration tests
 
 Open edX includes some integration tests for Blockstore, but they don't run by default. To run them, first start an isolated test version of blockstore by running ``make testserver`` from the ``blockstore`` repo root directory on your host computer. Then, from ``make studio-shell``, run these commands:
 
-    .. code::
+.. code::
 
-        EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
-        EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
+   EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
+   EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
 
 Using in Production
 -------------------
@@ -90,32 +90,32 @@ You can deploy blockstore in production using the `blockstore ansible role <http
 
 Here is an example of setting the ansible variables to deploy Blockstore, assuming you are using the ``openedx_native.yml`` playbook. You will need to create the S3 bucket first (or comment out that part), and of course change all the variables and secret values to reflect your Open edX deployment details. Whatever value you put for ``BLOCKSTORE_API_AUTH_TOKEN`` must also be entered into the Blockstore django admin at e.g. https://blockstore.openedx-example.com/admin/authtoken/token/
 
-   .. code::
+.. code::
 
-        # Run blockstore, and expose it publicly at 'blockstore.openedx-example.com'
-        SANDBOX_ENABLE_BLOCKSTORE: true
-        BLOCKSTORE_NGINX_HOSTNAME: 'blockstore.*'
-        BLOCKSTORE_NGINX_PORT: 80
-        BLOCKSTORE_SSL_NGINX_PORT: 443
-        BLOCKSTORE_SECRET_KEY: secretvalue2here
-        BLOCKSTORE_DATABASE_HOST: mysql.openedx-example.com
-        BLOCKSTORE_DATABASE_USER: blockstore_user
-        BLOCKSTORE_DATABASE_PASSWORD: secretvalue3here
-        BLOCKSTORE_DEFAULT_DB_NAME: my_openedx_blockstore
+   # Run blockstore, and expose it publicly at 'blockstore.openedx-example.com'
+   SANDBOX_ENABLE_BLOCKSTORE: true
+   BLOCKSTORE_NGINX_HOSTNAME: 'blockstore.*'
+   BLOCKSTORE_NGINX_PORT: 80
+   BLOCKSTORE_SSL_NGINX_PORT: 443
+   BLOCKSTORE_SECRET_KEY: secretvalue2here
+   BLOCKSTORE_DATABASE_HOST: mysql.openedx-example.com
+   BLOCKSTORE_DATABASE_USER: blockstore_user
+   BLOCKSTORE_DATABASE_PASSWORD: secretvalue3here
+   BLOCKSTORE_DEFAULT_DB_NAME: my_openedx_blockstore
 
-        # Use S3 for blockstore data (optional but recommended):
-        BLOCKSTORE_SERVICE_CONFIG_OVERRIDES:
-            DEFAULT_FILE_STORAGE: storages.backends.s3boto3.S3Boto3Storage
-            AWS_ACCESS_KEY_ID: AKIAWABCDEFGHIJKLMNOPQRS
-            AWS_SECRET_ACCESS_KEY: secretvalue4here
-            AWS_STORAGE_BUCKET_NAME: blockstore-bucket
+   # Use S3 for blockstore data (optional but recommended):
+   BLOCKSTORE_SERVICE_CONFIG_OVERRIDES:
+       DEFAULT_FILE_STORAGE: storages.backends.s3boto3.S3Boto3Storage
+       AWS_ACCESS_KEY_ID: AKIAWABCDEFGHIJKLMNOPQRS
+       AWS_SECRET_ACCESS_KEY: secretvalue4here
+       AWS_STORAGE_BUCKET_NAME: blockstore-bucket
 
-        # Configure LMS/Studio to access Blockstore:
-        EDXAPP_BLOCKSTORE_API_URL: http://localhost:8250/api/v1/
-        EDXAPP_LMS_ENV_EXTRA:
-            BLOCKSTORE_API_AUTH_TOKEN: secretvalue1here
-        EDXAPP_CMS_ENV_EXTRA:
-            BLOCKSTORE_API_AUTH_TOKEN: secretvalue1here
+   # Configure LMS/Studio to access Blockstore:
+   EDXAPP_BLOCKSTORE_API_URL: http://localhost:8250/api/v1/
+   EDXAPP_LMS_ENV_EXTRA:
+       BLOCKSTORE_API_AUTH_TOKEN: secretvalue1here
+   EDXAPP_CMS_ENV_EXTRA:
+       BLOCKSTORE_API_AUTH_TOKEN: secretvalue1here
 
 Get Help
 --------
