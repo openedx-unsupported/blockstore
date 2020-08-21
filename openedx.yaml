@@ -1,13 +1,12 @@
-# openedx.yaml
+# This file describes this Open edX repo, as described in OEP-2:
+# https://open-edx-proposals.readthedocs.io/en/latest/oep-0002-bp-repo-metadata.html#specification
 
----
-owner:
-    type: team
-    team: edx/teaching-and-learning
 oeps:
     oep-2: true
     oep-7: true
     oep-18: true
+
 tags:
     - backend-service  # End users access LMS/Studio which in turn make requests to Blockstore
+
 openedx-release: {ref: master}
