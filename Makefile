@@ -90,3 +90,20 @@ quality: ## Run quality checks
 	${VENV_BIN}/mypy --config-file tagstore/mypy.ini tagstore
 
 validate: test quality ## Run tests and quality checks
+
+docker_build:
+	docker build . -f Dockerfile --target app -t openedx/blockstore
+	docker build . -f Dockerfile --target newrelic -t openedx/blockstore:latest-newrelic
+
+docker_tag: docker_build
+	docker tag openedx/blockstore openedx/blockstore:${GITHUB_SHA}
+	docker tag openedx/blockstore:latest-newrelic openedx/blockstore:${GITHUB_SHA}-newrelic
+
+docker_auth:
+	echo "$$DOCKERHUB_PASSWORD" | docker login -u "$$DOCKERHUB_USERNAME" --password-stdin
+
+docker_push: docker_tag docker_auth ## push to docker hub
+	docker push 'openedx/blockstore:latest'
+	docker push "openedx/blockstore:${GITHUB_SHA}"
+	docker push 'openedx/blockstore:latest-newrelic'
+	docker push "openedx/blockstore:${GITHUB_SHA}-newrelic"
