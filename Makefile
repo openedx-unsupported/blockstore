@@ -92,8 +92,8 @@ quality: ## Run quality checks
 validate: test quality ## Run tests and quality checks
 
 docker_build:
-	docker build . -f Dockerfile --target app -t openedx/blockstore
-	docker build . -f Dockerfile --target newrelic -t openedx/blockstore:latest-newrelic
+	docker build . -f Dockerfile -t openedx/blockstore
+	docker build . -f Dockerfile -t openedx/blockstore:latest-newrelic
 
 docker_tag: docker_build
 	docker tag openedx/blockstore openedx/blockstore:${GITHUB_SHA}
