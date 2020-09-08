@@ -6,6 +6,8 @@ contain namespaces for the active versions of the API.
 """
 from django.conf.urls import url, include
 
+app_name = 'tagstore'
+
 urlpatterns = [
     url(r'^api/v1/', include('tagstore.tagstore_rest.v1.urls', namespace='apiv1')),
 ]

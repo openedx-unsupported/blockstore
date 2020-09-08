@@ -7,14 +7,14 @@ workflows:
       - tests:
           matrix:
             parameters:
-              python_version: ["3.5", "3.8"]
+              python_version: ["3.8"]
       - quality
 jobs:
   tests:
     parameters:
       python_version:
         type: string
-        default: "3.5"
+        default: "3.8"
     working_directory: /blockstore/app/
     docker:
       - image: python:<< parameters.python_version >>-alpine
