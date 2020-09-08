@@ -67,7 +67,7 @@ class Tag(models.Model):
     A tag within a taxonomy
     """
     id = models.BigAutoField(primary_key=True)
-    taxonomy = models.ForeignKey(Taxonomy, null=False)
+    taxonomy = models.ForeignKey(Taxonomy, null=False, on_delete=models.CASCADE)
     # The tag string, like "good problem".
     name = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_column='tag')
     # Materialized path. Always ends with ":".

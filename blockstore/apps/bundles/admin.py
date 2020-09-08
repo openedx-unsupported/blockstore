@@ -58,7 +58,7 @@ class BundleVersionInline(admin.StackedInline):
         )
         return format_html("<pre>{}</pre>", json_str)
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
 
