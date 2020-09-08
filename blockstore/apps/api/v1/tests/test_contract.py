@@ -318,6 +318,7 @@ class DraftsTest(ApiTestCase):
         )
         file_url = bundle_version_detail_data['snapshot']['files']['hello.txt']['url']
         assert file_url.startswith('http'), "Response URLs should be absolute"
+        print('File URL is!', file_url)
         file_response = self.client.get(file_url)
         assert response_str_file(file_response) == "Hello World! 😀"
 

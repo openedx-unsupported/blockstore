@@ -58,6 +58,39 @@ Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ p
    #. In ``private.py``, set ``SOCIAL_AUTH_EDX_OAUTH2_SECRET`` to the random "Client secret" value.
    #. Now you can login at http://localhost:18250/login/
 
+Running Tests
+--------
+
+To run the unit tests, get into the blockstore container:
+
+```
+docker-compose --project-name blockstore -f docker-compose.yml exec blockstore /bin/bash
+```
+
+And then run:
+
+```
+make test
+```
+
+To save on overhead while running individual tests, from within the container, you can do:
+
+```
+DJANGO_SETTINGS_MODULE=blockstore.settings.test ./manage.py test dotted.path.To.test
+```
+
+To run a testserver for use with the edx-platform unit tests, run (on the host machine):
+
+```
+make testserver
+```
+
+And from within the studio shell, run:
+
+```
+EDXAPP_RUN_BLOCKSTORE_TESTS=1 paver test_system -s cms -t cms/djangoapps/contentstore/tests -t openedx/core/djangoapps/content_libraries
+```
+
 Get Help
 --------
 

@@ -111,6 +111,8 @@ def serve_media(request, path):
     inefficient in-proc file serving in a real environment, but it also means
     that the URL pattern won't be added for tests by default.
     """
+    print('Root is', settings.MEDIA_ROOT)
+    print(path)
     return serve(request, path, document_root=settings.MEDIA_ROOT)
 
 
