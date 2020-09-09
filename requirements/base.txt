@@ -5,7 +5,7 @@ django-cors-headers>=2.2.0,<2.3
 django-environ==0.4.5
 django-extensions
 django-rest-swagger
-django-waffle
+django-waffle==1.0.0
 djangorestframework
 djangorestframework-expander
 django-filter==2.1.0
