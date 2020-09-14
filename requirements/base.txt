@@ -10,13 +10,13 @@ cffi==1.14.2              # via cryptography
 chardet==3.0.4            # via requests
 coreapi==2.3.3            # via django-rest-swagger, openapi-codec
 coreschema==0.0.4         # via coreapi
-cryptography==3.0         # via social-auth-core
+cryptography==3.1         # via social-auth-core
 defusedxml==0.6.0         # via python3-openid, social-auth-core
 django-cors-headers==2.2.1  # via -c requirements/constraints.txt, -r requirements/base.in
 django-environ==0.4.5     # via -c requirements/constraints.txt, -r requirements/base.in
 django-filter==2.1.0      # via -c requirements/constraints.txt, -r requirements/base.in
 django-rest-swagger==2.2.0  # via -r requirements/base.in
-django-waffle==1.0.0      # via -r requirements/base.in
+django-waffle==0.18.0     # via -c requirements/constraints.txt, -r requirements/base.in
 django==1.11.29           # via -c requirements/constraints.txt, -r requirements/base.in, django-filter, djangorestframework, drf-nested-routers, edx-auth-backends, edx-django-release-util
 djangorestframework-expander==0.2.3  # via -r requirements/base.in
 djangorestframework==3.11.1  # via -r requirements/base.in, django-rest-swagger, djangorestframework-expander, drf-nested-routers
