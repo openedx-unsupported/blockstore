@@ -22,7 +22,7 @@ class BundleFilter(FilterSet):
     uuid = AllValuesMultipleFilter(widget=CSVWidget)  # Accepts multiple comma-separated UUIDs
     text_search = CharFilter(method='search')
 
-    def search(self, queryset, name, value):
+    def search(self, queryset, name, value):  # pylint: disable=unused-argument
         return queryset.filter(Q(title__icontains=value) | Q(description__icontains=value) | Q(slug__icontains=value))
 
     class Meta:
