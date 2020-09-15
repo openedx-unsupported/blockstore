@@ -19,23 +19,32 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
-from rest_framework_swagger.views import get_swagger_view
+
+from edx_api_doc_tools import make_api_info, make_docs_urls
 
 from blockstore.apps.core import views as core_views
 from blockstore.apps.bundles.tests.storage_utils import url_for_test_media
 
 admin.autodiscover()
 
+api_info = make_api_info(
+    title="Blockstore API",
+    version="v1",
+    description="APIs for Openedx Blockstore"
+)
+
+
 urlpatterns = oauth2_urlpatterns + [
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include('blockstore.apps.api.urls', namespace='api')),
-    url(r'^api-docs/', get_swagger_view(title='blockstore API')),
     # Use the same auth views for all logins, including those originating from the browseable API.
     url(r'^api-auth/', include((oauth2_urlpatterns, 'auth_backends'), namespace='rest_framework')),
     url(r'^auto_auth/$', core_views.AutoAuth.as_view(), name='auto_auth'),
     url(r'^health/$', core_views.health, name='health'),
     url(r'^tagstore/', include('tagstore.tagstore_rest.urls', namespace='tagstore')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+urlpatterns += make_docs_urls(api_info)
 
 if settings.DEBUG:  # pragma: no cover
     import debug_toolbar

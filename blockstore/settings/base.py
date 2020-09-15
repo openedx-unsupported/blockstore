@@ -39,9 +39,12 @@ INSTALLED_APPS = (
 )
 
 THIRD_PARTY_APPS = (
+    # API Documentation
+    'drf_yasg',
+    'edx_api_doc_tools',
+
     'rest_framework',
     'rest_framework.authtoken',  # For authenticating API clients
-    'rest_framework_swagger',
     'django_filters',
     'social_django',  # To let admin users log in using their LMS user account
     'waffle',
