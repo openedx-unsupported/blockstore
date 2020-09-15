@@ -107,3 +107,13 @@ docker_push: docker_tag docker_auth ## push to docker hub
 	docker push "openedx/blockstore:${GITHUB_SHA}"
 	docker push 'openedx/blockstore:latest-newrelic'
 	docker push "openedx/blockstore:${GITHUB_SHA}-newrelic"
+
+upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
+upgrade: ## update the requirements/*.txt files with the latest packages satisfying requirements/*.in
+	pip install -q -r requirements/pip-tools.txt
+	pip-compile --upgrade -o requirements/pip-tools.txt requirements/pip-tools.in
+	pip-compile --upgrade -o requirements/base.txt requirements/base.in
+	pip-compile --upgrade -o requirements/docs.txt requirements/docs.in
+	pip-compile --upgrade -o requirements/test.txt requirements/test.in
+	pip-compile --upgrade -o requirements/production.txt requirements/production.in
+	pip-compile --upgrade -o requirements/local.txt requirements/local.in

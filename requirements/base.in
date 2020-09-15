@@ -1,0 +1,18 @@
+-c constraints.txt
+-r github.in
+
+attrs
+pyblake2
+django
+django-cors-headers
+django-environ
+django-rest-swagger
+django-waffle
+djangorestframework
+djangorestframework-expander
+django-filter
+edx-auth-backends
+edx-django-release-util
+mysqlclient
+pytz
+sqlparse
