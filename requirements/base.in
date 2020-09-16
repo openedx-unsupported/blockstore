@@ -7,7 +7,6 @@ django
 django-cors-headers
 django-environ
 django-rest-swagger
-django-waffle
 djangorestframework
 djangorestframework-expander
 django-filter

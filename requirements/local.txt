@@ -26,7 +26,6 @@ django-dynamic-fixture==3.1.0  # via -r requirements/test.txt
 django-environ==0.4.5     # via -c requirements/constraints.txt, -r requirements/test.txt
 django-filter==2.1.0      # via -c requirements/constraints.txt, -r requirements/test.txt
 django-rest-swagger==2.2.0  # via -r requirements/test.txt
-django-waffle==0.18.0     # via -c requirements/constraints.txt, -r requirements/test.txt
 django==1.11.29           # via -c requirements/constraints.txt, -r requirements/test.txt, django-debug-toolbar, django-filter, djangorestframework, drf-nested-routers, edx-auth-backends, edx-django-release-util
 djangorestframework-expander==0.2.3  # via -r requirements/test.txt
 djangorestframework==3.11.1  # via -r requirements/test.txt, django-rest-swagger, djangorestframework-expander, drf-nested-routers

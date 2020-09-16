@@ -21,9 +21,6 @@ django-environ==0.4.5
 
 django-filter==2.1.0
 
-#django-waffle version 0.19 dropped support for django<2.2
-django-waffle<0.19
-
 # django-storages version 1.10.0 requires Django2.2
 django-storages<1.10.0
 

@@ -44,7 +44,6 @@ THIRD_PARTY_APPS = (
     'rest_framework_swagger',
     'django_filters',
     'social_django',  # To let admin users log in using their LMS user account
-    'waffle',
     'corsheaders',
     'release_util',
 )
@@ -72,7 +71,6 @@ MIDDLEWARE = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    'waffle.middleware.WaffleMiddleware',
 )
 
 ROOT_URLCONF = 'blockstore.urls'
