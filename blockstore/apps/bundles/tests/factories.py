@@ -1,23 +1,24 @@
 """ Factories for bundle models. """
+
 import factory
 
 from ..store import FileInfo
 from ..models import Bundle, BundleVersion, Collection
 
 
-class BundleFactory(factory.django.DjangoModelFactory):
+class BundleFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = Bundle
 
 
-class BundleVersionFactory(factory.django.DjangoModelFactory):
+class BundleVersionFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = BundleVersion
 
 
-class CollectionFactory(factory.django.DjangoModelFactory):
+class CollectionFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = Collection

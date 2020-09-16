@@ -27,11 +27,11 @@ from blockstore.apps.bundles.tests.storage_utils import url_for_test_media
 admin.autodiscover()
 
 urlpatterns = oauth2_urlpatterns + [
-    url(r'^admin/', admin.site.urls),
+    url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('blockstore.apps.api.urls', namespace='api')),
     url(r'^api-docs/', get_swagger_view(title='blockstore API')),
     # Use the same auth views for all logins, including those originating from the browseable API.
-    url(r'^api-auth/', include((oauth2_urlpatterns, 'auth_backends'), namespace='rest_framework')),
+    url(r'^api-auth/', include(oauth2_urlpatterns, namespace='rest_framework')),
     url(r'^auto_auth/$', core_views.AutoAuth.as_view(), name='auto_auth'),
     url(r'^health/$', core_views.health, name='health'),
     url(r'^tagstore/', include('tagstore.tagstore_rest.urls', namespace='tagstore')),

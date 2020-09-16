@@ -73,35 +73,7 @@ Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ p
    #. In ``private.py``, set ``SOCIAL_AUTH_EDX_OAUTH2_SECRET`` to the random "Client secret" value.
    #. Now you can login at http://localhost:18250/login/
 
-
-Running Tests
-=============
-
-Unit Tests
-----------
-
-To run the unit tests, get into the blockstore container:
-
-.. code::
-
-  make blockstore-shell
-
-
-And then run:
-
-.. code::
-
-  make test
-
-To save on overhead while running individual tests, from within the container, you can do:
-
-
-.. code::
-
-  DJANGO_SETTINGS_MODULE=blockstore.settings.test ./manage.py test dotted.path.To.test
-
-
-Running Integration Tests
+Running integration tests
 -------------------------
 
 Open edX includes some integration tests for Blockstore, but they don't run by default. To run them, first start an isolated test version of blockstore by running ``make testserver`` from the ``blockstore`` repo root directory on your host computer. Then, from ``make studio-shell``, run these commands:

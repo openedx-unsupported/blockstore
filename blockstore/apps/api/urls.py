@@ -6,8 +6,6 @@ contain namespaces for the active versions of the API.
 """
 from django.conf.urls import url, include
 
-app_name = 'blockstore'
-
 urlpatterns = [
     url(r'^v1/', include('blockstore.apps.api.v1.urls', namespace='v1')),
 ]
