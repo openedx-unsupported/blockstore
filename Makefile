@@ -28,7 +28,7 @@ stop:  # Stop Blockstore container
 	docker-compose --project-name blockstore -f docker-compose.yml stop
 
 pull:  # Update docker images that this depends on.
-	docker pull python:3.8.5-alpine3.12
+	docker pull python:3.5.7-alpine3.9
 
 destroy:  # Remove Blockstore container, network and volumes. Destructive.
 	docker-compose --project-name blockstore -f docker-compose.yml down -v

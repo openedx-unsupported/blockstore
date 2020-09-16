@@ -21,8 +21,7 @@ services:
       - "18251:18251"
     volumes:
       - ./:/blockstore/app/:cached
-      # Change when all users will need a new venv, like after a Python version update.
-      - blockstore_venv_3_8_5:/blockstore/venv/
+      - blockstore_venv:/blockstore/venv/
     environment:
       - MYSQL_DATABASE=blockstore_test_db
       - MYSQL_USER=root
@@ -35,5 +34,4 @@ networks:
       name: devstack_default
 
 volumes:
-  blockstore_venv_3_8_5:
-
+  blockstore_venv:

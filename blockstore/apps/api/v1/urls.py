@@ -7,8 +7,6 @@ from .views.bundles import BundleViewSet, BundleVersionViewSet
 from .views.collections import CollectionViewSet
 from .views.drafts import DraftViewSet
 
-app_name = 'blockstore'
-
 root_router = DefaultRouter(trailing_slash=False)
 
 root_router.register(r'bundles', BundleViewSet)

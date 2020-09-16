@@ -92,8 +92,7 @@ class Bundle(models.Model):
     title = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_index=True)
 
     collection = models.ForeignKey(
-        Collection, related_name="bundles", related_query_name="bundle", editable=False,
-        on_delete=models.CASCADE,
+        Collection, related_name="bundles", related_query_name="bundle", editable=False
     )
 
     slug = models.SlugField(allow_unicode=True)  # For pretty URLs
@@ -125,8 +124,7 @@ class BundleVersion(models.Model):
     """
     id = models.BigAutoField(primary_key=True)
     bundle = models.ForeignKey(
-        Bundle, related_name="versions", related_query_name="version", editable=False,
-        on_delete=models.CASCADE,
+        Bundle, related_name="versions", related_query_name="version", editable=False
     )
     version_num = models.PositiveIntegerField(editable=False)
     # This is a CharField only because Django ORM doens't support indexed binary
@@ -194,8 +192,7 @@ class Draft(models.Model):
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     bundle = models.ForeignKey(
-        Bundle, related_name="drafts", related_query_name="draft", editable=False,
-        on_delete=models.CASCADE,
+        Bundle, related_name="drafts", related_query_name="draft", editable=False
     )
     name = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH)
 
