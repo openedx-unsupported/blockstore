@@ -7,14 +7,17 @@ workflows:
       - tests:
           matrix:
             parameters:
-              python_version: ["3.8"]
-      - quality
+              python_version: ["3.5", "3.8"]
+      - quality:
+          matrix:
+            parameters:
+              python_version: ["3.5", "3.8"]
 jobs:
   tests:
     parameters:
       python_version:
         type: string
-        default: "3.8"
+        default: "3.5"
     working_directory: /blockstore/app/
     docker:
       - image: python:<< parameters.python_version >>-alpine
@@ -50,25 +53,23 @@ jobs:
             make test
 
   quality:
-
+    parameters:
+      python_version:
+        type: string
+        default: "3.5"
     working_directory: /blockstore/app/
-
     docker:
-      - image: python:3.8-alpine
-
+      - image: python:<< parameters.python_version >>-alpine
     steps:
-
       - checkout
-
       - run:
           name: Install requirements
           command: |
             apk update && apk upgrade
             apk add bash bash-completion build-base git perl mariadb-dev libffi-dev
-            python3.8 -m venv /blockstore/venv
+            python -m venv /blockstore/venv
             source /blockstore/venv/bin/activate
             make requirements
-
       - run:
           name: Run quality
           command: |

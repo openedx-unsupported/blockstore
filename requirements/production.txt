@@ -5,8 +5,8 @@
 #    make upgrade
 #
 attrs==18.2.0             # via -c requirements/constraints.txt, -r requirements/base.txt
-boto3==1.14.61            # via -c requirements/constraints.txt, -r requirements/production.in
-botocore==1.17.61         # via boto3, s3transfer
+boto3==1.14.63            # via -c requirements/constraints.txt, -r requirements/production.in
+botocore==1.17.63         # via boto3, s3transfer
 certifi==2020.6.20        # via -r requirements/base.txt, requests
 cffi==1.14.2              # via -r requirements/base.txt, cryptography
 chardet==3.0.4            # via -r requirements/base.txt, requests

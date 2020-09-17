@@ -1,16 +1,13 @@
-# Compose file to run a (second) ephemeral instance of Blockstore that is used only
-# for edx-platform runtime tests. This instance is isolated and runs on port 18251.
-
 version: '3'
 
 services:
 
   blockstore:
-    container_name: edx.devstack.blockstore-test
+    container_name: edx.devstack.blockstore
     image: opencraft/blockstore:latest
     build:
       context: .
-      dockerfile: Dockerfile-dev
+      dockerfile: Dockerfile-3.8
     stdin_open: true
     tty: true
     entrypoint: ["/bin/bash"]
@@ -18,13 +15,13 @@ services:
       - default
       - devstack
     ports:
-      - "18251:18251"
+      - "18250:18250"
     volumes:
       - ./:/blockstore/app/:cached
-      # Change when all users will need a new venv, like after a Python version update.
+      # Increment when all users will need a new venv, like after a Python version update.
       - blockstore_venv_3_8_5:/blockstore/venv/
     environment:
-      - MYSQL_DATABASE=blockstore_test_db
+      - MYSQL_DATABASE=blockstore_db
       - MYSQL_USER=root
       - MYSQL_HOST=mysql
       - MYSQL_PORT=3306
@@ -36,4 +33,3 @@ networks:
 
 volumes:
   blockstore_venv_3_8_5:
-
