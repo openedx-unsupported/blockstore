@@ -7,6 +7,8 @@ from .views.entities import EntityViewSet
 
 root_router = EntityRouter()
 
+app_name = 'tagstore'
+
 root_router.register(r'entities', EntityViewSet)
 
 urlpatterns = [
