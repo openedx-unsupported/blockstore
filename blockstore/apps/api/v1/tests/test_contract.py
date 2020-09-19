@@ -18,9 +18,11 @@ This file has many 😀 emojis in strings to test for Unicode encoding/decoding
 related issues.
 """
 import re
+from urllib.parse import urlparse, parse_qsl
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
@@ -233,6 +235,70 @@ class BundlesMetadataTestCase(ApiTestCase):
         assert len(list_data) == 1
 
 
+class BundleVersionsTestCase(ApiTestCase):
+    """Test basic BundleVersions functionality."""
+    def setUp(self):
+        super().setUp()
+        collection_response = self.client.post(
+            '/api/v1/collections',
+            data={'title': 'Bundle Default Collection 😀'}
+        )
+        collection_data = response_data(collection_response)
+
+        bundle_response = self.client.post(
+            '/api/v1/bundles',
+            data={
+                'collection_uuid': collection_data['uuid'],
+                'description': "Draft Test 😀😀😀😀 Bundle",
+                'slug': 'draft_test',
+                'title': "Draft Test Bundle 😀"
+            }
+        )
+        self.bundle_data = response_data(bundle_response)
+
+    def test_redirect(self):
+        create_draft_response = self.client.post(
+            '/api/v1/drafts',
+            {
+                'bundle_uuid': self.bundle_data['uuid'],
+                'name': 'studio_draft',
+                'title': "For DraftsTest.test_basic_draft_commit",
+            }
+        )
+        draft_data = response_data(create_draft_response)
+        self.client.patch(
+            draft_data['url'],
+            data={
+                'files': {
+                    'hello.txt': encode_str_for_draft("Hello World! 😀")
+                }
+            },
+            format='json'
+        )
+
+        self.client.post(u'/api/v1/drafts/{}/commit'.format(draft_data["uuid"]))
+        url = reverse(
+            "api:v1:bundleversion-detail",
+            kwargs={"bundle_uuid": draft_data['bundle_uuid'], 'version_num': 1},
+        )
+        detail_response = self.client.get(url)
+        detail_data = response_data(detail_response)
+
+        response_redirect_url = detail_data['snapshot']['files']['hello.txt']['url']
+        parsed_url = urlparse(response_redirect_url)._replace(netloc='', scheme='')
+
+        url = reverse(
+            "api:v1:bundleversion-redirect",
+            kwargs={"bundle_uuid": draft_data['bundle_uuid'], 'version_num': 1},
+        )
+        assert parsed_url.path == url
+        assert dict(parse_qsl(parsed_url.query))['file'] == 'hello.txt'
+
+        redirect_response = self.client.get(parsed_url.geturl())
+        assert redirect_response.status_code == 303
+        assert redirect_response.url
+
+
 class DraftsTest(ApiTestCase):
     """Test creation, editing, and commits of content to Bundles."""
 
@@ -318,7 +384,7 @@ class DraftsTest(ApiTestCase):
         )
         file_url = bundle_version_detail_data['snapshot']['files']['hello.txt']['url']
         assert file_url.startswith('http'), "Response URLs should be absolute"
-        file_response = self.client.get(file_url)
+        file_response = self.client.get(file_url, follow=True)
         assert response_str_file(file_response) == "Hello World! 😀"
 
     def test_editing_errors(self):
@@ -378,7 +444,9 @@ class DraftsTest(ApiTestCase):
 
         assert updated_draft_data['staged_draft']['base_snapshot'] == bundle_version_data['snapshot']['hash_digest']
         for file_name in draft_files:
-            assert draft_files[file_name]['url'] == snapshot_files[file_name]['url']
+            print(draft_files[file_name]['url'])
+            print(snapshot_files[file_name]['url'])
+            assert draft_files[file_name]['url'] == self.client.get(snapshot_files[file_name]['url']).url
             assert draft_files[file_name]['size'] == snapshot_files[file_name]['size']
             assert draft_files[file_name]['hash_digest'] == snapshot_files[file_name]['hash_digest']
             assert draft_files[file_name]['modified'] is False
@@ -408,11 +476,11 @@ class DraftsTest(ApiTestCase):
         snapshot_files = bundle_version_data['snapshot']['files']
         assert 'empty.txt' not in snapshot_files  # Was deleted
         hawaii_text = response_str_file(
-            self.client.get(snapshot_files['hawaii.txt']['url'])
+            self.client.get(snapshot_files['hawaii.txt']['url'], follow=True)
         )
         assert hawaii_text == "Aloha a hui hou!"
         korea_text = response_str_file(
-            self.client.get(snapshot_files['korea.txt']['url'])
+            self.client.get(snapshot_files['korea.txt']['url'], follow=True)
         )
         assert korea_text == "안녕하세요!"
 

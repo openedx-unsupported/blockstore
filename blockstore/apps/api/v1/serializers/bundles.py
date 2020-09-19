@@ -7,7 +7,6 @@ from rest_framework.relations import SlugRelatedField
 from rest_framework.reverse import reverse
 
 from blockstore.apps.bundles.models import Bundle, BundleVersion, Collection
-from blockstore.apps.bundles.store import SnapshotRepo
 from ... import relations
 
 
@@ -125,12 +124,6 @@ class BundleVersionWithFileDataSerializer(BundleVersionSerializer):
 
     class SnapshotField(serializers.Field):
         """Helper read-only field for a Snapshot."""
-        def _serialized_dep(self, dependency):
-            return {
-                "bundle_uuid": dependency.bundle_uuid,
-                "version": dependency.version,
-                "snapshot_digest": dependency.snapshot_digest.hex(),
-            }
 
         def _expand_url(self, url):
             """Ensure that the given URL is an absolute URL"""
@@ -140,33 +133,13 @@ class BundleVersionWithFileDataSerializer(BundleVersionSerializer):
 
         def to_representation(self, value):
             """Snapshot JSON serialization."""
-            snapshot = value
-            snapshot_repo = SnapshotRepo()
-            info = {
-                'hash_digest': snapshot.hash_digest.hex(),
-                'created_at': snapshot.created_at,
-            }
-
-            info['files'] = {
-                path: {
-                    "url": self._expand_url(snapshot_repo.url(snapshot, path)),
-                    "size": file_info.size,
-                    "hash_digest": file_info.hash_digest.hex(),
-                }
-                for path, file_info in snapshot.files.items()
-            }
-
-            info['links'] = {
-                link.name: {
-                    "direct": self._serialized_dep(link.direct_dependency),
-                    "indirect": [
-                        self._serialized_dep(dep)
-                        for dep in link.indirect_dependencies
-                    ]
-                }
-                for link in snapshot.links
-            }
-
+            view_kwargs = self.context['view'].kwargs
+            info = value.serialize(context=self.context)
+            for file_name, file_info in info['files'].items():
+                file_info['url'] = self._expand_url('{}?file={}'.format(
+                    reverse('api:v1:bundleversion-redirect', kwargs=view_kwargs),
+                    file_name,
+                ))
             return info
 
         def to_internal_value(self, _data):

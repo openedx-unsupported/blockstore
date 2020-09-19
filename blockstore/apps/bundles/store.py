@@ -121,6 +121,49 @@ class Snapshot:
             created_at=created_at,
         )
 
+    def _serialized_dep(self, dependency):
+        return {
+            "bundle_uuid": dependency.bundle_uuid,
+            "version": dependency.version,
+            "snapshot_digest": dependency.snapshot_digest.hex(),
+        }
+
+    def _expand_url(self, url, context):
+        """Ensure that the given URL is an absolute URL"""
+        if not url.startswith('http'):
+            url = context['request'].build_absolute_uri(url)
+        return url
+
+    def serialize(self, context):
+        """Serialize a snapshot."""
+        snapshot_repo = SnapshotRepo()
+        info = {
+            'hash_digest': self.hash_digest.hex(),
+            'created_at': self.created_at,
+        }
+
+        info['files'] = {
+            path: {
+                "url": self._expand_url(snapshot_repo.url(self, path), context),
+                "size": file_info.size,
+                "hash_digest": file_info.hash_digest.hex(),
+            }
+            for path, file_info in self.files.items()
+        }
+
+        info['links'] = {
+            link.name: {
+                "direct": self._serialized_dep(link.direct_dependency),
+                "indirect": [
+                    self._serialized_dep(dep)
+                    for dep in link.indirect_dependencies
+                ]
+            }
+            for link in self.links
+        }
+
+        return info
+
     class NotFoundError(Exception):
         pass
 

@@ -3,10 +3,12 @@ Views for Bundles and BundleVersions.
 """
 
 from django.db.models import Q
-from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 from django_filters.widgets import CSVWidget
 from django_filters.filters import AllValuesMultipleFilter, CharFilter
-from rest_framework import viewsets, mixins
+from django.http.response import HttpResponseRedirectBase
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet
+from rest_framework import viewsets, mixins, serializers
+from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 
 from blockstore.apps.bundles.models import Bundle, BundleVersion
@@ -28,6 +30,10 @@ class BundleFilter(FilterSet):
     class Meta:
         model = Bundle
         fields = ('collection__uuid',)
+
+
+class HttpResponseSeeOtherRedirect(HttpResponseRedirectBase):
+    status_code = 303
 
 
 class BundleViewSet(viewsets.ModelViewSet):
@@ -91,3 +97,18 @@ class BundleVersionViewSet(mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewSe
             return BundleVersionWithFileDataSerializer
         # Generic model serializer is sufficient for other views.
         return BundleVersionSerializer
+
+    @action(detail=True)
+    def redirect(self, request, *args, **kwargs):
+        """
+        Redirect a BundleVersion file path to the actual file.
+        """
+        instance = self.get_object()
+        snapshot = instance.snapshot()
+        serialized_snapshot = snapshot.serialize(context={'request': request})
+
+        filename = request.query_params.get('file')
+        if not filename:
+            raise serializers.ValidationError("Missing the file argument")
+
+        return HttpResponseSeeOtherRedirect(serialized_snapshot['files'][filename]['url'])
