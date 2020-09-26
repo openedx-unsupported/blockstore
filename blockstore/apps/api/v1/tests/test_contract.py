@@ -45,6 +45,7 @@ class ApiTestCase(TestCase):
     def setUp(self):
         super().setUp()
         self.client = APIClient()
+        self.public_client = APIClient()
         # Authenticate (this can't be done via the REST API for security reasons)
         test_user = User.objects.create(username='test-service-user')
         token = Token.objects.create(user=test_user)
@@ -294,7 +295,7 @@ class BundleVersionsTestCase(ApiTestCase):
         assert parsed_url.path == url
         assert dict(parse_qsl(parsed_url.query))['file'] == 'hello.txt'
 
-        redirect_response = self.client.get(parsed_url.geturl())
+        redirect_response = self.public_client.get(parsed_url.geturl())
         assert redirect_response.status_code == 303
         assert redirect_response.url
 
@@ -384,7 +385,7 @@ class DraftsTest(ApiTestCase):
         )
         file_url = bundle_version_detail_data['snapshot']['files']['hello.txt']['url']
         assert file_url.startswith('http'), "Response URLs should be absolute"
-        file_response = self.client.get(file_url, follow=True)
+        file_response = self.public_client.get(file_url, follow=True)
         assert response_str_file(file_response) == "Hello World! 😀"
 
     def test_editing_errors(self):
@@ -446,7 +447,7 @@ class DraftsTest(ApiTestCase):
         for file_name in draft_files:
             print(draft_files[file_name]['url'])
             print(snapshot_files[file_name]['url'])
-            assert draft_files[file_name]['url'] == self.client.get(snapshot_files[file_name]['url']).url
+            assert draft_files[file_name]['url'] == self.public_client.get(snapshot_files[file_name]['url']).url
             assert draft_files[file_name]['size'] == snapshot_files[file_name]['size']
             assert draft_files[file_name]['hash_digest'] == snapshot_files[file_name]['hash_digest']
             assert draft_files[file_name]['modified'] is False
@@ -476,11 +477,11 @@ class DraftsTest(ApiTestCase):
         snapshot_files = bundle_version_data['snapshot']['files']
         assert 'empty.txt' not in snapshot_files  # Was deleted
         hawaii_text = response_str_file(
-            self.client.get(snapshot_files['hawaii.txt']['url'], follow=True)
+            self.public_client.get(snapshot_files['hawaii.txt']['url'], follow=True)
         )
         assert hawaii_text == "Aloha a hui hou!"
         korea_text = response_str_file(
-            self.client.get(snapshot_files['korea.txt']['url'], follow=True)
+            self.public_client.get(snapshot_files['korea.txt']['url'], follow=True)
         )
         assert korea_text == "안녕하세요!"
 

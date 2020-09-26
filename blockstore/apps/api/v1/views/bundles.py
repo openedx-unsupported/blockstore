@@ -10,6 +10,7 @@ from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 from rest_framework import viewsets, mixins, serializers
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import AllowAny
 
 from blockstore.apps.bundles.models import Bundle, BundleVersion
 
@@ -70,6 +71,16 @@ class BundleVersionViewSet(mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewSe
     filterset_fields = ('bundle__uuid', 'bundle__collection__uuid')
 
     queryset = BundleVersion.objects.all().select_related('bundle')
+
+    permission_classes_by_action = {
+        'redirect': (AllowAny,)
+    }
+
+    def get_permissions(self):
+        try:
+            return [permission() for permission in self.permission_classes_by_action[self.action]]
+        except KeyError:
+            return super(BundleVersionViewSet, self).get_permissions()
 
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())
