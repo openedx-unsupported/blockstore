@@ -113,6 +113,8 @@ class BundleVersionViewSet(mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewSe
     def redirect(self, request, *args, **kwargs):
         """
         Redirect a BundleVersion file path to the actual file.
+
+        Check <decisions/0003-bundle-versions-redirect.rst> for more context.
         """
         instance = self.get_object()
         snapshot = instance.snapshot()

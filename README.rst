@@ -57,6 +57,10 @@ Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ p
 
    To use Blockstore library content in a course, open your course in Studio. In its advanced settings, add ``library_sourced`` to the list of "advanced block types". In the "Unit Edit View" in Studio, find the green "Add New Component" buttons. Click Advanced > Library Sourced Content. Edit the new Library Sourced Content XBlock to enter the XBlock ID of the library content that you'd like to use. It should be similar to ``lb:DeveloperInc:MyLibrary:1`` (note: ``lb:`` is short for "Library Block" and should not be confused with the ``lib:`` prefix used to identify a library).
 
+#. Optional: If you want to override some settings, the easiest alternative is to create and populate the `private.py` settings file:
+
+   #. Copy ``blockstore/settings/private.py.example`` to ``blockstore/settings/private.py``
+
 #. Optional: To log in to Blockstore in your web browser directly, you'll need to configure SSO with your devstack. Most people won't need to do this, but it's helpful for debugging or development.
 
    #. Go to http://localhost:18000/admin/oauth2_provider/application/ and add a new application
@@ -69,10 +73,17 @@ Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ p
    #. Press "Save and continue editing"
    #. Go to http://localhost:18000/admin/oauth_dispatch/applicationaccess/
    #. Click "Add Application Access +", choose Application: ``blockstore-sso`` and set Scopes to ``user_id``, then hit "Save"
-   #. Copy ``blockstore/settings/private.py.example`` to ``blockstore/settings/private.py``
    #. In ``private.py``, set ``SOCIAL_AUTH_EDX_OAUTH2_SECRET`` to the random "Client secret" value.
    #. Now you can login at http://localhost:18250/login/
 
+#. Optional: You can also setup S3 as the storage backend with devstack. In ``private.py`` set the following variables:
+
+   .. code::
+
+      DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+      AWS_ACCESS_KEY_ID = "SET_YOUR_OWN_ACCESS_KEY"
+      AWS_SECRET_ACCESS_KEY = "SET_YOUR_OWN_SECRET_KEY"
+      AWS_STORAGE_BUCKET_NAME = "blockstore-bucket-example"
 
 Running Tests
 =============

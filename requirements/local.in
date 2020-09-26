@@ -1,7 +1,7 @@
--c constraints.txt
+-r constraints.txt
 
 # Packages required for local development
 -r test.txt
 -r docs.txt
 
-django-debug-toolbar
+django-debug-toolbar<3.0

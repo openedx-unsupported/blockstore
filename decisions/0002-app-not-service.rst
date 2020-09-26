@@ -20,7 +20,7 @@ Rationale
 
 Domain Driven Design
 --------------------
-Blockstore is a new peristence mechanism for Studio and is an implementation detail of the Content Authoring domain. Blockstore should continue to be strongly separated from a logic/code point of view, and maintain its place as something that is XBlock-agnostic.
+Blockstore is a new persistence mechanism for Studio and is an implementation detail of the Content Authoring domain. Blockstore should continue to be strongly separated from a logic/code point of view, and maintain its place as something that is XBlock-agnostic.
 
 Development and Deployment
 --------------------------
@@ -40,4 +40,4 @@ Early visions of Blockstore speculated a future where one Blockstore instance ha
 
 Reversibility
 -------------
-Blockstore is still separate app in a separate repo, with its own REST API. As long as it maintains its separation from the XBlock runtime (made easier by being in a different repo), we should be able to exract it back out into a service if makes sense to do so in the future.
+Blockstore is still separate app in a separate repo, with its own REST API. As long as it maintains its separation from the XBlock runtime (made easier by being in a different repo), we should be able to extract it back out into a service if makes sense to do so in the future.
