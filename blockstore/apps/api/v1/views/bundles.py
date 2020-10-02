@@ -15,7 +15,12 @@ from rest_framework.permissions import AllowAny
 from blockstore.apps.bundles.models import Bundle, BundleVersion
 
 from ...constants import UUID4_REGEX, VERSION_NUM_REGEX
-from ..serializers.bundles import BundleSerializer, BundleVersionSerializer, BundleVersionWithFileDataSerializer
+from ..serializers.bundles import (
+    BundleSerializer,
+    BundleVersionSerializer,
+    BundleVersionWithFileDataSerializer,
+    SnapshotSerializer,
+)
 
 
 class BundleFilter(FilterSet):
@@ -118,7 +123,7 @@ class BundleVersionViewSet(mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewSe
         """
         instance = self.get_object()
         snapshot = instance.snapshot()
-        serialized_snapshot = snapshot.serialize(context={'request': request})
+        serialized_snapshot = SnapshotSerializer(snapshot, context={'request': request}).data
 
         filename = request.query_params.get('file')
         if not filename:

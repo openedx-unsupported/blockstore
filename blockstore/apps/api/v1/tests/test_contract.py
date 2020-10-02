@@ -288,14 +288,13 @@ class BundleVersionsTestCase(ApiTestCase):
         response_redirect_url = detail_data['snapshot']['files']['hello.txt']['url']
         parsed_url = urlparse(response_redirect_url)._replace(netloc='', scheme='')
 
-        url = reverse(
-            "api:v1:bundleversion-redirect",
-            kwargs={"bundle_uuid": draft_data['bundle_uuid'], 'version_num': 1},
+        assert parsed_url.path == '/api/v1/bundle_versions/{bundle_uuid},{version_num}/redirect'.format(
+            bundle_uuid=draft_data['bundle_uuid'],
+            version_num=1,
         )
-        assert parsed_url.path == url
         assert dict(parse_qsl(parsed_url.query))['file'] == 'hello.txt'
 
-        redirect_response = self.public_client.get(parsed_url.geturl())
+        redirect_response = self.public_client.get(response_redirect_url)
         assert redirect_response.status_code == 303
         assert redirect_response.url
 
@@ -445,8 +444,6 @@ class DraftsTest(ApiTestCase):
 
         assert updated_draft_data['staged_draft']['base_snapshot'] == bundle_version_data['snapshot']['hash_digest']
         for file_name in draft_files:
-            print(draft_files[file_name]['url'])
-            print(snapshot_files[file_name]['url'])
             assert draft_files[file_name]['url'] == self.public_client.get(snapshot_files[file_name]['url']).url
             assert draft_files[file_name]['size'] == snapshot_files[file_name]['size']
             assert draft_files[file_name]['hash_digest'] == snapshot_files[file_name]['hash_digest']
