@@ -1,12 +1,13 @@
 """Test core.views."""
 
+from unittest import mock
+
 from django.db import DatabaseError
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.urls import reverse
-import mock
 
 from blockstore.apps.core.constants import Status
 

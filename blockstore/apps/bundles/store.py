@@ -267,7 +267,7 @@ class SnapshotRepo:
                 storage_path,
             )
             raise Snapshot.NotFoundError(
-                u"Snapshot {} for Bundle {} not found".format(snapshot_digest.hex(), bundle_uuid)
+                f"Snapshot {snapshot_digest.hex()} for Bundle {bundle_uuid} not found"
             )
 
         return Snapshot(
@@ -306,11 +306,11 @@ class SnapshotRepo:
 
     @classmethod
     def _summary_path(cls, bundle_uuid, snapshot_digest):
-        return u'{}/snapshots/{}.json'.format(bundle_uuid, snapshot_digest.hex())
+        return f'{bundle_uuid}/snapshots/{snapshot_digest.hex()}.json'
 
     @classmethod
     def _file_data_path(cls, bundle_uuid, file_hash):
-        return u'{}/snapshot_data/{}'.format(bundle_uuid, file_hash)
+        return f'{bundle_uuid}/snapshot_data/{file_hash}'
 
     def _save_file(self, bundle_uuid, path, data, public=False):
         """
@@ -372,11 +372,11 @@ class DraftRepo:
     @classmethod
     def _data_file_path(cls, draft_uuid, file_path):
         """Path to a file that we've edited in our Draft."""
-        return u'{}/data/{}'.format(draft_uuid, file_path)
+        return f'{draft_uuid}/data/{file_path}'
 
     @classmethod
     def _summary_path(cls, draft_uuid):
-        return u'{}/summary.json'.format(draft_uuid)
+        return f'{draft_uuid}/summary.json'
 
     def _overwrite(self, path, file_obj):
         # There's gotta be a better way, but for now...
@@ -407,7 +407,7 @@ class DraftRepo:
         """
         summary_path = self._summary_path(draft_uuid)
         if not self.storage.exists(summary_path):
-            raise StagedDraft.NotFoundError(u"Draft {} not found in {}".format(draft_uuid, self))
+            raise StagedDraft.NotFoundError(f"Draft {draft_uuid} not found in {self}")
 
         with self.storage.open(summary_path, mode='rb') as draft_summary_file:
             draft_summary_raw_data = draft_summary_file.read()
@@ -641,7 +641,7 @@ class DraftRepo:
         new_files_written = {}
         for path, django_file in files.items():
             if not is_safe_file_path(path):
-                raise DraftRepo.SaveError(u'"{}" is not a valid file name'.format(path))
+                raise DraftRepo.SaveError(f'"{path}" is not a valid file name')
             storage_path = self._data_file_path(existing_draft.uuid, path)
 
             # If the django_file is None, it means we want a delete

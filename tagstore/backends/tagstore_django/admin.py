@@ -18,7 +18,7 @@ class CustomTagAdminForm(forms.ModelForm):
         if 'instance' in kwargs and kwargs['instance'] is not None:
             if kwargs['instance'].parent_tag_tuple:
                 parent_tag = kwargs['instance'].parent_tag_tuple.name
-        super(CustomTagAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['parent'].widget.attrs.update({'value': parent_tag})
 
 
