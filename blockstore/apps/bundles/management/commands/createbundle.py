@@ -30,7 +30,7 @@ class Command(BaseCommand):
         bundle = Bundle.objects.create(
             slug=slug, title=title, description=description, collection=Collection.objects.first()
         )
-        print(f"Created Bundle: {bundle.uuid} ({bundle.title})")
+        print("Created Bundle: {} ({})".format(bundle.uuid, bundle.title))
 
         # Fetch Bundle data from source directory
         bundle_data_path = pathlib.Path(bundle_src)

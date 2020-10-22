@@ -59,7 +59,7 @@ class AbstractBackendTest:
         self.assertEqual(len(tags), 1)
         self.assertEqual(tags[0], tag)
         tag2 = tax.add_tag('testing 2')
-        self.assertEqual({t for t in tax.list_tags()}, {tag, tag2})  # pylint: disable=unnecessary-comprehension
+        self.assertEqual(set(t for t in tax.list_tags()), {tag, tag2})
 
     def test_case_sensitive_tags(self):
         """
@@ -94,7 +94,7 @@ class AbstractBackendTest:
         tax = self.tagstore.create_taxonomy("TestTax", owner_id=some_user)
         for tag in valid_tags:
             tax.add_tag(tag)
-        tags_created = {t.name for t in tax.list_tags()}
+        tags_created = set(t.name for t in tax.list_tags())
         self.assertEqual(tags_created, set(valid_tags))
 
     def test_forbidden_tag_names(self):

@@ -24,7 +24,7 @@ class Dependency:
     def check_type(self, attrib, value):
         if not isinstance(value, UUID):
             raise ValueError(
-                f"{attrib} {value} must be a UUID (not str or bytes!)"
+                "{} {} must be a UUID (not str or bytes!)".format(attrib, value)
             )
 
     @classmethod
@@ -139,7 +139,7 @@ class LinkCollection:
         for link in links:
             if link.name in seen_names:
                 raise ValueError(
-                    f"Duplicate link name not allowed: {link.name}"
+                    "Duplicate link name not allowed: {}".format(link.name)
                 )
 
     def _check_for_cycles(self, bundle_uuid, links):
@@ -161,7 +161,7 @@ class LinkCollection:
                     )
 
     def all_dependencies(self):
-        dependencies = {link.direct_dependency for link in self}
+        dependencies = set(link.direct_dependency for link in self)
         for link in self:
             dependencies |= set(link.indirect_dependencies)
         return list(sorted(dependencies))
@@ -197,9 +197,9 @@ class LinkChangeSet:
         """
         self.puts = puts
         self.deletes = deletes
-        self.modified_set = {p.name for p in puts} | set(deletes)
+        self.modified_set = set(p.name for p in puts) | set(deletes)
 
-        overlap = {p.name for p in puts} & set(deletes)
+        overlap = set(p.name for p in puts) & set(deletes)
         if overlap:
             raise ValueError(
                 "Keys marked for both PUT and DELETE: {}".format(

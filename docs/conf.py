@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # Blockstore documentation build configuration file, created by
 # sphinx-quickstart on Sun Feb 17 11:46:20 2013.
@@ -47,9 +48,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Blockstore'
+project = u'Blockstore'
 copyright = edx_theme.COPYRIGHT
-author = 'OpenCraft/Harvard/edX'
+author = u'OpenCraft/Harvard/edX'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -191,8 +192,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ('index', 'blockstore.tex', 'Blockstore Documentation',
-     'OpenCraft/Harvard/edX', 'manual'),
+    ('index', 'blockstore.tex', u'Blockstore Documentation',
+     u'OpenCraft/Harvard/edX', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -221,8 +222,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'Blockstore', 'Blockstore Documentation',
-     ['OpenCraft/Harvard/edX'], 1)
+    ('index', 'Blockstore', u'Blockstore Documentation',
+     [u'OpenCraft/Harvard/edX'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -235,8 +236,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'Blockstore', 'Blockstore Documentation',
-     'OpenCraft/Harvard/edX', 'Blockstore', 'Blockstore',
+    ('index', 'Blockstore', u'Blockstore Documentation',
+     u'OpenCraft/Harvard/edX', 'Blockstore', 'Blockstore',
      'Miscellaneous'
      ),
 ]

@@ -131,7 +131,8 @@ class Tagstore:
         get_entities_tagged_with_all()
         """
         # Subclasses do not generally need to override this method.
-        yield from self.get_entities_tagged_with_all({tag}, **kwargs)
+        for entity_id in self.get_entities_tagged_with_all({tag}, **kwargs):
+            yield entity_id
 
     def get_entities_tagged_with_all(
         self,
