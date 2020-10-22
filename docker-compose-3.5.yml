@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+
+  blockstore:
+    container_name: edx.devstack.blockstore.old-test
+    image: opencraft/blockstore:py35
+    build:
+      context: .
+      dockerfile: Dockerfile-3.5
+    stdin_open: true
+    tty: true
+    entrypoint: ["/bin/bash"]
+    networks:
+      - default
+      - devstack
+    ports:
+      - "18250:18250"
+    volumes:
+      - ./:/blockstore/app/:cached
+      # Increment when all users will need a new venv, like after a Python version update.
+      - blockstore_venv_3_5_7:/blockstore/venv/
+    environment:
+      - MYSQL_DATABASE=blockstore_db
+      - MYSQL_USER=root
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+
+networks:
+  devstack:
+    external:
+      name: devstack_default
+
+volumes:
+  blockstore_venv_3_5_7:
