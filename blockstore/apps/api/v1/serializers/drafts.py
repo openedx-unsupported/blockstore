@@ -139,7 +139,7 @@ class DraftFileUpdateSerializer(serializers.BaseSerializer):
         """Parse file dict from client PATCH JSON."""
         for file_name in files:
             if not is_safe_file_path(file_name):
-                raise serializers.ValidationError(f'"{file_name}" is not a valid file name')
+                raise serializers.ValidationError(u'"{}" is not a valid file name'.format(file_name))
 
         def _parse_file_data(file_path, b64_encoded_str):
             """Parse base64 encoded file data into ContentFile if valid."""
@@ -152,7 +152,7 @@ class DraftFileUpdateSerializer(serializers.BaseSerializer):
                 binary_file_data = base64.b64decode(b64_encoded_str)
             except binascii.Error as err:
                 raise ValidationError(
-                    f"Error decoding file {file_path}: {err} (check if it's base64 encoded?)"
+                    u"Error decoding file {}: {} (check if it's base64 encoded?)".format(file_path, err)
                 )
             return ContentFile(binary_file_data)
 
@@ -190,30 +190,30 @@ class DraftFileUpdateSerializer(serializers.BaseSerializer):
             # Check that our fields exist.
             if 'bundle_uuid' not in bv_info:
                 raise ValidationError(
-                    f"Link {name} has no 'bundle_uuid' specified."
+                    "Link {} has no 'bundle_uuid' specified.".format(name)
                 )
             if 'version' not in bv_info:
                 raise ValidationError(
-                    f"Link {name} has no 'version' specified."
+                    "Link {} has no 'version' specified.".format(name)
                 )
 
             # Check that our field values make sense (proper types).
             if not isinstance(name, str):
                 raise ValidationError(
-                    f"{name} is not a valid Link name."
+                    "{} is not a valid Link name.".format(name)
                 )
             version = bv_info['version']
             # Python's bool is a subclass of int
             if (not isinstance(version, int)) or isinstance(version, bool):
                 raise ValidationError(
-                    f"Link {name}: {version} must be an integer."
+                    "Link {}: {} must be an integer.".format(name, version)
                 )
             try:
                 bundle_uuid_str = bv_info['bundle_uuid']
                 bundle_uuid = uuid.UUID(bundle_uuid_str)
             except ValueError:
                 raise ValidationError(
-                    f"Link {name}: {bundle_uuid_str} is not a valid UUID."
+                    "Link {}: {} is not a valid UUID.".format(name, bundle_uuid_str)
                 )
 
             # At this point it's syntactically correct, but it might be pointing
@@ -224,8 +224,10 @@ class DraftFileUpdateSerializer(serializers.BaseSerializer):
             )
             if not bundle_version:
                 raise ValidationError(
+                    (
                         "BundleVersion ({}, {}) referenced in Link {} does not exist."
                         .format(bundle_uuid, version, name)
+                    )
                 )
 
             # If everything checks out, create a Dependency. We can't make a

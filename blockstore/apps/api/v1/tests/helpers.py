@@ -26,7 +26,7 @@ def create_bundle_with_history(client, col_uuid_str, bundle_title, commit_data):
             {
                 'bundle_uuid': bundle_data['uuid'],
                 'name': 'test_draft',
-                'title': f"Draft for {bundle_title} 😀"
+                'title': "Draft for {} 😀".format(bundle_title)
             }
         )
     )
@@ -64,6 +64,6 @@ def response_data(response):
         data = json.loads(response.content.decode('utf-8'))
     except Exception:
         raise ValueError(
-            f"The following could not be parsed as JSON: {response.content}"
+            "The following could not be parsed as JSON: {}".format(response.content)
         )
     return data
