@@ -176,7 +176,7 @@ class BundlesMetadataTestCase(ApiTestCase):
         assert create_data['slug'] == 'Ηαρργ'
         assert create_data['title'] == "Happy Bundle 😀"
         assert re.match(UUID4_REGEX, create_data['uuid'])
-        assert create_data['url'] == f"http://testserver/api/v1/bundles/{create_data['uuid']}"
+        assert create_data['url'] == "http://testserver/api/v1/bundles/{}".format(create_data['uuid'])
         assert create_data['versions'] == []
 
         # Check that the GET returns the same thing
@@ -286,7 +286,7 @@ class DraftsTest(ApiTestCase):
         assert staged_draft_data['base_snapshot'] is None  # No commit yet.
 
         # Bundle should show our draft, but no versions (no commits yet)
-        bundle_detail_response = self.client.get(f'/api/v1/bundles/{draft_data["bundle_uuid"]}')
+        bundle_detail_response = self.client.get('/api/v1/bundles/{}'.format(draft_data["bundle_uuid"]))
         bundle_detail_data = response_data(bundle_detail_response)
         assert bundle_detail_data['drafts'] == {'studio_draft': draft_data['url']}
         assert bundle_detail_data['versions'] == []
@@ -304,11 +304,11 @@ class DraftsTest(ApiTestCase):
         assert draft_patch_response.status_code == status.HTTP_204_NO_CONTENT
 
         # Now commit it
-        commit_response = self.client.post(f'/api/v1/drafts/{draft_data["uuid"]}/commit')
+        commit_response = self.client.post('/api/v1/drafts/{}/commit'.format(draft_data["uuid"]))
         assert commit_response.status_code == status.HTTP_201_CREATED
 
         # Now grab the Bundle again and check that a new version exists...
-        bundle_detail_response = self.client.get(f'/api/v1/bundles/{draft_data["bundle_uuid"]}')
+        bundle_detail_response = self.client.get('/api/v1/bundles/{}'.format(draft_data["bundle_uuid"]))
         bundle_detail_data = response_data(bundle_detail_response)
         assert len(bundle_detail_data['versions']) == 1
 
