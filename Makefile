@@ -32,7 +32,8 @@ dev.provision:  # Provision Blockstore service
 	docker exec -t ${CONTAINER_NAME} /bin/bash -c 'source ~/.bashrc && make requirements && make migrate'
 
 stop:  # Stop Blockstore container
-	docker-compose --project-name blockstore -f docker-compose.yml stop
+	docker-compose --project-name "blockstore${PYTHON_VERSION}" -f "docker-compose-${PYTHON_VERSION}.yml" stop
+	docker-compose --project-name "blockstore-testserver${PYTHON_VERSION}" -f "docker-compose-testserver-${PYTHON_VERSION}.yml" stop
 
 pull:  # Update docker images that this depends on.
 	docker pull python:3.8.5-alpine3.12
