@@ -16,4 +16,4 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         title = options['title']
         collection = Collection.objects.create(title=title)
-        print("Created Collection: {} ({})".format(collection.uuid, collection.title))
+        print(f"Created Collection: {collection.uuid} ({collection.title})")

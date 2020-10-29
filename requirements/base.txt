@@ -6,20 +6,20 @@
 #
 attrs==18.2.0             # via -c requirements/constraints.txt, -r requirements/base.in
 certifi==2020.6.20        # via requests
-cffi==1.14.2              # via cryptography
+cffi==1.14.3              # via cryptography
 chardet==3.0.4            # via requests
 coreapi==2.3.3            # via django-rest-swagger, openapi-codec
 coreschema==0.0.4         # via coreapi
-cryptography==3.1         # via social-auth-core
+cryptography==3.1.1       # via social-auth-core
 defusedxml==0.6.0         # via python3-openid, social-auth-core
 django-cors-headers==2.2.1  # via -c requirements/constraints.txt, -r requirements/base.in
 django-environ==0.4.5     # via -c requirements/constraints.txt, -r requirements/base.in
 django-filter==2.1.0      # via -c requirements/constraints.txt, -r requirements/base.in
 django-rest-swagger==2.2.0  # via -r requirements/base.in
-django-waffle==0.18.0     # via -c requirements/constraints.txt, -r requirements/base.in
+django-waffle==2.0.0      # via -r requirements/base.in
 django==2.2.16            # via -c requirements/constraints.txt, -r requirements/base.in, django-filter, djangorestframework, drf-nested-routers, edx-auth-backends, edx-django-release-util
 djangorestframework-expander==0.2.3  # via -r requirements/base.in
-djangorestframework==3.11.1  # via -r requirements/base.in, django-rest-swagger, djangorestframework-expander, drf-nested-routers
+djangorestframework==3.12.1  # via -r requirements/base.in, django-rest-swagger, djangorestframework-expander, drf-nested-routers
 git+https://github.com/alanjds/drf-nested-routers.git@8686392f91b114e01f3781807dea60e9a80d3e07#egg=drf-nested-routers==0.91  # via -r requirements/github.in
 edx-auth-backends==3.1.0  # via -r requirements/base.in
 edx-django-release-util==0.4.4  # via -r requirements/base.in
@@ -42,6 +42,6 @@ simplejson==3.17.2        # via django-rest-swagger
 six==1.15.0               # via cryptography, edx-auth-backends, edx-django-release-util, social-auth-app-django, social-auth-core
 social-auth-app-django==4.0.0  # via edx-auth-backends
 social-auth-core==3.3.3   # via edx-auth-backends, social-auth-app-django
-sqlparse==0.3.1           # via -r requirements/base.in, django
+sqlparse==0.4.1           # via -r requirements/base.in, django
 uritemplate==3.0.1        # via coreapi
 urllib3==1.25.10          # via requests

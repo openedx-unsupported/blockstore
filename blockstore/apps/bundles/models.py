@@ -77,7 +77,7 @@ class Collection(models.Model):
     title = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_index=True)
 
     def __str__(self):
-        return "{} - {}".format(self.uuid, self.title)
+        return f"{self.uuid} - {self.title}"
 
 
 class Bundle(models.Model):
@@ -100,7 +100,7 @@ class Bundle(models.Model):
     description = models.TextField(max_length=10000, blank=True)
 
     def __str__(self):
-        return "Bundle {} - {}".format(self.uuid, self.slug)
+        return f"Bundle {self.uuid} - {self.slug}"
 
     def get_bundle_version(self, version_num=None):
         """
@@ -226,7 +226,7 @@ class Draft(models.Model):
         )
 
     def __str__(self):
-        return u"{} ({})".format(self.name, self.uuid)
+        return f"{self.name} ({self.uuid})"
 
 
 class BundleLink(models.Model):
