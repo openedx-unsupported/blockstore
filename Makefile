@@ -15,13 +15,8 @@ help:
 	@echo ""
 
 VIRTUAL_ENV?=/blockstore/venv
-OLD_VERSION=3.5
-PYTHON_VERSION?=3.8
-ifeq ($(PYTHON_VERSION), $(OLD_VERSION))
-	CONTAINER_NAME=edx.devstack.blockstore.old
-else
-	CONTAINER_NAME=edx.devstack.blockstore
-endif
+PYTHON_VERSION=3.8
+CONTAINER_NAME=edx.devstack.blockstore
 VENV_BIN=${VIRTUAL_ENV}/bin
 
 dev.up:  # Start Blockstore container
@@ -36,7 +31,6 @@ stop:  # Stop Blockstore container
 
 pull:  # Update docker images that this depends on.
 	docker pull python:3.8.5-alpine3.12
-	docker pull python:3.5.7-alpine3.9
 
 destroy:  # Remove Blockstore container, network and volumes. Destructive.
 	docker-compose --project-name "blockstore${PYTHON_VERSION}" -f "docker-compose-${PYTHON_VERSION}.yml" down -v

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # By default django and many MySQL installations use a broken
 # version of unicode ("utf8"). We should always use "utf8mb4"
 # which is a correct/non-broken unicode character set, and fully
