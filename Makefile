@@ -23,7 +23,7 @@ dev.up:  # Start Blockstore container
 	docker-compose --project-name "blockstore${PYTHON_VERSION}" -f "docker-compose-${PYTHON_VERSION}.yml" up -d
 
 dev.provision:  # Provision Blockstore service
-	docker exec -t edx.devstack.mysql /bin/bash -c 'mysql -uroot <<< "create database if not exists blockstore_db;"'
+	docker exec -t edx.devstack.mysql57 /bin/bash -c 'mysql -uroot <<< "create database if not exists blockstore_db;"'
 	docker exec -t ${CONTAINER_NAME} /bin/bash -c 'source ~/.bashrc && make requirements && make migrate'
 
 stop:  # Stop Blockstore container
@@ -75,13 +75,13 @@ easyserver: dev.up dev.provision  # Start and provision a Blockstore container a
 
 testserver:  # Run an isolated ephemeral instance of Blockstore for use by edx-platform tests
 	docker-compose --project-name "blockstore-testserver${PYTHON_VERSION}" -f "docker-compose-testserver-${PYTHON_VERSION}.yml" up -d
-	docker exec -t edx.devstack.mysql /bin/bash -c 'mysql -uroot <<< "create database if not exists blockstore_test_db;"'
+	docker exec -t edx.devstack.mysql57 /bin/bash -c 'mysql -uroot <<< "create database if not exists blockstore_test_db;"'
 	docker exec -t ${CONTAINER_NAME}-test /bin/bash -c 'source ~/.bashrc && make requirements && make migrate && ./manage.py shell < provision-testserver-data.py'
 	# Now run blockstore until the user hits CTRL-C:
 	docker-compose --project-name "blockstore-testserver${PYTHON_VERSION}" -f "docker-compose-testserver-${PYTHON_VERSION}.yml" exec blockstore /blockstore/venv/bin/python /blockstore/app/manage.py runserver 0.0.0.0:18251
 	# And destroy everything except the virtualenv volume (which we want to reuse to save time):
 	docker-compose --project-name "blockstore-testserver${PYTHON_VERSION}" -f "docker-compose-testserver-${PYTHON_VERSION}.yml" down
-	docker exec -t edx.devstack.mysql /bin/bash -c 'mysql -uroot <<< "drop database blockstore_test_db;"'
+	docker exec -t edx.devstack.mysql57 /bin/bash -c 'mysql -uroot <<< "drop database blockstore_test_db;"'
 
 html_coverage: ## Generate HTML coverage report
 	${VENV_BIN}/coverage html

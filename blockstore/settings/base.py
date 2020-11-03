@@ -96,6 +96,7 @@ DATABASES = {
             # the correct unicode implementation.
             # Note that this limits the length of InnoDB indexed columns to 191 characters.
             'charset': 'utf8mb4',
+            'init_command': 'SET NAMES utf8mb4',
         },
     }
 }

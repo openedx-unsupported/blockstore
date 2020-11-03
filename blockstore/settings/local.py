@@ -26,7 +26,7 @@ DATABASES = {
         'NAME': os.environ.get('MYSQL_DATABASE', 'blockstore_db'),
         'USER': os.environ.get('MYSQL_USER', 'root'),
         'PASSWORD': os.environ.get('MYSQL_ROOT_PASSWORD', ''),
-        'HOST': os.environ.get('MYSQL_HOST', 'mysql'),
+        'HOST': os.environ.get('MYSQL_HOST', 'mysql57'),
         'PORT': int(os.environ.get('MYSQL_PORT', '3306')),
         'OPTIONS': {
             # Use a non-broken unicode encoding. See "mysql_unicode/migrations/0001_initial.py"
@@ -34,6 +34,7 @@ DATABASES = {
             # the correct unicode implementation.
             # Note that this limits the length of InnoDB indexed columns to 191 characters.
             'charset': 'utf8mb4',
+            'init_command': 'SET NAMES utf8mb4',
         },
     }
 }

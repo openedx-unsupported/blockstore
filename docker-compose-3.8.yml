@@ -23,7 +23,7 @@ services:
     environment:
       - MYSQL_DATABASE=blockstore_db
       - MYSQL_USER=root
-      - MYSQL_HOST=mysql
+      - MYSQL_HOST=mysql57
       - MYSQL_PORT=3306
 
 networks:
