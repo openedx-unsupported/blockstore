@@ -44,8 +44,8 @@ clean: ## Remove all generated files
 	rm -f diff-cover.html
 
 requirements: ## Install requirements for development
-    # We can't add this to requirements. It changes the way pip itself works.
-    ${VENV_BIN}/pip install wheel
+	# We can't add this to requirements. It changes the way pip itself works.
+	${VENV_BIN}/pip install wheel
 	${VENV_BIN}/pip install -r requirements/local.txt --exists-action w
 
 requirements-test: ## Install requirements for testing
