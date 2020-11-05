@@ -1,13 +1,15 @@
 # Dockerfile
 
-FROM python:3.8.5-alpine3.12
+FROM ubuntu:20.04
 
 ENV VIRTUAL_ENV=/blockstore/venv
 
-RUN apk update && apk upgrade
-RUN apk add bash bash-completion build-base git perl mariadb-dev libffi-dev
+RUN apt-get update
+RUN apt-get install libmysqlclient-dev libjpeg-dev libssl-dev libffi-dev python3 python3-venv python3-pip git -y
 
 RUN python3.8 -m venv $VIRTUAL_ENV
 
-RUN echo 'cd /blockstore/app/' >> ~/.bashrc
-RUN echo 'export PATH=$VIRTUAL_ENV/bin:$PATH' >> ~/.bashrc
+RUN echo 'cd /blockstore/app/' > ~/.bashrc.new
+RUN echo 'export PATH=$VIRTUAL_ENV/bin:$PATH' >> ~/.bashrc.new
+RUN cat ~/.bashrc >> ~/.bashrc.new
+RUN mv ~/.bashrc.new ~/.bashrc
