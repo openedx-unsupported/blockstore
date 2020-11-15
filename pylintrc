@@ -64,7 +64,7 @@
 #
 # ------------------------------
 [MASTER]
-ignore = ,migrations, settings, wsgi.py
+ignore = ,migrations, settings, setup.py, wsgi.py
 persistent = yes
 load-plugins = edx_lint.pylint,pylint_django,pylint_celery
 
