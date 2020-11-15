@@ -55,8 +55,8 @@ THIRD_PARTY_APPS = (
 PROJECT_APPS = (
     'blockstore.apps.mysql_unicode',
     'blockstore.apps.core',
-    'blockstore.apps.api',
     'blockstore.apps.bundles.apps.BundlesConfig',
+    'blockstore.apps.rest_api',
     'tagstore.backends.tagstore_django',
 )
 
@@ -236,7 +236,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         # Only superusers or authorized applications that authenticate with a
         # token are allowed to use the API.
-        'blockstore.apps.api.permissions.IsSuperUserOrAuthorizedApplication',
+        'blockstore.apps.rest_api.permissions.IsSuperUserOrAuthorizedApplication',
     ),
 }
 
