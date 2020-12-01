@@ -73,6 +73,11 @@ Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ p
    #. In ``private.py``, set ``SOCIAL_AUTH_EDX_OAUTH2_SECRET`` to the random "Client secret" value.
    #. Now you can login at http://localhost:18250/login/
 
+#. Optional: If running an Open edX devstack under a project name different
+   than the default (support for which was introduced
+   [here](https://github.com/edx/devstack/pull/532)), simply export
+   ``OPENEDX_PROJECT_NAME`` and substitute the container names in the commands
+   above accordingly.
 
 Running Tests
 =============

@@ -16,27 +16,46 @@ help:
 
 VIRTUAL_ENV?=/blockstore/venv
 PYTHON_VERSION=3.8
-CONTAINER_NAME=edx.devstack.blockstore
 VENV_BIN=${VIRTUAL_ENV}/bin
 
+# Blockstore Docker configuration
+BLOCKSTORE_PROJECT_NAME?=blockstore${PYTHON_VERSION}
+BLOCKSTORE_DOCKER_COMPOSE_OPTS=-p ${BLOCKSTORE_PROJECT_NAME} -f docker-compose-${PYTHON_VERSION}.yml
+
+# Blockstore test server Docker configuration
+BLOCKSTORE_TESTSERVER_PROJECT_NAME?=blockstore-testserver${PYTHON_VERSION}
+BLOCKSTORE_TESTSERVER_DOCKER_COMPOSE_OPTS=-p ${BLOCKSTORE_TESTSERVER_PROJECT_NAME} -f docker-compose-testserver-${PYTHON_VERSION}.yml
+
+# Open edX Docker configuration
+OPENEDX_PROJECT_NAME?=devstack
+
+dev.build:  # Start Blockstore container
+	docker-compose ${BLOCKSTORE_DOCKER_COMPOSE_OPTS} build --no-cache
+
 dev.up:  # Start Blockstore container
-	docker-compose --project-name "blockstore${PYTHON_VERSION}" -f "docker-compose-${PYTHON_VERSION}.yml" up -d
+	docker-compose ${BLOCKSTORE_DOCKER_COMPOSE_OPTS} up -d
 
 dev.provision:  # Provision Blockstore service
-	docker exec -t edx.devstack.mysql57 /bin/bash -c 'mysql -uroot <<< "create database if not exists blockstore_db;"'
-	docker exec -t ${CONTAINER_NAME} /bin/bash -c 'source ~/.bashrc && make requirements && make migrate'
+	docker exec -t edx.${OPENEDX_PROJECT_NAME}.mysql57 /bin/bash -c 'mysql -uroot <<< "create database if not exists blockstore_db;"'
+	docker-compose ${BLOCKSTORE_DOCKER_COMPOSE_OPTS} exec blockstore /bin/bash -c 'source ~/.bashrc && make requirements && make migrate'
+
+dev.run: dev.up  # Run the service in the foreground
+	docker-compose ${BLOCKSTORE_DOCKER_COMPOSE_OPTS} exec blockstore /blockstore/venv/bin/python /blockstore/app/manage.py runserver 0.0.0.0:18250
+
+dev.run-detached: dev.up  # Run the service in the background
+	docker-compose ${BLOCKSTORE_DOCKER_COMPOSE_OPTS} exec -d blockstore /blockstore/venv/bin/python /blockstore/app/manage.py runserver 0.0.0.0:18250
 
 stop:  # Stop Blockstore container
-	docker-compose --project-name blockstore${PYTHON_VERSION} -f docker-compose-${PYTHON_VERSION}.yml stop
+	docker-compose ${BLOCKSTORE_DOCKER_COMPOSE_OPTS} stop
 
 pull:  # Update docker images that this depends on.
 	docker pull python:3.8.5-alpine3.12
 
 destroy:  # Remove Blockstore container, network and volumes. Destructive.
-	docker-compose --project-name "blockstore${PYTHON_VERSION}" -f "docker-compose-${PYTHON_VERSION}.yml" down -v
+	docker-compose ${BLOCKSTORE_DOCKER_COMPOSE_OPTS} down -v
 
 blockstore-shell:  # Open a shell on the running Blockstore container
-	docker exec -e COLUMNS="`tput cols`" -e LINES="`tput lines`" -it ${CONTAINER_NAME} /bin/bash
+	docker-compose ${BLOCKSTORE_DOCKER_COMPOSE_OPTS} exec -e COLUMNS="`tput cols`" -e LINES="`tput lines`" blockstore /bin/bash
 
 clean: ## Remove all generated files
 	find . -name '*.pyc' -delete
@@ -52,7 +71,7 @@ requirements-test: ## Install requirements for testing
 	${VENV_BIN}/pip install -r requirements/test.txt --exists-action w
 
 production-requirements:
-	pip install -r requirements/production.txt --exists-action w
+	${VENV_BIN}/pip install -r requirements/production.txt --exists-action w
 
 migrate: ## Apply database migrations
 	${VENV_BIN}/python manage.py migrate --no-input
@@ -71,19 +90,19 @@ test: clean ## Run tests and generate coverage report
 
 easyserver: dev.up dev.provision  # Start and provision a Blockstore container and run the server until CTRL-C, then stop it
 	# Now run blockstore until the user hits CTRL-C:
-	docker-compose --project-name "blockstore${PYTHON_VERSION}" -f "docker-compose-${PYTHON_VERSION}.yml" exec blockstore /blockstore/venv/bin/python /blockstore/app/manage.py runserver 0.0.0.0:18250
+	docker-compose ${BLOCKSTORE_DOCKER_COMPOSE_OPTS} exec blockstore /blockstore/venv/bin/python /blockstore/app/manage.py runserver 0.0.0.0:18250
 	# Then stop the container:
-	docker-compose --project-name blockstore${PYTHON_VERSION} -f docker-compose-${PYTHON_VERSION}.yml stop
+	docker-compose ${BLOCKSTORE_DOCKER_COMPOSE_OPTS} stop
 
 testserver:  # Run an isolated ephemeral instance of Blockstore for use by edx-platform tests
-	docker-compose --project-name "blockstore-testserver${PYTHON_VERSION}" -f "docker-compose-testserver-${PYTHON_VERSION}.yml" up -d
-	docker exec -t edx.devstack.mysql57 /bin/bash -c 'mysql -uroot <<< "create database if not exists blockstore_test_db;"'
-	docker exec -t ${CONTAINER_NAME}-test /bin/bash -c 'source ~/.bashrc && make requirements && make migrate && ./manage.py shell < provision-testserver-data.py'
+	docker-compose ${BLOCKSTORE_TESTSERVER_DOCKER_COMPOSE_OPTS} up -d
+	docker exec -t edx.${OPENEDX_PROJECT_NAME}.mysql57 /bin/bash -c 'mysql -uroot <<< "create database if not exists blockstore_test_db;"'
+	docker-compose ${BLOCKSTORE_TESTSERVER_DOCKER_COMPOSE_OPTS} exec blockstore /bin/bash -c 'source ~/.bashrc && make requirements && make migrate && ./manage.py shell < provision-testserver-data.py'
 	# Now run blockstore until the user hits CTRL-C:
-	docker-compose --project-name "blockstore-testserver${PYTHON_VERSION}" -f "docker-compose-testserver-${PYTHON_VERSION}.yml" exec blockstore /blockstore/venv/bin/python /blockstore/app/manage.py runserver 0.0.0.0:18251
+	docker-compose ${BLOCKSTORE_TESTSERVER_DOCKER_COMPOSE_OPTS} exec blockstore /blockstore/venv/bin/python /blockstore/app/manage.py runserver 0.0.0.0:18251
 	# And destroy everything except the virtualenv volume (which we want to reuse to save time):
-	docker-compose --project-name "blockstore-testserver${PYTHON_VERSION}" -f "docker-compose-testserver-${PYTHON_VERSION}.yml" down
-	docker exec -t edx.devstack.mysql57 /bin/bash -c 'mysql -uroot <<< "drop database blockstore_test_db;"'
+	docker-compose ${BLOCKSTORE_TESTSERVER_DOCKER_COMPOSE_OPTS} down
+	docker exec -t edx.${OPENEDX_PROJECT_NAME}.mysql57 /bin/bash -c 'mysql -uroot <<< "drop database blockstore_test_db;"'
 
 html_coverage: ## Generate HTML coverage report
 	${VENV_BIN}/coverage html
