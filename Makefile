@@ -49,7 +49,7 @@ stop:  # Stop Blockstore container
 	docker-compose ${BLOCKSTORE_DOCKER_COMPOSE_OPTS} stop
 
 pull:  # Update docker images that this depends on.
-	docker pull python:3.8.5-alpine3.12
+	docker pull ubuntu:20.04
 
 destroy:  # Remove Blockstore container, network and volumes. Destructive.
 	docker-compose ${BLOCKSTORE_DOCKER_COMPOSE_OPTS} down -v
