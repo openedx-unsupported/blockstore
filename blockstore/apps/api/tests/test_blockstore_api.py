@@ -1,26 +1,20 @@
 # -*- coding: utf-8 -*-
 """
-Tests for xblock_utils.py
+Tests for the api.
 """
 
-import unittest
 from uuid import UUID
 
-from django.conf import settings
-from openedx.core.lib import blockstore_api as api
+from django.test import TestCase
+from blockstore.apps import api
 
 # A fake UUID that won't represent any real bundle/draft/collection:
 BAD_UUID = UUID('12345678-0000-0000-0000-000000000000')
 
 
-@unittest.skipUnless(settings.RUN_BLOCKSTORE_TESTS, "Requires a running Blockstore server")
-class BlockstoreApiClientTest(unittest.TestCase):
+class BlockstoreApiTest(TestCase):
     """
-    Test for the Blockstore API Client.
-
-    The goal of these tests is not to test that Blockstore works correctly, but
-    that the API client can interact with it and all the API client methods
-    work.
+    Tests for the Blockstore API.
     """
 
     # Collections
@@ -100,12 +94,12 @@ class BlockstoreApiClientTest(unittest.TestCase):
         coll = api.create_collection("Test Collection")
         bundle = api.create_bundle(coll.uuid, title="Earth 🗿 Bundle", slug="earth", description="another test bundle")
         # Create a draft
-        draft = api.get_or_create_bundle_draft(bundle.uuid, draft_name="test-draft")
+        draft = api.get_or_create_draft(bundle.uuid, draft_name="test-draft")
         self.assertEqual(draft.bundle_uuid, bundle.uuid)
         self.assertEqual(draft.name, "test-draft")
         self.assertGreaterEqual(draft.updated_at.year, 2019)
         # And retrieve it again:
-        draft2 = api.get_or_create_bundle_draft(bundle.uuid, draft_name="test-draft")
+        draft2 = api.get_or_create_draft(bundle.uuid, draft_name="test-draft")
         self.assertEqual(draft, draft2)
         # Also test retrieving using get_draft
         draft3 = api.get_draft(draft.uuid)
@@ -136,8 +130,7 @@ class BlockstoreApiClientTest(unittest.TestCase):
         self.assertEqual(file_info1.size, len(b"initial version"))
         self.assertEqual(file_info1.hash_digest, "a45a5c6716276a66c4005534a51453ab16ea63c4")
 
-        self.assertEqual(list(api.get_bundle_files(bundle.uuid)), [file_info1])
-        self.assertEqual(api.get_bundle_files_dict(bundle.uuid), {
+        self.assertEqual(api.get_bundle_files(bundle.uuid), {
             "test.txt": file_info1,
         })
 
@@ -150,11 +143,11 @@ class BlockstoreApiClientTest(unittest.TestCase):
         coll = api.create_collection("Test Collection")
         # Create two library bundles and a course bundle:
         lib1_bundle = api.create_bundle(coll.uuid, title="Library 1", slug="lib1")
-        lib1_draft = api.get_or_create_bundle_draft(lib1_bundle.uuid, draft_name="test-draft")
+        lib1_draft = api.get_or_create_draft(lib1_bundle.uuid, draft_name="test-draft")
         lib2_bundle = api.create_bundle(coll.uuid, title="Library 1", slug="lib2")
-        lib2_draft = api.get_or_create_bundle_draft(lib2_bundle.uuid, draft_name="other-draft")
+        lib2_draft = api.get_or_create_draft(lib2_bundle.uuid, draft_name="other-draft")
         course_bundle = api.create_bundle(coll.uuid, title="Library 1", slug="course")
-        course_draft = api.get_or_create_bundle_draft(course_bundle.uuid, draft_name="test-draft")
+        course_draft = api.get_or_create_draft(course_bundle.uuid, draft_name="test-draft")
 
         # To create links, we need valid BundleVersions, which requires having committed at least one change:
         api.write_draft_file(lib1_draft.uuid, "lib1-data.txt", "hello world")
@@ -171,8 +164,8 @@ class BlockstoreApiClientTest(unittest.TestCase):
         # Now confirm the link exists in the draft:
         lib2_draft_links = api.get_bundle_links(lib2_bundle.uuid, use_draft=lib2_draft.name)
         self.assertIn(link1_name, lib2_draft_links)
-        self.assertEqual(lib2_draft_links[link1_name].direct.bundle_uuid, lib1_bundle.uuid)
-        self.assertEqual(lib2_draft_links[link1_name].direct.version, 1)
+        self.assertEqual(lib2_draft_links[link1_name].direct_dependency.bundle_uuid, lib1_bundle.uuid)
+        self.assertEqual(lib2_draft_links[link1_name].direct_dependency.version, 1)
         # Now commit the change to lib2:
         api.commit_draft(lib2_draft.uuid)  # Creates version 2
 
@@ -184,11 +177,11 @@ class BlockstoreApiClientTest(unittest.TestCase):
         # And confirm the link exists in the resulting bundle version:
         course_links = api.get_bundle_links(course_bundle.uuid)
         self.assertIn(link2_name, course_links)
-        self.assertEqual(course_links[link2_name].direct.bundle_uuid, lib2_bundle.uuid)
-        self.assertEqual(course_links[link2_name].direct.version, 2)
+        self.assertEqual(course_links[link2_name].direct_dependency.bundle_uuid, lib2_bundle.uuid)
+        self.assertEqual(course_links[link2_name].direct_dependency.version, 2)
         # And since the links go course->lib2->lib1, course has an indirect link to lib1:
-        self.assertEqual(course_links[link2_name].indirect[0].bundle_uuid, lib1_bundle.uuid)
-        self.assertEqual(course_links[link2_name].indirect[0].version, 1)
+        self.assertEqual(course_links[link2_name].indirect_dependencies[0].bundle_uuid, lib1_bundle.uuid)
+        self.assertEqual(course_links[link2_name].indirect_dependencies[0].version, 1)
 
         # Finally, test deleting a link from course's draft:
         api.set_draft_link(course_draft.uuid, link2_name, None, None)

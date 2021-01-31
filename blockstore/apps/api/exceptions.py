@@ -19,7 +19,15 @@ class BundleNotFound(NotFound):
     pass
 
 
+class BundleVersionNotFound(NotFound):
+    pass
+
+
 class DraftNotFound(NotFound):
+    pass
+
+
+class DraftHasNoChangesToCommit(Exception):
     pass
 
 
