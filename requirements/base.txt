@@ -17,7 +17,7 @@ django-environ==0.4.5     # via -c requirements/constraints.txt, -r requirements
 django-filter==2.1.0      # via -c requirements/constraints.txt, -r requirements/base.in
 django-rest-swagger==2.2.0  # via -r requirements/base.in
 django-waffle==2.0.0      # via -r requirements/base.in
-django==2.2.18            # via -c requirements/constraints.txt, -r requirements/base.in, django-filter, djangorestframework, drf-nested-routers, edx-auth-backends, edx-django-release-util
+django==2.2.19            # via -c requirements/constraints.txt, -r requirements/base.in, django-filter, djangorestframework, drf-nested-routers, edx-auth-backends, edx-django-release-util
 djangorestframework-expander==0.2.3  # via -r requirements/base.in
 djangorestframework==3.12.1  # via -r requirements/base.in, django-rest-swagger, djangorestframework-expander, drf-nested-routers
 git+https://github.com/alanjds/drf-nested-routers.git@8686392f91b114e01f3781807dea60e9a80d3e07#egg=drf-nested-routers==0.91  # via -r requirements/github.in
