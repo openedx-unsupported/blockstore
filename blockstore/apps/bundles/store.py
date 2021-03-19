@@ -18,13 +18,13 @@ import logging
 import json
 import pytz
 
-from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile, File
 from django.dispatch import Signal
 import attr
 from pyblake2 import blake2b
 
 from .links import Dependency, Link, LinkCollection, LinkChangeSet
+from .storage import default_asset_storage
 
 logger = logging.getLogger(__name__)
 snapshot_created = Signal(providing_args=["bundle_uuid", "hash_digest"])
@@ -246,7 +246,7 @@ class SnapshotRepo:
       by different paths in different versions.
     """
     def __init__(self, storage=None):
-        self.storage = storage or default_storage
+        self.storage = storage or default_asset_storage
 
     def get(self, bundle_uuid: UUID, snapshot_digest: bytes) -> Snapshot:
         """
@@ -367,7 +367,7 @@ class DraftRepo:
         to where we can get Snapshot data.
         """
         self.snapshot_repo = snapshot_repo
-        self.storage = storage or default_storage
+        self.storage = storage or default_asset_storage
 
     @classmethod
     def _data_file_path(cls, draft_uuid, file_path):
