@@ -8,8 +8,6 @@
 # pin when possible.  Writing an issue against the offending project and
 # linking to it here is good.
 
-attrs<19.0.0
-
 boto3<2.0
 
 # Not yet using Django 3.X. Using the 2.X LTS to mirror the LMS.
@@ -20,10 +18,6 @@ django-cors-headers>=2.2.0,<2.3
 django-environ==0.4.5
 
 django-filter==2.1.0
-
-# factory-boy version 3.0.0 is having installation problems
-# in docker images https://github.com/FactoryBoy/factory_boy/issues/780
-factory-boy<3.0.0
 
 mysqlclient==1.3.14
 
