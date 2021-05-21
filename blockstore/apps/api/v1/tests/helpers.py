@@ -62,8 +62,8 @@ def response_data(response):
     """
     try:
         data = json.loads(response.content.decode('utf-8'))
-    except Exception:
+    except Exception as exc:
         raise ValueError(
             f"The following could not be parsed as JSON: {response.content}"
-        )
+        ) from exc
     return data

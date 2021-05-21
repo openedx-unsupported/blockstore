@@ -259,7 +259,7 @@ class SnapshotRepo:
             with self.storage.open(storage_path, mode='rb') as snapshot_file:
                 snapshot_raw_data = snapshot_file.read()
                 snapshot_json = json.loads(snapshot_raw_data.decode('utf-8'))
-        except FileNotFoundError:
+        except FileNotFoundError as err:
             logger.error(
                 "Snapshot %s,%s not found at: %s",
                 bundle_uuid,
@@ -268,7 +268,7 @@ class SnapshotRepo:
             )
             raise Snapshot.NotFoundError(
                 f"Snapshot {snapshot_digest.hex()} for Bundle {bundle_uuid} not found"
-            )
+            ) from err
 
         return Snapshot(
             bundle_uuid=bundle_uuid,
@@ -675,7 +675,7 @@ class DraftRepo:
 
 class BundleDataJSONEncoder(json.JSONEncoder):
     """Default JSON serialization."""
-    def default(self, o):  # pylint: disable=method-hidden
+    def default(self, o):
         if isinstance(o, FileInfo):
             return [o.public, o.size, o.hash_digest.hex()]
         elif isinstance(o, UUID):
