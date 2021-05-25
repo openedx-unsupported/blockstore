@@ -153,7 +153,7 @@ class DraftFileUpdateSerializer(serializers.BaseSerializer):
             except binascii.Error as err:
                 raise ValidationError(
                     f"Error decoding file {file_path}: {err} (check if it's base64 encoded?)"
-                )
+                ) from err
             return ContentFile(binary_file_data)
 
         # TODO: make sure they can't write outside the draft space
@@ -211,10 +211,10 @@ class DraftFileUpdateSerializer(serializers.BaseSerializer):
             try:
                 bundle_uuid_str = bv_info['bundle_uuid']
                 bundle_uuid = uuid.UUID(bundle_uuid_str)
-            except ValueError:
+            except ValueError as err:
                 raise ValidationError(
                     f"Link {name}: {bundle_uuid_str} is not a valid UUID."
-                )
+                ) from err
 
             # At this point it's syntactically correct, but it might be pointing
             # to a BundleVersion that doesn't really exist.

@@ -93,7 +93,7 @@ class DraftViewSet(viewsets.ModelViewSet):
         # Generic model serializer is sufficience for other views.
         return DraftSerializer
 
-    def partial_update(self, request, uuid):
+    def partial_update(self, request, uuid):  # pylint: disable=arguments-differ
         """
         Create, update, and delete files in a Draft.
 
@@ -129,8 +129,10 @@ class DraftViewSet(viewsets.ModelViewSet):
         draft_repo = DraftRepo(SnapshotRepo())
         try:
             draft_repo.update(uuid, files_to_write, dependencies_to_write)
-        except LinkCycleError:
-            raise serializers.ValidationError("Link cycle detected: Cannot create draft.")
+        except LinkCycleError as err:
+            raise serializers.ValidationError(
+                "Link cycle detected: Cannot create draft."
+            ) from err
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -179,10 +181,10 @@ class DraftViewSet(viewsets.ModelViewSet):
         }
         return Response(result, status=status.HTTP_201_CREATED)
 
-    def destroy(self, request, uuid):
+    def destroy(self, request, uuid):  # pylint: disable=arguments-differ
         """
         This removes any files that were staged along with the database entry.
         """
         draft_repo = DraftRepo(SnapshotRepo())
         draft_repo.delete(uuid)
-        return super().destroy(request, uuid)  # pylint: disable=no-member
+        return super().destroy(request, uuid)

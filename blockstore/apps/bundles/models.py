@@ -199,7 +199,6 @@ class Draft(models.Model):
     )
     name = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH)
 
-    # pylint: disable=arguments-differ
     def save(self, *args, **kwargs):
         if not self.pk:
             draft_repo = DraftRepo(SnapshotRepo())

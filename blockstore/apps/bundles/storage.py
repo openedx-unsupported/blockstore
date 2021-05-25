@@ -66,7 +66,7 @@ class LongLivedSignedUrlStorage(Storage):  # pylint: disable=abstract-method
         """
         def __str__(self):
             return (
-                f"In order to instantiate this storage backend, "
+                "In order to instantiate this storage backend, "
                 "boto3 must be installed "
                 "and both BUNDLE_ASSET_URL_STORAGE_KEY "
                 "and BUNDLE_ASSET_URL_STORAGE_SECRET "

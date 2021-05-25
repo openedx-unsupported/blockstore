@@ -38,8 +38,8 @@ class DjangoTagstore(Tagstore):
             # Check the parent tag:
             try:
                 pt = TagModel.objects.get(taxonomy_id=taxonomy_uid, name=parent_tag)
-            except TagModel.DoesNotExist:
-                raise ValueError("Invalid parent tag.")
+            except TagModel.DoesNotExist as exc:
+                raise ValueError("Invalid parent tag.") from exc
             path = TagModel.make_path(taxonomy_uid, name, pt.path)
         else:
             path = TagModel.make_path(taxonomy_uid, name)
