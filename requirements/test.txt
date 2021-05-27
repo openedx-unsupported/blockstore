@@ -115,7 +115,7 @@ edx-lint==5.0.0
     # via -r requirements/test.in
 factory-boy==3.2.0
     # via -r requirements/test.in
-faker==8.2.1
+faker==8.3.0
     # via factory-boy
 idna==2.10
     # via
@@ -298,7 +298,7 @@ uritemplate==3.0.1
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-urllib3==1.26.4
+urllib3==1.26.5
     # via
     #   -r requirements/base.txt
     #   requests

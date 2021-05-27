@@ -139,7 +139,7 @@ edx-sphinx-theme==2.1.0
     # via -r requirements/docs.txt
 factory-boy==3.2.0
     # via -r requirements/test.txt
-faker==8.2.1
+faker==8.3.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -397,7 +397,7 @@ uritemplate==3.0.1
     #   -r requirements/test.txt
     #   coreapi
     #   drf-yasg
-urllib3==1.26.4
+urllib3==1.26.5
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
