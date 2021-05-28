@@ -44,6 +44,7 @@ jobs:
             apk add bash bash-completion build-base git perl mariadb-dev libffi-dev
             python<< parameters.python_version >> -m venv /blockstore/venv
             source /blockstore/venv/bin/activate
+            pip install --upgrade pip
             make requirements
 
       - run:
@@ -60,6 +61,8 @@ jobs:
     working_directory: /blockstore/app/
     docker:
       - image: python:<< parameters.python_version >>-alpine
+    environment:
+      DJANGO_SETTINGS_MODULE=blockstore.settings.test
     steps:
       - checkout
       - run:
@@ -69,6 +72,7 @@ jobs:
             apk add bash bash-completion build-base git perl mariadb-dev libffi-dev
             python -m venv /blockstore/venv
             source /blockstore/venv/bin/activate
+            pip install --upgrade pip
             make requirements
       - run:
           name: Run quality

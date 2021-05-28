@@ -1,7 +1,7 @@
 """
 Tests for all included backends
 """
-# pylint: disable=no-member, too-many-statements
+# pylint: disable=too-many-statements
 from typing import Iterable
 
 from django.test import TestCase

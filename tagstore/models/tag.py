@@ -4,7 +4,7 @@ Data models for tags
 from collections import namedtuple
 
 
-TagPrivate = namedtuple('Tag', ['taxonomy_uid', 'name'])  # type: ignore
+TagPrivate = namedtuple('TagPrivate', ['taxonomy_uid', 'name'])
 
 
 class Tag(TagPrivate):

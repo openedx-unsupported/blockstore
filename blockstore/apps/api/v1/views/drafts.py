@@ -133,7 +133,6 @@ class DraftViewSet(viewsets.ModelViewSet):
             raise serializers.ValidationError(
                 "Link cycle detected: Cannot create draft."
             ) from err
-
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['post'])
