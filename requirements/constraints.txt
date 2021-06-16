@@ -21,8 +21,6 @@ django-filter==2.1.0
 
 mysqlclient==1.3.14
 
-pip-tools<6.0
-
 # We want >=3.3.2 to fix a moderate-severity security issue
 # reported here: https://github.com/pyca/cryptography/issues/5615.
 # However, we want <3.4 because the usage of Rust in cryptography>=3.4
