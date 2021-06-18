@@ -29,7 +29,7 @@ BLOCKSTORE_TESTSERVER_DOCKER_COMPOSE_OPTS=-p ${BLOCKSTORE_TESTSERVER_PROJECT_NAM
 # Open edX Docker configuration
 OPENEDX_PROJECT_NAME?=devstack
 
-dev.build:  # Start Blockstore container
+dev.build:  # Build Blockstore container
 	docker-compose ${BLOCKSTORE_DOCKER_COMPOSE_OPTS} build --no-cache
 
 dev.up:  # Start Blockstore container
