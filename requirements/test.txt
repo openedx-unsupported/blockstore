@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.6.2
+astroid==2.6.6
     # via
     #   -r requirements/test.in
     #   pylint
@@ -17,14 +17,15 @@ certifi==2021.5.30
     # via
     #   -r requirements/base.txt
     #   requests
-cffi==1.14.5
+cffi==1.14.6
     # via
     #   -r requirements/base.txt
     #   cryptography
 chardet==4.0.0
+    # via diff-cover
+charset-normalizer==2.0.4
     # via
     #   -r requirements/base.txt
-    #   diff-cover
     #   requests
 click==8.0.1
     # via
@@ -33,7 +34,7 @@ click==8.0.1
     #   edx-lint
 click-log==0.3.2
     # via edx-lint
-code-annotations==1.1.2
+code-annotations==1.2.0
     # via edx-lint
 coreapi==2.3.3
     # via
@@ -60,7 +61,7 @@ defusedxml==0.7.1
     #   -r requirements/base.txt
     #   python3-openid
     #   social-auth-core
-diff-cover==5.4.0
+diff-cover==6.2.1
     # via -r requirements/test.in
 django==2.2.24
     # via
@@ -88,7 +89,7 @@ django-filter==2.1.0
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.txt
-django-waffle==2.2.0
+django-waffle==2.2.1
     # via -r requirements/base.txt
 djangorestframework==3.12.4
     # via
@@ -105,19 +106,19 @@ drf-yasg==1.20.0
     # via
     #   -r requirements/base.txt
     #   edx-api-doc-tools
-edx-api-doc-tools==1.4.0
+edx-api-doc-tools==1.4.3
     # via -r requirements/base.txt
-edx-auth-backends==3.3.3
+edx-auth-backends==3.4.0
     # via -r requirements/base.txt
-edx-django-release-util==1.0.0
+edx-django-release-util==1.1.0
     # via -r requirements/base.txt
 edx-lint==5.0.0
     # via -r requirements/test.in
 factory-boy==3.2.0
     # via -r requirements/test.in
-faker==8.9.0
+faker==8.11.0
     # via factory-boy
-idna==2.10
+idna==3.2
     # via
     #   -r requirements/base.txt
     #   requests
@@ -129,7 +130,7 @@ inflection==0.5.1
     #   drf-yasg
 iniconfig==1.1.1
     # via pytest
-isort==5.9.1
+isort==5.9.3
     # via pylint
 itypes==1.2.0
     # via
@@ -165,7 +166,7 @@ oauthlib==3.1.1
     #   -r requirements/base.txt
     #   requests-oauthlib
     #   social-auth-core
-packaging==20.9
+packaging==21.0
     # via
     #   -r requirements/base.txt
     #   drf-yasg
@@ -193,7 +194,7 @@ pyjwt==2.1.0
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.9.1
+pylint==2.9.6
     # via
     #   edx-lint
     #   pylint-celery
@@ -220,7 +221,7 @@ pytest-cov==2.12.1
     # via -r requirements/test.in
 pytest-django==4.4.0
     # via -r requirements/test.in
-python-dateutil==2.8.1
+python-dateutil==2.8.2
     # via faker
 python-slugify==5.0.2
     # via code-annotations
@@ -237,7 +238,7 @@ pyyaml==5.4.1
     #   -r requirements/base.txt
     #   code-annotations
     #   edx-django-release-util
-requests==2.25.1
+requests==2.26.0
     # via
     #   -r requirements/base.txt
     #   coreapi
@@ -251,7 +252,7 @@ ruamel.yaml==0.17.10
     # via
     #   -r requirements/base.txt
     #   drf-yasg
-ruamel.yaml.clib==0.2.4
+ruamel.yaml.clib==0.2.6
     # via
     #   -r requirements/base.txt
     #   ruamel.yaml
@@ -303,3 +304,6 @@ urllib3==1.26.6
     #   requests
 wrapt==1.12.1
     # via astroid
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
