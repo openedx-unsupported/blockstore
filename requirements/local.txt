@@ -70,6 +70,7 @@ cryptography==3.3.2
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/test.txt
+    #   pyjwt
     #   social-auth-core
 ddt==1.4.2
     # via -r requirements/test.txt
@@ -82,6 +83,7 @@ diff-cover==6.2.1
     # via -r requirements/test.txt
 django==2.2.24
     # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -c requirements/constraints.txt
     #   -r requirements/test.txt
     #   django-debug-toolbar
@@ -248,8 +250,9 @@ pygments==2.9.0
     #   -r requirements/test.txt
     #   diff-cover
     #   sphinx
-pyjwt==2.1.0
+pyjwt[crypto]==1.7.1
     # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
     #   edx-auth-backends
     #   social-auth-core
@@ -341,6 +344,7 @@ six==1.16.0
     #   edx-sphinx-theme
     #   python-dateutil
     #   social-auth-app-django
+    #   social-auth-core
     #   sphinx
 snowballstemmer==2.1.0
     # via
@@ -350,8 +354,9 @@ social-auth-app-django==4.0.0
     # via
     #   -r requirements/test.txt
     #   edx-auth-backends
-social-auth-core==4.1.0
+social-auth-core==4.0.2
     # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
     #   edx-auth-backends
     #   social-auth-app-django
