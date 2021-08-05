@@ -43,13 +43,13 @@ Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ p
       docker exec -t edx.devstack.blockstore bash -c "source ~/.bashrc && echo \"from django.contrib.auth import get_user_model; from rest_framework.authtoken.models import Token; User = get_user_model(); edxapp_user, _ = User.objects.get_or_create(username='edxapp'); Token.objects.get_or_create(user=edxapp_user, key='edxapp-insecure-devstack-key')\" | ./manage.py shell"
       # Configure the LMS and Studio to use the key
       docker exec -t edx.devstack.lms bash -c "grep BLOCKSTORE_API_AUTH_TOKEN /edx/app/edxapp/edx-platform/lms/envs/private.py || echo BLOCKSTORE_API_AUTH_TOKEN = \'edxapp-insecure-devstack-key\' >> /edx/app/edxapp/edx-platform/lms/envs/private.py"
-      docker exec -t edx.devstack.lms bash -c "grep BLOCKSTORE_API_AUTH_TOKEN /edx/app/edxapp/edx-platform/cms/envs/private.py || echo BLOCKSTORE_API_AUTH_TOKEN = \'edxapp-insecure-devstack-key\' >> /edx/app/edxapp/edx-platform/cms/envs/private.py"
+      docker exec -t edx.devstack.studio bash -c "grep BLOCKSTORE_API_AUTH_TOKEN /edx/app/edxapp/edx-platform/cms/envs/private.py || echo BLOCKSTORE_API_AUTH_TOKEN = \'edxapp-insecure-devstack-key\' >> /edx/app/edxapp/edx-platform/cms/envs/private.py"
       # Create a "Collection" that new content libraries / xblocks can be created within:
       docker exec -t edx.devstack.blockstore bash -c "source ~/.bashrc && echo \"from blockstore.apps.bundles.models import Collection; coll, _ = Collection.objects.get_or_create(title='Devstack Content Collection', uuid='11111111-2111-4111-8111-111111111111')\" | ./manage.py shell"
       # Create an "Organization":
       docker exec -t edx.devstack.lms bash -c "source /edx/app/edxapp/edxapp_env && echo \"from organizations.models import Organization; Organization.objects.get_or_create(short_name='DeveloperInc', defaults={'name': 'DeveloperInc', 'active': True})\" | python /edx/app/edxapp/edx-platform/manage.py lms shell"
 
-   Then restart Studio and the LMS (``make lms-restart studio-restart``).
+   Then restart Studio and the LMS (``make dev.restart-devserver.lms dev.restart-devserver.studio``).
 
 #. Now you should be able to use Blockstore in Studio.
 
@@ -109,12 +109,26 @@ To save on overhead while running individual tests, from within the container, y
 Running Integration Tests
 -------------------------
 
-Open edX includes some integration tests for Blockstore, but they don't run by default. To run them, first start an isolated test version of blockstore by running ``make testserver`` from the ``blockstore`` repo root directory on your host computer. Then, from ``make studio-shell``, run these commands:
+Open edX includes some integration tests for Blockstore, but they don't run by default. To run them, first start an isolated test version of blockstore by running ``make testserver`` from the ``blockstore`` repo root directory on your host computer. Then, from ``make dev.shell.studio``, run these commands:
 
 .. code::
 
-   EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
-   EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
+   EDXAPP_RUN_BLOCKSTORE_TESTS=1 EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
+   EDXAPP_RUN_BLOCKSTORE_TESTS=1 EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
+
+To run these integration tests while using Elasticsearch, add ``EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1`` on the above commands:
+
+.. code::
+
+   EDXAPP_RUN_BLOCKSTORE_TESTS=1 EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
+   EDXAPP_RUN_BLOCKSTORE_TESTS=1 EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
+
+To run these integration tests while using a specific container's version of Elasticsearch, add ``EDXAPP_TEST_ELASTICSEARCH_HOST`` with a specific container name on the above commands:
+
+.. code::
+
+   EDXAPP_RUN_BLOCKSTORE_TESTS=1 EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 EDXAPP_TEST_ELASTICSEARCH_HOST=edx.devstack.elasticsearch710 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
+   EDXAPP_RUN_BLOCKSTORE_TESTS=1 EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 EDXAPP_TEST_ELASTICSEARCH_HOST=edx.devstack.elasticsearch710 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
 
 Using in Production
 -------------------
