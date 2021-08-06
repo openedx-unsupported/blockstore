@@ -113,8 +113,8 @@ Open edX includes some integration tests for Blockstore, but they don't run by d
 
 .. code::
 
-   EDXAPP_RUN_BLOCKSTORE_TESTS=1 EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
-   EDXAPP_RUN_BLOCKSTORE_TESTS=1 EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
+   EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
+   EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
 
 To run these integration tests while using Elasticsearch, add ``EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1`` on the above commands:
 
