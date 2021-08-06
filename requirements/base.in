@@ -16,3 +16,4 @@ edx-django-release-util
 mysqlclient
 pytz
 sqlparse
+social-auth-app-django<5.0.0  # 5th aug release giving version conflict in upgrade job

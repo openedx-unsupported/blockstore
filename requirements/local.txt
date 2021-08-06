@@ -8,6 +8,10 @@ alabaster==0.7.12
     # via
     #   -r requirements/docs.txt
     #   sphinx
+argparse==1.4.0
+    # via
+    #   -r requirements/test.txt
+    #   unittest2
 astroid==2.6.6
     # via
     #   -r requirements/test.txt
@@ -148,6 +152,8 @@ faker==8.11.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
+httpretty==1.1.3
+    # via -r requirements/test.txt
 idna==3.2
     # via
     #   -r requirements/docs.txt
@@ -194,6 +200,10 @@ lazy-object-proxy==1.6.0
     # via
     #   -r requirements/test.txt
     #   astroid
+linecache2==1.0.0
+    # via
+    #   -r requirements/test.txt
+    #   traceback2
 markupsafe==2.0.1
     # via
     #   -r requirements/docs.txt
@@ -346,6 +356,7 @@ six==1.16.0
     #   social-auth-app-django
     #   social-auth-core
     #   sphinx
+    #   unittest2
 snowballstemmer==2.1.0
     # via
     #   -r requirements/docs.txt
@@ -393,10 +404,16 @@ toml==0.10.2
     #   pylint
     #   pytest
     #   pytest-cov
+traceback2==1.4.0
+    # via
+    #   -r requirements/test.txt
+    #   unittest2
 typing-extensions==3.10.0.0
     # via
     #   -r requirements/test.txt
     #   mypy
+unittest2==1.1.0
+    # via -r requirements/test.txt
 uritemplate==3.0.1
     # via
     #   -r requirements/test.txt
