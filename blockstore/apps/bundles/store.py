@@ -14,8 +14,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from uuid import UUID
 import codecs
-import logging
 import json
+import logging
+import mimetypes
 import pytz
 
 from django.core.files.base import ContentFile, File
@@ -42,6 +43,14 @@ class FileInfo:
     public = attr.ib(type=bool)
     size = attr.ib(type=int)
     hash_digest = attr.ib(type=bytes)
+    mime_type = attr.ib(type=str, default=None)
+
+    @property
+    def data_filename(self):
+        """The data filename with an extension, if present."""
+        hash_hex = self.hash_digest.hex()
+        extension = mimetypes.guess_extension(self.mime_type) if self.mime_type else ''
+        return f"{hash_hex}{extension}"
 
     @staticmethod
     def generate_hash(django_file):
@@ -50,6 +59,12 @@ class FileInfo:
         for chunk in django_file.chunks():
             hash_obj.update(chunk)
         return hash_obj
+
+    @staticmethod
+    def guess_mime_type(path):
+        """Given a path, return its IANA MIME type."""
+        # Return only the 'type/subtype', usable for a MIME content-type header.
+        return mimetypes.guess_type(path)[0]
 
     @classmethod
     def from_json_dict(cls, json_dict):
@@ -60,13 +75,24 @@ class FileInfo:
                 # Used by Drafts to indicate this file should be deleted.
                 file_info_dict[pathname] = None
             else:
-                file_info_dict[pathname] = cls(
+                kwds = dict(
                     path=pathname,
                     public=file_info[0],
                     size=file_info[1],
                     hash_digest=bytes_from_hex_str(file_info[2])
                 )
+                if len(file_info) > 3:
+                    kwds['mime_type'] = file_info[3]
+                file_info_dict[pathname] = cls(**kwds)
         return file_info_dict
+
+    def to_json_object(self):
+        """Return a python object suitable for json serialization."""
+        fields = [self.public, self.size, self.hash_digest.hex()]
+        # If no MIME type don't write nulls.
+        if self.mime_type:
+            fields.append(self.mime_type)
+        return fields
 
 
 @attr.s(frozen=True)
@@ -236,14 +262,25 @@ class SnapshotRepo:
     Metadata JSON file describing the contents of a Snapshot and basic metadata:
         {bundle_uuid}/snapshots/{snapshot_digest.hex()}.json
 
-    Data for each file:
+    Data for each file can be stored with or without an extension, based on the
+    existance of a ``mime_type`` attribute:
+
         {bundle_uuid}/snapshot_data/{file_hash.hexdigest()}
+
+    Or (e.g. image/jpeg):
+
+        {bundle_uuid}/snapshot_data/{file_hash.hexdigest()}.jpg
+
+    The extension is infered from the original static file extension, see
+    ``mimetypes.guess_type()``.
 
     Notes:
     * To make S3 partitioning work correctly, we need to lead with the UUID or
       some other randomly distributed string.
     * A data file is stored with a hash as a name since it could be referenced
       by different paths in different versions.
+    * The data file extension allows underlying Persistance/Datastore layer to
+      serve the file with the correct MIME content-type header.
     """
     def __init__(self, storage=None):
         self.storage = storage or default_asset_storage
@@ -270,6 +307,8 @@ class SnapshotRepo:
                 f"Snapshot {snapshot_digest.hex()} for Bundle {bundle_uuid} not found"
             ) from err
 
+        # TODO Can we use a more robust JSON schema handling here, and take
+        #      advantage of _version?
         return Snapshot(
             bundle_uuid=bundle_uuid,
             files=FileInfo.from_json_dict(snapshot_json['files']),
@@ -296,12 +335,12 @@ class SnapshotRepo:
     def url(self, snapshot, path):
         """Return a user-accessible URL to download a path from this Snapshot."""
         file_info = snapshot.files[path]
-        storage_path = self._file_data_path(snapshot.bundle_uuid, file_info.hash_digest.hex())
+        storage_path = self._file_data_path(snapshot.bundle_uuid, file_info)
         return self.storage.url(storage_path)
 
     def open(self, snapshot, path):
         file_info = snapshot.files[path]
-        storage_path = self._file_data_path(snapshot.bundle_uuid, file_info.hash_digest.hex())
+        storage_path = self._file_data_path(snapshot.bundle_uuid, file_info)
         return self.storage.open(storage_path, 'rb')
 
     @classmethod
@@ -309,20 +348,24 @@ class SnapshotRepo:
         return f'{bundle_uuid}/snapshots/{snapshot_digest.hex()}.json'
 
     @classmethod
-    def _file_data_path(cls, bundle_uuid, file_hash):
-        return f'{bundle_uuid}/snapshot_data/{file_hash}'
+    def _file_data_path(cls, bundle_uuid, file_info):
+        return f'{bundle_uuid}/snapshot_data/{file_info.data_filename}'
 
     def _save_file(self, bundle_uuid, path, data, public=False):
         """
         Save file at path and return a FileInfo object for it.
         """
-        file_hash = FileInfo.generate_hash(data)
-        data_write_location = self._file_data_path(bundle_uuid, file_hash.hexdigest())
+        file_info = FileInfo(
+            path=path,
+            public=public,
+            size=data.size,
+            hash_digest=FileInfo.generate_hash(data).digest(),
+            mime_type=FileInfo.guess_mime_type(path),
+        )
+        data_write_location = self._file_data_path(bundle_uuid, file_info)
         if not self.storage.exists(data_write_location):
             self.storage.save(data_write_location, data)
-        return FileInfo(
-            path=path, public=public, size=data.size, hash_digest=file_hash.digest()
-        )
+        return file_info
 
     def _create(self, bundle_uuid, files, links):
         """
@@ -549,7 +592,10 @@ class DraftRepo:
 
         def file_for_path(path):
             # If it hasn't changed from the snapshot, serve it from the snapshot
-            if draft.base_snapshot and composed_files[path] == draft.base_snapshot.files.get(path):
+            if (draft.base_snapshot
+                    and path in draft.base_snapshot.files
+                    and (draft.base_snapshot.files.get(path).hash_digest
+                         == composed_files[path].hash_digest)):
                 return self.snapshot_repo.open(draft.base_snapshot, path)
             # Otherwise, look for it in our draft files.
             return self.open(draft, path)
@@ -654,7 +700,8 @@ class DraftRepo:
                     path=path,
                     public=False,  # Hardcoded for now -- maybe get rid of this from FileInfo altogether?
                     size=django_file.size,
-                    hash_digest=FileInfo.generate_hash(django_file).digest()
+                    hash_digest=FileInfo.generate_hash(django_file).digest(),
+                    mime_type=FileInfo.guess_mime_type(path),
                 )
                 self._overwrite(storage_path, django_file)
 
@@ -677,7 +724,7 @@ class BundleDataJSONEncoder(json.JSONEncoder):
     """Default JSON serialization."""
     def default(self, o):
         if isinstance(o, FileInfo):
-            return [o.public, o.size, o.hash_digest.hex()]
+            return o.to_json_object()
         elif isinstance(o, UUID):
             return str(o)
         elif isinstance(o, datetime):

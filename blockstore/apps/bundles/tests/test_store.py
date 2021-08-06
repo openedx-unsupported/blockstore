@@ -57,6 +57,30 @@ class TestFileInfo(unittest.TestCase):
             }
         )
 
+    def test_serialization_with_extensions(self):
+        """
+        Test creation from Python primitives (that you'd get from JSON parsing).
+        """
+        sample_data = {
+            "a/file-1.html": [False, 25, "c0c0940e4b3151908b60cecd1ef5e2aa19904676", "text/html"],
+            "b/file-2.txt": None
+        }
+        file_info = FileInfo.from_json_dict(sample_data)
+
+        self.assertEqual(
+            file_info,
+            {
+                "a/file-1.html": FileInfo(
+                    path="a/file-1.html",
+                    public=False,
+                    size=25,
+                    hash_digest=codecs.decode("c0c0940e4b3151908b60cecd1ef5e2aa19904676", 'hex'),
+                    mime_type="text/html",
+                ),
+                "b/file-2.txt": None
+            }
+        )
+
 
 @isolate_test_storage
 class TestSnapshots(SimpleTestCase):
@@ -88,12 +112,14 @@ class TestSnapshots(SimpleTestCase):
                     public=False,
                     size=25,
                     hash_digest=create_hash(HTML_CONTENT_BYTES).digest(),
+                    mime_type='text/html',
                 ),
                 'test.txt': FileInfo(
                     path='test.txt',
                     public=False,
                     size=17,
                     hash_digest=create_hash(TEXT_CONTENT_BYTES).digest(),
+                    mime_type='text/plain',
                 ),
             }
         )
@@ -137,6 +163,47 @@ class TestSnapshots(SimpleTestCase):
         bundle_uuid = uuid.UUID('00000000000000000000000000000000')
         with self.assertRaises(Snapshot.NotFoundError):
             store.get(bundle_uuid, create_hash().digest())
+
+    @mock.patch('blockstore.apps.bundles.store.snapshot_created.send')
+    def test_create_with_two_files_with_same_content(self, snapshot_created_mock):
+        BUNDLE_UUID = uuid.UUID('12345678123456781234567812345678')
+        store = SnapshotRepo()
+        file_mapping = {
+            'a_html.html': HTML_FILE,
+            'same_html_but.txt': HTML_FILE,
+        }
+        snapshot = store.create(BUNDLE_UUID, file_mapping)
+        self.assertEqual(snapshot.bundle_uuid, BUNDLE_UUID)
+        self.assertEqual(
+            snapshot.files,
+            {
+                'a_html.html': FileInfo(
+                    path='a_html.html',
+                    public=False,
+                    size=25,
+                    hash_digest=create_hash(HTML_CONTENT_BYTES).digest(),
+                    mime_type='text/html',
+                ),
+                'same_html_but.txt': FileInfo(
+                    path='same_html_but.txt',
+                    public=False,
+                    size=25,
+                    hash_digest=create_hash(HTML_CONTENT_BYTES).digest(),
+                    mime_type='text/plain',
+                ),
+            }
+        )
+
+        # Test our Django Signal for external notification
+        snapshot_created_mock.assert_called_with(
+            SnapshotRepo,
+            bundle_uuid=BUNDLE_UUID,
+            hash_digest=mock.ANY,
+        )
+
+        # Make sure we can pull the Snapshot back out of the BundleStore
+        # (i.e. it was actually persisted).
+        self.assertEqual(snapshot, store.get(BUNDLE_UUID, snapshot.hash_digest))
 
 
 @isolate_test_storage
