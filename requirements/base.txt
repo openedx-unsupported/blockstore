@@ -69,7 +69,9 @@ drf-yasg==1.20.0
 edx-api-doc-tools==1.4.3
     # via -r requirements/base.in
 edx-auth-backends==3.4.0
-    # via -r requirements/base.in
+    # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
+    #   -r requirements/base.in
 edx-django-release-util==1.1.0
     # via -r requirements/base.in
 idna==3.2
@@ -130,7 +132,9 @@ six==1.16.0
     #   social-auth-app-django
     #   social-auth-core
 social-auth-app-django==4.0.0
-    # via edx-auth-backends
+    # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
+    #   edx-auth-backends
 social-auth-core==4.0.2
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
