@@ -43,7 +43,7 @@ django-cors-headers==2.2.1
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.in
-django-environ==0.4.5
+django-environ-2==2.1.0
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.in
@@ -128,6 +128,10 @@ six==1.16.0
     #   edx-django-release-util
     #   social-auth-app-django
 social-auth-app-django==4.0.0
+    # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
+    #   edx-auth-backends
+social-auth-core==4.0.2
     # via
     #   -c requirements/common_constraints.txt
     #   edx-auth-backends
