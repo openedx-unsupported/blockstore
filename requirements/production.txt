@@ -63,7 +63,7 @@ django-cors-headers==2.2.1
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.txt
-django-environ==0.4.5
+django-environ-2==2.1.0
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/base.txt

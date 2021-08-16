@@ -102,7 +102,7 @@ django-debug-toolbar==3.2.2
     # via -r requirements/local.in
 django-dynamic-fixture==3.1.1
     # via -r requirements/test.txt
-django-environ==0.4.5
+django-environ-2==2.1.0
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/test.txt
