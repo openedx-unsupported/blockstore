@@ -8,7 +8,7 @@ alabaster==0.7.12
     # via
     #   -r requirements/docs.txt
     #   sphinx
-astroid==2.6.6
+astroid==2.7.2
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -79,7 +79,7 @@ defusedxml==0.7.1
     #   -r requirements/test.txt
     #   python3-openid
     #   social-auth-core
-diff-cover==6.2.1
+diff-cover==6.3.4
     # via -r requirements/test.txt
 django==2.2.24
     # via
@@ -99,7 +99,7 @@ django-cors-headers==2.2.1
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/test.txt
-django-debug-toolbar==3.2.1
+django-debug-toolbar==3.2.2
     # via -r requirements/local.in
 django-dynamic-fixture==3.1.1
     # via -r requirements/test.txt
@@ -135,7 +135,9 @@ drf-yasg==1.20.0
 edx-api-doc-tools==1.4.3
     # via -r requirements/test.txt
 edx-auth-backends==3.4.0
-    # via -r requirements/test.txt
+    # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
+    #   -r requirements/test.txt
 edx-django-release-util==1.1.0
     # via -r requirements/test.txt
 edx-lint==5.0.0
@@ -144,7 +146,7 @@ edx-sphinx-theme==3.0.0
     # via -r requirements/docs.txt
 factory-boy==3.2.0
     # via -r requirements/test.txt
-faker==8.11.0
+faker==8.12.1
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -227,6 +229,10 @@ pbr==5.6.0
     # via
     #   -r requirements/test.txt
     #   stevedore
+platformdirs==2.2.0
+    # via
+    #   -r requirements/test.txt
+    #   pylint
 pluggy==0.13.1
     # via
     #   -r requirements/test.txt
@@ -244,7 +250,7 @@ pycparser==2.20
     # via
     #   -r requirements/test.txt
     #   cffi
-pygments==2.9.0
+pygments==2.10.0
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -256,7 +262,7 @@ pyjwt[crypto]==1.7.1
     #   -r requirements/test.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.9.6
+pylint==2.10.2
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -324,7 +330,7 @@ requests-oauthlib==1.3.0
     # via
     #   -r requirements/test.txt
     #   social-auth-core
-ruamel.yaml==0.17.10
+ruamel.yaml==0.17.14
     # via
     #   -r requirements/test.txt
     #   drf-yasg
@@ -352,6 +358,7 @@ snowballstemmer==2.1.0
     #   sphinx
 social-auth-app-django==4.0.0
     # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
     #   edx-auth-backends
 social-auth-core==4.0.2
@@ -377,7 +384,7 @@ sqlparse==0.4.1
     #   -r requirements/test.txt
     #   django
     #   django-debug-toolbar
-stevedore==3.3.0
+stevedore==3.4.0
     # via
     #   -r requirements/test.txt
     #   code-annotations

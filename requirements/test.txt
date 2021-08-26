@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.6.6
+astroid==2.7.2
     # via
     #   -r requirements/test.in
     #   pylint
@@ -62,7 +62,7 @@ defusedxml==0.7.1
     #   -r requirements/base.txt
     #   python3-openid
     #   social-auth-core
-diff-cover==6.2.1
+diff-cover==6.3.4
     # via -r requirements/test.in
 django==2.2.24
     # via
@@ -111,14 +111,16 @@ drf-yasg==1.20.0
 edx-api-doc-tools==1.4.3
     # via -r requirements/base.txt
 edx-auth-backends==3.4.0
-    # via -r requirements/base.txt
+    # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
+    #   -r requirements/base.txt
 edx-django-release-util==1.1.0
     # via -r requirements/base.txt
 edx-lint==5.0.0
     # via -r requirements/test.in
 factory-boy==3.2.0
     # via -r requirements/test.in
-faker==8.11.0
+faker==8.12.1
     # via factory-boy
 idna==3.2
     # via
@@ -175,6 +177,8 @@ packaging==21.0
     #   pytest
 pbr==5.6.0
     # via stevedore
+platformdirs==2.2.0
+    # via pylint
 pluggy==0.13.1
     # via
     #   diff-cover
@@ -189,7 +193,7 @@ pycparser==2.20
     # via
     #   -r requirements/base.txt
     #   cffi
-pygments==2.9.0
+pygments==2.10.0
     # via diff-cover
 pyjwt[crypto]==1.7.1
     # via
@@ -197,7 +201,7 @@ pyjwt[crypto]==1.7.1
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.9.6
+pylint==2.10.2
     # via
     #   edx-lint
     #   pylint-celery
@@ -251,7 +255,7 @@ requests-oauthlib==1.3.0
     # via
     #   -r requirements/base.txt
     #   social-auth-core
-ruamel.yaml==0.17.10
+ruamel.yaml==0.17.14
     # via
     #   -r requirements/base.txt
     #   drf-yasg
@@ -272,6 +276,7 @@ six==1.16.0
     #   social-auth-core
 social-auth-app-django==4.0.0
     # via
+    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.txt
     #   edx-auth-backends
 social-auth-core==4.0.2
@@ -284,7 +289,7 @@ sqlparse==0.4.1
     # via
     #   -r requirements/base.txt
     #   django
-stevedore==3.3.0
+stevedore==3.4.0
     # via code-annotations
 text-unidecode==1.3
     # via
