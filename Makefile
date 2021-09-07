@@ -64,13 +64,15 @@ clean: ## Remove all generated files
 
 requirements: ## Install requirements for development
 	# We can't add this to requirements. It changes the way pip itself works.
-	${VENV_BIN}/pip install wheel
+	${VENV_BIN}/pip install -U pip wheel
 	${VENV_BIN}/pip install -r requirements/local.txt --exists-action w
 
 requirements-test: ## Install requirements for testing
+	${VENV_BIN}/pip install -U pip wheel
 	${VENV_BIN}/pip install -r requirements/test.txt --exists-action w
 
 production-requirements:
+	${VENV_BIN}/pip install -U pip wheel
 	${VENV_BIN}/pip install -r requirements/production.txt --exists-action w
 
 migrate: ## Apply database migrations
