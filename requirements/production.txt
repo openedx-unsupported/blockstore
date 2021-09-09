@@ -6,11 +6,11 @@
 #
 attrs==21.2.0
     # via -r requirements/base.txt
-boto3==1.18.34
+boto3==1.18.38
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.21.34
+botocore==1.21.38
     # via
     #   boto3
     #   s3transfer
