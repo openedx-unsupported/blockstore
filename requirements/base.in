@@ -5,7 +5,7 @@ attrs
 pyblake2
 django
 django-cors-headers
-django-environ-2
+django-environ
 django-waffle
 djangorestframework
 djangorestframework-expander
