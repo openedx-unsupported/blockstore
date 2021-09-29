@@ -213,8 +213,8 @@ class BundlesMetadataTestCase(ApiTestCase):
         bundles_list = response_data(list_response)
         assert len(bundles_list) == 10
 
-        uuids = [bundle['uuid'] for bundle in bundles_list[:2]]
-        list_response = self.client.get('/api/v1/bundles?uuid={}'.format(','.join(uuids)))
+        uuids = ','.join([bundle['uuid'] for bundle in bundles_list[:2]])
+        list_response = self.client.get(f'/api/v1/bundles?uuid={uuids}')
         assert list_response.status_code == status.HTTP_200_OK
         list_data = response_data(list_response)
         assert len(list_data) == 2
@@ -226,8 +226,8 @@ class BundlesMetadataTestCase(ApiTestCase):
         assert len(list_data) == 2
 
         # This should return Happy Bundle 1, as it's searching only in the first two bundles
-        uuids = [bundle['uuid'] for bundle in bundles_list[:2]]
-        list_response = self.client.get('/api/v1/bundles?uuid={}&text_search=Happy bundle 1'.format(','.join(uuids)))
+        uuids = ','.join([bundle['uuid'] for bundle in bundles_list[:2]])
+        list_response = self.client.get(f'/api/v1/bundles?uuid={uuids}&text_search=Happy bundle 1')
         assert list_response.status_code == status.HTTP_200_OK
         list_data = response_data(list_response)
         assert len(list_data) == 1
@@ -268,7 +268,7 @@ class DraftsTest(ApiTestCase):
         assert create_draft_response.status_code == status.HTTP_201_CREATED
         draft_data = response_data(create_draft_response)
         assert re.match(UUID4_REGEX, draft_data['uuid'])
-        assert draft_data['url'] == 'http://testserver/api/v1/drafts/{}'.format(draft_data["uuid"])
+        assert draft_data['url'] == f'http://testserver/api/v1/drafts/{draft_data["uuid"]}'
         assert draft_data['bundle_uuid'] == self.bundle_data['uuid']
         assert draft_data['bundle'] == self.bundle_data['url']
         assert draft_data['name'] == 'studio_draft'

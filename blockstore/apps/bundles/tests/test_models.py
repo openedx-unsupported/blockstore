@@ -99,10 +99,10 @@ class TestToString(TestCase):
         self.assertEqual(str(self.collection), " - ".join([str(self.uuid1), "Collection 1"]))
 
     def test_bundle_str(self):
-        self.assertEqual(str(self.bundle), "Bundle {} - {}".format(self.uuid2, "bundle-1"))
+        self.assertEqual(str(self.bundle), f"Bundle {self.uuid2} - bundle-1")
 
     def test_version_str(self):
-        self.assertEqual(str(self.version), "{}@{}".format(self.uuid2, 1))
+        self.assertEqual(str(self.version), f"{self.uuid2}@1")
 
 
 @isolate_test_storage

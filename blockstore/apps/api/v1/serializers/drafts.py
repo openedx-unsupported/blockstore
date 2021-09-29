@@ -224,8 +224,7 @@ class DraftFileUpdateSerializer(serializers.BaseSerializer):
             )
             if not bundle_version:
                 raise ValidationError(
-                        "BundleVersion ({}, {}) referenced in Link {} does not exist."
-                        .format(bundle_uuid, version, name)
+                    "BundleVersion ({bundle_uuid}, {version}) referenced in Link {name} does not exist."
                 )
 
             # If everything checks out, create a Dependency. We can't make a

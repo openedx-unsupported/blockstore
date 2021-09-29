@@ -67,7 +67,7 @@ djangorestframework==3.12.4
     #   edx-api-doc-tools
 djangorestframework-expander==0.2.3
     # via -r requirements/base.in
-git+https://github.com/alanjds/drf-nested-routers.git@8686392f91b114e01f3781807dea60e9a80d3e07#egg=drf-nested-routers==0.91
+drf-nested-routers @ git+https://github.com/alanjds/drf-nested-routers.git@8686392f91b114e01f3781807dea60e9a80d3e07
     # via -r requirements/github.in
 drf-yasg==1.20.0
     # via edx-api-doc-tools
@@ -85,7 +85,7 @@ inflection==0.5.1
     # via drf-yasg
 itypes==1.2.0
     # via coreapi
-jinja2==3.0.1
+jinja2==3.0.2
     # via coreschema
 markupsafe==2.0.1
     # via jinja2
@@ -115,7 +115,7 @@ pyparsing==2.4.7
     # via packaging
 python3-openid==3.2.0
     # via social-auth-core
-pytz==2021.1
+pytz==2021.3
     # via
     #   -r requirements/base.in
     #   django
@@ -136,11 +136,8 @@ six==1.16.0
     # via
     #   edx-auth-backends
     #   edx-django-release-util
-    #   social-auth-app-django
-social-auth-app-django==4.0.0
-    # via
-    #   -c requirements/common_constraints.txt
-    #   edx-auth-backends
+social-auth-app-django==5.0.0
+    # via edx-auth-backends
 social-auth-core==4.1.0
     # via
     #   edx-auth-backends

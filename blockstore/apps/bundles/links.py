@@ -150,14 +150,12 @@ class LinkCollection:
         for link in links:
             if link.direct_dependency == bundle_uuid:
                 raise LinkCycleError(
-                    "A Bundle cannot have any version of itself as a dependency (see Link {})."
-                    .format(link.name)
+                    f"A Bundle cannot have any version of itself as a dependency (see Link {link.name})."
                 )
             for dep in link.indirect_dependencies:
                 if dep.bundle_uuid == bundle_uuid:
                     raise LinkCycleError(
-                        "Cycle detected: Link {} requires Bundle {}"
-                        .format(link.name, bundle_uuid)
+                        f"Cycle detected: Link {link.name} requires Bundle {bundle_uuid}"
                     )
 
     def all_dependencies(self):
@@ -202,9 +200,7 @@ class LinkChangeSet:
         overlap = {p.name for p in puts} & set(deletes)
         if overlap:
             raise ValueError(
-                "Keys marked for both PUT and DELETE: {}".format(
-                    ", ".join(overlap)
-                )
+                f"Keys marked for both PUT and DELETE: {overlap}"
             )
 
     def __eq__(self, other):
