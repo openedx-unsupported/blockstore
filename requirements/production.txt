@@ -70,10 +70,8 @@ django-crum==0.7.9
     #   edx-django-utils
 django-environ==0.7.0
     # via -r requirements/base.txt
-django-filter==2.1.0
-    # via
-    #   -c requirements/constraints.txt
-    #   -r requirements/base.txt
+django-filter==21.1
+    # via -r requirements/base.txt
 django-storages==1.11.1
     # via -r requirements/production.in
 django-waffle==2.2.1
