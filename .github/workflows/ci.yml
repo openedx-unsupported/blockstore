@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches:
+    - '**'
+
+jobs:
+
+  run_tests:
+    name: Tests
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        python-version: ['3.8']
+
+    env:
+      MYSQL_HOST: "127.0.0.1"  # For Django DATABASES setting.
+      VIRTUAL_ENV: ${{ github.workspace }}/venv
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+          MYSQL_DATABASE: "blockstore_db"
+          MYSQL_ROOT_PASSWORD: ""
+        ports:
+          - 3306:3306
+
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Need to fetch main branch for diff-cover.
+        path: app
+
+    - name: Setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Create Virtual Environment
+      run: python3.8 -m venv $VIRTUAL_ENV
+
+    - name: Install Dependencies
+      run: make requirements-test
+
+    - name: Run Tests
+      run: make test
+
+  run_quality:
+    name: Quality
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        python-version: ['3.8']
+
+    env:
+      VIRTUAL_ENV: ${{ github.workspace }}/venv
+
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        path: app
+
+    - name: Setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Create Virtual Environment
+      run: python3.8 -m venv $VIRTUAL_ENV
+
+    - name: Install Dependencies
+      run: make requirements-test
+
+    - name: Run Quality
+      run: make quality

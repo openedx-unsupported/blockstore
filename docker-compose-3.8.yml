@@ -30,7 +30,6 @@ services:
 
 networks:
   devstack:
-    external:
       name: ${OPENEDX_PROJECT_NAME:-devstack}_default
 
 volumes:
