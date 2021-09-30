@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.7.3
+astroid==2.8.0
     # via
     #   -r requirements/test.in
     #   pylint
@@ -23,7 +23,7 @@ cffi==1.14.6
     #   cryptography
 chardet==4.0.0
     # via diff-cover
-charset-normalizer==2.0.4
+charset-normalizer==2.0.6
     # via
     #   -r requirements/base.txt
     #   requests
@@ -54,14 +54,14 @@ cryptography==3.4.8
     #   -r requirements/base.txt
     #   pyjwt
     #   social-auth-core
-ddt==1.4.2
+ddt==1.4.3
     # via -r requirements/test.in
 defusedxml==0.7.1
     # via
     #   -r requirements/base.txt
     #   python3-openid
     #   social-auth-core
-diff-cover==6.3.5
+diff-cover==6.4.1
     # via -r requirements/test.in
 django==2.2.24
     # via
@@ -112,11 +112,11 @@ edx-auth-backends==4.0.0
     # via -r requirements/base.txt
 edx-django-release-util==1.1.0
     # via -r requirements/base.txt
-edx-lint==5.1.0
+edx-lint==5.2.0
     # via -r requirements/test.in
 factory-boy==3.2.0
     # via -r requirements/test.in
-faker==8.12.1
+faker==8.14.0
     # via factory-boy
 idna==3.2
     # via
@@ -171,9 +171,9 @@ packaging==21.0
     #   pytest
 pbr==5.6.0
     # via stevedore
-platformdirs==2.3.0
+platformdirs==2.4.0
     # via pylint
-pluggy==0.13.1
+pluggy==1.0.0
     # via
     #   diff-cover
     #   pytest
@@ -194,7 +194,7 @@ pyjwt[crypto]==2.1.0
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.10.2
+pylint==2.11.1
     # via
     #   edx-lint
     #   pylint-celery
@@ -264,10 +264,8 @@ six==1.16.0
     #   edx-django-release-util
     #   edx-lint
     #   python-dateutil
-    #   social-auth-app-django
-social-auth-app-django==4.0.0
+social-auth-app-django==5.0.0
     # via
-    #   -c requirements/common_constraints.txt
     #   -r requirements/base.txt
     #   edx-auth-backends
 social-auth-core==4.1.0
@@ -292,13 +290,16 @@ toml==0.10.2
     #   pytest
     #   pytest-cov
 typing-extensions==3.10.0.2
-    # via mypy
+    # via
+    #   astroid
+    #   mypy
+    #   pylint
 uritemplate==3.0.1
     # via
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-urllib3==1.26.6
+urllib3==1.26.7
     # via
     #   -r requirements/base.txt
     #   requests

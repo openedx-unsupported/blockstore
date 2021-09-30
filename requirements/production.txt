@@ -6,11 +6,11 @@
 #
 attrs==21.2.0
     # via -r requirements/base.txt
-boto3==1.18.40
+boto3==1.18.51
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.21.40
+botocore==1.21.51
     # via
     #   boto3
     #   s3transfer
@@ -22,7 +22,7 @@ cffi==1.14.6
     # via
     #   -r requirements/base.txt
     #   cryptography
-charset-normalizer==2.0.4
+charset-normalizer==2.0.6
     # via
     #   -r requirements/base.txt
     #   requests
@@ -97,7 +97,7 @@ edx-django-release-util==1.1.0
     # via -r requirements/base.txt
 gevent==21.8.0
     # via -r requirements/production.in
-greenlet==1.1.1
+greenlet==1.1.2
     # via gevent
 gunicorn==20.1.0
     # via -r requirements/production.in
@@ -127,7 +127,7 @@ markupsafe==2.0.1
     #   jinja2
 mysqlclient==2.0.3
     # via -r requirements/base.txt
-newrelic==6.8.1.164
+newrelic==7.0.0.166
     # via -r requirements/production.in
 oauthlib==3.1.1
     # via
@@ -197,10 +197,8 @@ six==1.16.0
     #   edx-django-release-util
     #   python-dateutil
     #   python-memcached
-    #   social-auth-app-django
-social-auth-app-django==4.0.0
+social-auth-app-django==5.0.0
     # via
-    #   -c requirements/common_constraints.txt
     #   -r requirements/base.txt
     #   edx-auth-backends
 social-auth-core==4.1.0
@@ -217,7 +215,7 @@ uritemplate==3.0.1
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-urllib3==1.26.6
+urllib3==1.26.7
     # via
     #   -r requirements/base.txt
     #   botocore

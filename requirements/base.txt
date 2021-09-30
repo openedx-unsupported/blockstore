@@ -10,7 +10,7 @@ certifi==2021.5.30
     # via requests
 cffi==1.14.6
     # via cryptography
-charset-normalizer==2.0.4
+charset-normalizer==2.0.6
     # via requests
 coreapi==2.3.3
     # via drf-yasg
@@ -122,11 +122,8 @@ six==1.16.0
     # via
     #   edx-auth-backends
     #   edx-django-release-util
-    #   social-auth-app-django
-social-auth-app-django==4.0.0
-    # via
-    #   -c requirements/common_constraints.txt
-    #   edx-auth-backends
+social-auth-app-django==5.0.0
+    # via edx-auth-backends
 social-auth-core==4.1.0
     # via
     #   edx-auth-backends
@@ -139,5 +136,5 @@ uritemplate==3.0.1
     # via
     #   coreapi
     #   drf-yasg
-urllib3==1.26.6
+urllib3==1.26.7
     # via requests

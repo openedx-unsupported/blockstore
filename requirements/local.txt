@@ -8,7 +8,7 @@ alabaster==0.7.12
     # via
     #   -r requirements/docs.txt
     #   sphinx
-astroid==2.7.3
+astroid==2.8.0
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -34,7 +34,7 @@ chardet==4.0.0
     # via
     #   -r requirements/test.txt
     #   diff-cover
-charset-normalizer==2.0.4
+charset-normalizer==2.0.6
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -71,14 +71,14 @@ cryptography==3.4.8
     #   -r requirements/test.txt
     #   pyjwt
     #   social-auth-core
-ddt==1.4.2
+ddt==1.4.3
     # via -r requirements/test.txt
 defusedxml==0.7.1
     # via
     #   -r requirements/test.txt
     #   python3-openid
     #   social-auth-core
-diff-cover==6.3.5
+diff-cover==6.4.1
     # via -r requirements/test.txt
 django==2.2.24
     # via
@@ -136,13 +136,13 @@ edx-auth-backends==4.0.0
     # via -r requirements/test.txt
 edx-django-release-util==1.1.0
     # via -r requirements/test.txt
-edx-lint==5.1.0
+edx-lint==5.2.0
     # via -r requirements/test.txt
 edx-sphinx-theme==3.0.0
     # via -r requirements/docs.txt
 factory-boy==3.2.0
     # via -r requirements/test.txt
-faker==8.12.1
+faker==8.14.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -223,11 +223,11 @@ pbr==5.6.0
     # via
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==2.3.0
+platformdirs==2.4.0
     # via
     #   -r requirements/test.txt
     #   pylint
-pluggy==0.13.1
+pluggy==1.0.0
     # via
     #   -r requirements/test.txt
     #   diff-cover
@@ -255,7 +255,7 @@ pyjwt[crypto]==2.1.0
     #   -r requirements/test.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.10.2
+pylint==2.11.1
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -341,15 +341,13 @@ six==1.16.0
     #   edx-lint
     #   edx-sphinx-theme
     #   python-dateutil
-    #   social-auth-app-django
     #   sphinx
 snowballstemmer==2.1.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
-social-auth-app-django==4.0.0
+social-auth-app-django==5.0.0
     # via
-    #   -c requirements/common_constraints.txt
     #   -r requirements/test.txt
     #   edx-auth-backends
 social-auth-core==4.1.0
@@ -393,13 +391,15 @@ toml==0.10.2
 typing-extensions==3.10.0.2
     # via
     #   -r requirements/test.txt
+    #   astroid
     #   mypy
+    #   pylint
 uritemplate==3.0.1
     # via
     #   -r requirements/test.txt
     #   coreapi
     #   drf-yasg
-urllib3==1.26.6
+urllib3==1.26.7
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
