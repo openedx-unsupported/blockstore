@@ -40,10 +40,6 @@ django==2.2.24
     #   edx-auth-backends
     #   edx-django-release-util
     #   edx-django-utils
-django-cors-headers==2.2.1
-    # via
-    #   -c requirements/constraints.txt
-    #   -r requirements/base.in
 django-crum==0.7.9
     # via edx-django-utils
 django-environ==0.7.0
