@@ -154,8 +154,8 @@ class AssetStorage(Storage):
     def get_valid_name(self, name):
         return default_storage.get_valid_name(name)
 
-    def get_alternative_name(self, name):
-        return default_storage.get_alternative_name(name)
+    def get_alternative_name(self, file_root, file_ext):
+        return default_storage.get_alternative_name(file_root, file_ext)
 
     def get_available_name(self, name, max_length=None):
         return default_storage.get_available_name(name, max_length=None)

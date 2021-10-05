@@ -8,6 +8,10 @@ alabaster==0.7.12
     # via
     #   -r requirements/docs.txt
     #   sphinx
+asgiref==3.4.1
+    # via
+    #   -r requirements/test.txt
+    #   django
 astroid==2.8.0
     # via
     #   -r requirements/test.txt
@@ -80,9 +84,8 @@ defusedxml==0.7.1
     #   social-auth-core
 diff-cover==6.4.1
     # via -r requirements/test.txt
-django==2.2.24
+django==3.2.8
     # via
-    #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
     #   -r requirements/test.txt
     #   django-crum

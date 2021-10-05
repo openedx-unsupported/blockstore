@@ -15,5 +15,4 @@
 
 boto3<2.0
 
-# Not yet using Django 3.X. Using the 2.X LTS to mirror the LMS.
-django>2.2,<2.3
+django>3.2,<3.3
