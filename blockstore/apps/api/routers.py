@@ -36,11 +36,9 @@ class DefaultRouter(routers.DefaultRouter):
             lookup_url_kwargs = getattr(viewset, 'lookup_url_kwargs', lookup_fields)
             lookup_value_regexes = getattr(viewset, 'lookup_value_regexes', len(lookup_fields) * ['[^/.]+'])
             return ','.join([
-                '(?P<{lookup_prefix}{lookup_url_kwarg}>{lookup_value_regex})'.format(
-                    lookup_prefix=lookup_prefix,
-                    lookup_url_kwarg=lookup_url_kwarg,
-                    lookup_value_regex=lookup_value_regex,
-                ) for (lookup_url_kwarg, lookup_value_regex) in zip(lookup_url_kwargs, lookup_value_regexes)
+                f'(?P<{lookup_prefix}{lookup_url_kwarg}>{lookup_value_regex})' for (
+                    lookup_url_kwarg, lookup_value_regex
+                ) in zip(lookup_url_kwargs, lookup_value_regexes)
             ])
 
         return super().get_lookup_regex(viewset, lookup_prefix=lookup_prefix)

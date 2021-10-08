@@ -48,7 +48,6 @@ THIRD_PARTY_APPS = (
     'django_filters',
     'social_django',  # To let admin users log in using their LMS user account
     'waffle',
-    'corsheaders',
     'release_util',
 )
 
@@ -68,7 +67,6 @@ MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -211,12 +209,6 @@ SOCIAL_AUTH_EDX_OAUTH2_KEY = 'replace-me'
 SOCIAL_AUTH_EDX_OAUTH2_SECRET = 'replace-me'
 SOCIAL_AUTH_EDX_OAUTH2_URL_ROOT = 'http://edx.devstack.lms:18000'
 SOCIAL_AUTH_EDX_OAUTH2_PUBLIC_URL_ROOT = 'http://localhost:18000'
-
-# CORS Config
-CORS_ORIGIN_ALLOW_ALL = env('DJANGO_CORS_ORIGIN_ALLOW_ALL', default=False)
-CORS_ORIGIN_WHITELIST = env.list('DJANGO_CORS_ORIGIN_WHITELIST', default=[])
-CORS_ORIGIN_REGEX_WHITELIST = (r'^(https?://)?localhost:.+$', )
-
 
 # TODO Set this to another (non-staff, ideally) path.
 LOGIN_REDIRECT_URL = '/admin/'

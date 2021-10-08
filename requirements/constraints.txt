@@ -15,11 +15,4 @@
 
 boto3<2.0
 
-# Not yet using Django 3.X. Using the 2.X LTS to mirror the LMS.
-django>2.2,<2.3
-
-django-cors-headers>=2.2.0,<2.3
-
-django-environ-2==2.1.0
-
-django-filter==2.1.0
+django>3.2,<3.3

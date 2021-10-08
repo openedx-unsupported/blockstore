@@ -13,7 +13,8 @@ RUN apt-get install -qy --no-install-recommends \
  make \
  python3-dev \
  python3-pip \
- python3-venv
+ python3-venv \
+ wget
 
 ENV VIRTUAL_ENV=/blockstore/venv
 RUN python3 -m venv $VIRTUAL_ENV

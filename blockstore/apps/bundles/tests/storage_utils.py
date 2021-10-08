@@ -121,7 +121,8 @@ def url_for_test_media():
     You should never turn this on in a production setting because it has
     horrible performance characteristics.
     """
+    media_url = re.escape(settings.MEDIA_URL.lstrip('/'))
     return url(
-        r'^%s(?P<path>.*)$' % re.escape(settings.MEDIA_URL.lstrip('/')),
+        fr'^{media_url}(?P<path>.*)$',
         serve_media,
     )

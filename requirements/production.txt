@@ -4,13 +4,17 @@
 #
 #    make upgrade
 #
+asgiref==3.4.1
+    # via
+    #   -r requirements/base.txt
+    #   django
 attrs==21.2.0
     # via -r requirements/base.txt
-boto3==1.18.48
+boto3==1.18.54
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.21.48
+botocore==1.21.54
     # via
     #   boto3
     #   s3transfer
@@ -45,9 +49,8 @@ defusedxml==0.7.1
     #   -r requirements/base.txt
     #   python3-openid
     #   social-auth-core
-django==2.2.24
+django==3.2.8
     # via
-    #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
     #   -r requirements/base.txt
     #   django-crum
@@ -60,22 +63,14 @@ django==2.2.24
     #   edx-auth-backends
     #   edx-django-release-util
     #   edx-django-utils
-django-cors-headers==2.2.1
-    # via
-    #   -c requirements/constraints.txt
-    #   -r requirements/base.txt
 django-crum==0.7.9
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-django-environ-2==2.1.0
-    # via
-    #   -c requirements/constraints.txt
-    #   -r requirements/base.txt
-django-filter==2.1.0
-    # via
-    #   -c requirements/constraints.txt
-    #   -r requirements/base.txt
+django-environ==0.7.0
+    # via -r requirements/base.txt
+django-filter==21.1
+    # via -r requirements/base.txt
 django-storages==1.11.1
     # via -r requirements/production.in
 django-waffle==2.2.1
@@ -91,7 +86,7 @@ djangorestframework==3.12.4
     #   edx-api-doc-tools
 djangorestframework-expander==0.2.3
     # via -r requirements/base.txt
-git+https://github.com/alanjds/drf-nested-routers.git@8686392f91b114e01f3781807dea60e9a80d3e07#egg=drf-nested-routers==0.91
+drf-nested-routers @ git+https://github.com/alanjds/drf-nested-routers.git@8686392f91b114e01f3781807dea60e9a80d3e07
     # via -r requirements/base.txt
 drf-yasg==1.20.0
     # via
@@ -107,7 +102,7 @@ edx-django-utils==4.4.0
     # via -r requirements/base.txt
 gevent==21.8.0
     # via -r requirements/production.in
-greenlet==1.1.1
+greenlet==1.1.2
     # via gevent
 gunicorn==20.1.0
     # via -r requirements/production.in
@@ -123,7 +118,7 @@ itypes==1.2.0
     # via
     #   -r requirements/base.txt
     #   coreapi
-jinja2==3.0.1
+jinja2==3.0.2
     # via
     #   -r requirements/base.txt
     #   coreschema
@@ -182,7 +177,7 @@ python3-openid==3.2.0
     # via
     #   -r requirements/base.txt
     #   social-auth-core
-pytz==2021.1
+pytz==2021.3
     # via
     #   -r requirements/base.txt
     #   django
