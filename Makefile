@@ -15,7 +15,7 @@ help:
 	@echo ""
 
 VIRTUAL_ENV?=/blockstore/venv
-PYTHON_VERSION=3.8
+PYTHON_VERSION=38
 VENV_BIN=${VIRTUAL_ENV}/bin
 
 # Blockstore Docker configuration
