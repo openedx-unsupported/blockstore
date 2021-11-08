@@ -74,7 +74,7 @@ class Collection(models.Model):
     """
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    title = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_index=True, db_collation='utf8mb4_general_ci')
+    title = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_index=True)
 
     def __str__(self):
         return f"{self.uuid} - {self.title}"
@@ -89,15 +89,15 @@ class Bundle(models.Model):
     """
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    title = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_index=True, db_collation='utf8mb4_general_ci')
+    title = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_index=True)
 
     collection = models.ForeignKey(
         Collection, related_name="bundles", related_query_name="bundle", editable=False,
         on_delete=models.CASCADE,
     )
 
-    slug = models.SlugField(allow_unicode=True, db_collation='utf8mb4_general_ci')  # For pretty URLs
-    description = models.TextField(max_length=10000, blank=True, db_collation='utf8mb4_general_ci')
+    slug = models.SlugField(allow_unicode=True)  # For pretty URLs
+    description = models.TextField(max_length=10000, blank=True)
 
     def __str__(self):
         return f"Bundle {self.uuid} - {self.slug}"
@@ -132,7 +132,7 @@ class BundleVersion(models.Model):
     # This is a CharField only because Django ORM doens't support indexed binary
     # fields in MySQL
     snapshot_digest = models.CharField(max_length=40, db_index=True, editable=False)
-    change_description = models.TextField(max_length=1000, blank=True, db_collation='utf8mb4_general_ci')
+    change_description = models.TextField(max_length=1000, blank=True)
 
     class Meta:
         unique_together = (
@@ -197,7 +197,7 @@ class Draft(models.Model):
         Bundle, related_name="drafts", related_query_name="draft", editable=False,
         on_delete=models.CASCADE,
     )
-    name = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_collation='utf8mb4_general_ci')
+    name = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH)
 
     def save(self, *args, **kwargs):
         if not self.pk:
