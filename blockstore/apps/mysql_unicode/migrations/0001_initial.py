@@ -1,3 +1,11 @@
+# Because blockstore is being converted from a service to an
+# app which will be installed in edx-platform it should not
+# try to change database settings. To prevent accidentally
+# running this migration against an edxapp database, it
+# is being disabled. It can be removed once the conversion work
+# is complete.
+
+# ----------------------------------------
 # By default django and many MySQL installations use a broken
 # version of unicode ("utf8"). We should always use "utf8mb4"
 # which is a correct/non-broken unicode character set, and fully
@@ -24,8 +32,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(
-            'ALTER DATABASE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;',
-            reverse_sql=migrations.RunSQL.noop,
-        ),
+        # migrations.RunSQL(
+        #     'ALTER DATABASE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;',
+        #     reverse_sql=migrations.RunSQL.noop,
+        # ),
     ]
