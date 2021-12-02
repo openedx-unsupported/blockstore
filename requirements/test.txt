@@ -8,7 +8,7 @@ asgiref==3.4.1
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.8.0
+astroid==2.9.0
     # via
     #   -r requirements/test.in
     #   pylint
@@ -17,21 +17,21 @@ attrs==21.2.0
     # via
     #   -r requirements/base.txt
     #   pytest
-certifi==2021.5.30
+certifi==2021.10.8
     # via
     #   -r requirements/base.txt
     #   requests
-cffi==1.14.6
+cffi==1.15.0
     # via
     #   -r requirements/base.txt
     #   cryptography
 chardet==4.0.0
     # via diff-cover
-charset-normalizer==2.0.6
+charset-normalizer==2.0.8
     # via
     #   -r requirements/base.txt
     #   requests
-click==8.0.1
+click==8.0.3
     # via
     #   click-log
     #   code-annotations
@@ -49,11 +49,11 @@ coreschema==0.0.4
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-coverage[toml]==6.0
+coverage[toml]==6.2
     # via
     #   -r requirements/test.in
     #   pytest-cov
-cryptography==3.4.8
+cryptography==36.0.0
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -65,10 +65,11 @@ defusedxml==0.7.1
     #   -r requirements/base.txt
     #   python3-openid
     #   social-auth-core
-diff-cover==6.4.1
+diff-cover==6.4.2
     # via -r requirements/test.in
-django==3.2.8
+django==3.2.9
     # via
+    #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
     #   -r requirements/base.txt
     #   django-crum
@@ -86,7 +87,7 @@ django-crum==0.7.9
     #   edx-django-utils
 django-dynamic-fixture==3.1.2
     # via -r requirements/test.in
-django-environ==0.7.0
+django-environ==0.8.1
     # via -r requirements/base.txt
 django-filter==21.1
     # via -r requirements/base.txt
@@ -111,19 +112,19 @@ drf-yasg==1.20.0
     #   edx-api-doc-tools
 edx-api-doc-tools==1.5.0
     # via -r requirements/base.txt
-edx-auth-backends==4.0.0
+edx-auth-backends==4.0.1
     # via -r requirements/base.txt
 edx-django-release-util==1.1.0
     # via -r requirements/base.txt
 edx-django-utils==4.4.0
     # via -r requirements/base.txt
-edx-lint==5.2.0
+edx-lint==5.2.1
     # via -r requirements/test.in
-factory-boy==3.2.0
+factory-boy==3.2.1
     # via -r requirements/test.in
-faker==8.16.0
+faker==9.9.0
     # via factory-boy
-idna==3.2
+idna==3.3
     # via
     #   -r requirements/base.txt
     #   requests
@@ -135,13 +136,13 @@ inflection==0.5.1
     #   drf-yasg
 iniconfig==1.1.1
     # via pytest
-isort==5.9.3
+isort==5.10.1
     # via pylint
 itypes==1.2.0
     # via
     #   -r requirements/base.txt
     #   coreapi
-jinja2==3.0.2
+jinja2==3.0.3
     # via
     #   -r requirements/base.txt
     #   code-annotations
@@ -162,9 +163,9 @@ mypy==0.910
     # via -r requirements/test.in
 mypy-extensions==0.4.3
     # via mypy
-mysqlclient==2.0.3
+mysqlclient==2.1.0
     # via -r requirements/base.txt
-newrelic==7.0.0.166
+newrelic==7.2.4.171
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -173,12 +174,12 @@ oauthlib==3.1.1
     #   -r requirements/base.txt
     #   requests-oauthlib
     #   social-auth-core
-packaging==21.0
+packaging==21.3
     # via
     #   -r requirements/base.txt
     #   drf-yasg
     #   pytest
-pbr==5.6.0
+pbr==5.8.0
     # via
     #   -r requirements/base.txt
     #   stevedore
@@ -192,24 +193,24 @@ psutil==5.8.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-py==1.10.0
+py==1.11.0
     # via pytest
 pyblake2==1.1.2
     # via -r requirements/base.txt
-pycodestyle==2.7.0
+pycodestyle==2.8.0
     # via -r requirements/test.in
-pycparser==2.20
+pycparser==2.21
     # via
     #   -r requirements/base.txt
     #   cffi
 pygments==2.10.0
     # via diff-cover
-pyjwt[crypto]==2.1.0
+pyjwt[crypto]==2.3.0
     # via
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.11.1
+pylint==2.12.1
     # via
     #   edx-lint
     #   pylint-celery
@@ -223,7 +224,7 @@ pylint-plugin-utils==0.6
     # via
     #   pylint-celery
     #   pylint-django
-pyparsing==2.4.7
+pyparsing==3.0.6
     # via
     #   -r requirements/base.txt
     #   packaging
@@ -234,7 +235,7 @@ pytest==6.2.5
     #   pytest-django
 pytest-cov==3.0.0
     # via -r requirements/test.in
-pytest-django==4.4.0
+pytest-django==4.5.0
     # via -r requirements/test.in
 python-dateutil==2.8.2
     # via faker
@@ -248,7 +249,7 @@ pytz==2021.3
     # via
     #   -r requirements/base.txt
     #   django
-pyyaml==5.4.1
+pyyaml==6.0
     # via
     #   -r requirements/base.txt
     #   code-annotations
@@ -263,7 +264,7 @@ requests-oauthlib==1.3.0
     # via
     #   -r requirements/base.txt
     #   social-auth-core
-ruamel.yaml==0.17.16
+ruamel.yaml==0.17.17
     # via
     #   -r requirements/base.txt
     #   drf-yasg
@@ -292,7 +293,7 @@ sqlparse==0.4.2
     # via
     #   -r requirements/base.txt
     #   django
-stevedore==3.4.0
+stevedore==3.5.0
     # via
     #   -r requirements/base.txt
     #   code-annotations
@@ -306,14 +307,14 @@ toml==0.10.2
     #   mypy
     #   pylint
     #   pytest
-tomli==1.2.1
+tomli==1.2.2
     # via coverage
-typing-extensions==3.10.0.2
+typing-extensions==4.0.1
     # via
     #   astroid
     #   mypy
     #   pylint
-uritemplate==3.0.1
+uritemplate==4.1.1
     # via
     #   -r requirements/base.txt
     #   coreapi
@@ -322,7 +323,7 @@ urllib3==1.26.7
     # via
     #   -r requirements/base.txt
     #   requests
-wrapt==1.12.1
+wrapt==1.13.3
     # via astroid
 
 # The following packages are considered to be unsafe in a requirements file:
