@@ -90,7 +90,7 @@ test: clean ## Run tests and generate coverage report
 	${VENV_BIN}/coverage xml
 	${VENV_BIN}/diff-cover coverage.xml --html-report diff-cover.html --compare-branch origin/master
 
-easyserver: dev.up dev.provision  # Start and provision a Blockstore container and run the server until CTRL-C, then stop it
+easyserver: dev.build dev.up dev.provision  # Build, Start and provision a Blockstore container and run the server until CTRL-C, then stop it
 	# Now run blockstore until the user hits CTRL-C:
 	docker-compose ${BLOCKSTORE_DOCKER_COMPOSE_OPTS} exec blockstore /blockstore/venv/bin/python /blockstore/app/manage.py runserver 0.0.0.0:18250
 	# Then stop the container:
