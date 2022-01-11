@@ -1,5 +1,4 @@
 -c constraints.txt
--r github.in
 
 attrs
 pyblake2
@@ -9,6 +8,7 @@ django-waffle
 djangorestframework
 djangorestframework-expander
 django-filter
+drf-nested-routers
 edx-api-doc-tools
 edx-auth-backends
 edx-django-release-util
