@@ -1,16 +1,9 @@
 """
-Tests for xblock_utils.py
+Tests for the api.
 """
-# The code in this file has been copied over from edx-platform/openedx/core/lib/blockstore_api.
-# The following line should be removed when the implementation is being updated as part of
-# https://github.com/edx/blockstore/pull/97
-# pylint: skip-file
-
 import unittest
 from uuid import UUID
-
 import pytest
-from django.conf import settings
 
 from blockstore.apps import api
 
@@ -18,7 +11,6 @@ from blockstore.apps import api
 BAD_UUID = UUID('12345678-0000-0000-0000-000000000000')
 
 
-@unittest.skip("Skip until the Python API has been implemented.")
 class BlockstoreApiClientTest(unittest.TestCase):
     """
     Test for the Blockstore API Client.
@@ -105,12 +97,12 @@ class BlockstoreApiClientTest(unittest.TestCase):
         coll = api.create_collection("Test Collection")
         bundle = api.create_bundle(coll.uuid, title="Earth 🗿 Bundle", slug="earth", description="another test bundle")
         # Create a draft
-        draft = api.get_or_create_draft(bundle.uuid, draft_name="test-draft")
+        draft = api.get_or_create_bundle_draft(bundle.uuid, draft_name="test-draft")
         assert draft.bundle_uuid == bundle.uuid
         assert draft.name == 'test-draft'
         assert draft.updated_at.year >= 2019
         # And retrieve it again:
-        draft2 = api.get_or_create_draft(bundle.uuid, draft_name="test-draft")
+        draft2 = api.get_or_create_bundle_draft(bundle.uuid, draft_name="test-draft")
         assert draft == draft2
         # Also test retrieving using get_draft
         draft3 = api.get_draft(draft.uuid)
@@ -153,11 +145,11 @@ class BlockstoreApiClientTest(unittest.TestCase):
         coll = api.create_collection("Test Collection")
         # Create two library bundles and a course bundle:
         lib1_bundle = api.create_bundle(coll.uuid, title="Library 1", slug="lib1")
-        lib1_draft = api.get_or_create_draft(lib1_bundle.uuid, draft_name="test-draft")
+        lib1_draft = api.get_or_create_bundle_draft(lib1_bundle.uuid, draft_name="test-draft")
         lib2_bundle = api.create_bundle(coll.uuid, title="Library 1", slug="lib2")
-        lib2_draft = api.get_or_create_draft(lib2_bundle.uuid, draft_name="other-draft")
+        lib2_draft = api.get_or_create_bundle_draft(lib2_bundle.uuid, draft_name="other-draft")
         course_bundle = api.create_bundle(coll.uuid, title="Library 1", slug="course")
-        course_draft = api.get_or_create_draft(course_bundle.uuid, draft_name="test-draft")
+        course_draft = api.get_or_create_bundle_draft(course_bundle.uuid, draft_name="test-draft")
 
         # To create links, we need valid BundleVersions, which requires having committed at least one change:
         api.write_draft_file(lib1_draft.uuid, "lib1-data.txt", "hello world")
