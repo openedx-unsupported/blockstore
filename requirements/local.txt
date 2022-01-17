@@ -118,12 +118,9 @@ django-waffle==2.3.0
 djangorestframework==3.13.1
     # via
     #   -r requirements/test.txt
-    #   djangorestframework-expander
     #   drf-nested-routers
     #   drf-yasg
     #   edx-api-doc-tools
-djangorestframework-expander==0.2.3
-    # via -r requirements/test.txt
 docutils==0.17.1
     # via
     #   -r requirements/docs.txt

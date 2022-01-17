@@ -6,7 +6,6 @@ django
 django-environ
 django-waffle
 djangorestframework
-djangorestframework-expander
 django-filter
 drf-nested-routers
 edx-api-doc-tools
