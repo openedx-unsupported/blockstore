@@ -31,6 +31,11 @@ _____
 [1.2.0] - 2021-01-25
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Added
+_____
+
+* Adds API unit tests to improve test coverage.
+
 Changed
 _______
 
