@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: clean help requirements
+.PHONY: clean help requirements check_keywords
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
@@ -154,3 +154,6 @@ upgrade: $(COMMON_CONSTRAINTS_TXT)	## update the requirements/*.txt files with t
 	pip-compile --upgrade -o requirements/test.txt requirements/test.in
 	pip-compile --upgrade -o requirements/production.txt requirements/production.in
 	pip-compile --upgrade -o requirements/local.txt requirements/local.in
+
+check_keywords: ## Scan the Django models in all installed apps in this project for restricted field names
+	python manage.py check_reserved_keywords --override_file db_keyword_overrides.yml

@@ -92,3 +92,6 @@ jobs:
 
     - name: Run Quality
       run: make quality
+
+    - name: Run check_keywords
+      run: make check_keywords
