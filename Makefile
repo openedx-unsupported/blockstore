@@ -156,4 +156,4 @@ upgrade: $(COMMON_CONSTRAINTS_TXT)	## update the requirements/*.txt files with t
 	pip-compile --upgrade -o requirements/local.txt requirements/local.in
 
 check_keywords: ## Scan the Django models in all installed apps in this project for restricted field names
-	python manage.py check_reserved_keywords --override_file db_keyword_overrides.yml
+	${VENV_BIN}/python manage.py check_reserved_keywords --override_file db_keyword_overrides.yml
