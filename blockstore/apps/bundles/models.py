@@ -54,11 +54,20 @@ it's not *that* expensive, and migrating data once it gets that large is a pain.
 """
 import uuid
 
+from django.conf import settings
 from django.db import models
 
 from .store import DraftRepo, SnapshotRepo, bytes_from_hex_str
 
 MAX_CHAR_FIELD_LENGTH = 180
+
+
+"""
+Sqlite is used for testing on edx-platform, but doesn't contain the utf8mb4_general_ci collation sequence.
+
+So we detect this case here, and use a different db_collation if we're running on Sqlite.
+"""
+DB_COLLATION = 'binary' if 'sqlite' in settings.DATABASES['default']['ENGINE'] else 'utf8mb4_general_ci'
 
 
 class Collection(models.Model):
@@ -74,7 +83,7 @@ class Collection(models.Model):
     """
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    title = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_index=True, db_collation='utf8mb4_general_ci')
+    title = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_index=True, db_collation=DB_COLLATION)
 
     def __str__(self):
         return f"{self.uuid} - {self.title}"
@@ -89,15 +98,15 @@ class Bundle(models.Model):
     """
     id = models.BigAutoField(primary_key=True)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    title = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_index=True, db_collation='utf8mb4_general_ci')
+    title = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_index=True, db_collation=DB_COLLATION)
 
     collection = models.ForeignKey(
         Collection, related_name="bundles", related_query_name="bundle", editable=False,
         on_delete=models.CASCADE,
     )
 
-    slug = models.SlugField(allow_unicode=True, db_collation='utf8mb4_general_ci')  # For pretty URLs
-    description = models.TextField(max_length=10000, blank=True, db_collation='utf8mb4_general_ci')
+    slug = models.SlugField(allow_unicode=True, db_collation=DB_COLLATION)  # For pretty URLs
+    description = models.TextField(max_length=10000, blank=True, db_collation=DB_COLLATION)
 
     def __str__(self):
         return f"Bundle {self.uuid} - {self.slug}"
@@ -132,7 +141,7 @@ class BundleVersion(models.Model):
     # This is a CharField only because Django ORM doens't support indexed binary
     # fields in MySQL
     snapshot_digest = models.CharField(max_length=40, db_index=True, editable=False)
-    change_description = models.TextField(max_length=1000, blank=True, db_collation='utf8mb4_general_ci')
+    change_description = models.TextField(max_length=1000, blank=True, db_collation=DB_COLLATION)
 
     class Meta:
         unique_together = (
@@ -197,7 +206,7 @@ class Draft(models.Model):
         Bundle, related_name="drafts", related_query_name="draft", editable=False,
         on_delete=models.CASCADE,
     )
-    name = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_collation='utf8mb4_general_ci')
+    name = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_collation=DB_COLLATION)
 
     def save(self, *args, **kwargs):
         if not self.pk:
