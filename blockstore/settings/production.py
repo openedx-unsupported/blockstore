@@ -20,7 +20,7 @@ REST_FRAMEWORK = {
 
 CONFIG_FILE = get_env_setting('BLOCKSTORE_CFG')
 with open(CONFIG_FILE) as f:
-    config_from_yaml = yaml.load(f)
+    config_from_yaml = yaml.safe_load(f)
     vars().update(config_from_yaml)
 
 DB_OVERRIDES = dict(
