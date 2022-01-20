@@ -158,6 +158,10 @@ imagesize==1.3.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
+importlib-metadata==4.10.1
+    # via
+    #   -r requirements/docs.txt
+    #   sphinx
 inflection==0.5.1
     # via
     #   -r requirements/test.txt
@@ -355,12 +359,12 @@ social-auth-app-django==5.0.0
     # via
     #   -r requirements/test.txt
     #   edx-auth-backends
-social-auth-core==4.1.0
+social-auth-core==4.2.0
     # via
     #   -r requirements/test.txt
     #   edx-auth-backends
     #   social-auth-app-django
-sphinx==4.3.2
+sphinx==4.4.0
     # via
     #   -r requirements/docs.txt
     #   edx-sphinx-theme
@@ -433,6 +437,10 @@ wrapt==1.13.3
     # via
     #   -r requirements/test.txt
     #   astroid
+zipp==3.7.0
+    # via
+    #   -r requirements/docs.txt
+    #   importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

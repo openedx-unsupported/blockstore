@@ -10,11 +10,11 @@ asgiref==3.4.1
     #   django
 attrs==21.4.0
     # via -r requirements/base.txt
-boto3==1.20.34
+boto3==1.20.39
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.23.34
+botocore==1.23.39
     # via
     #   boto3
     #   s3transfer
@@ -216,7 +216,7 @@ social-auth-app-django==5.0.0
     # via
     #   -r requirements/base.txt
     #   edx-auth-backends
-social-auth-core==4.1.0
+social-auth-core==4.2.0
     # via
     #   -r requirements/base.txt
     #   edx-auth-backends
