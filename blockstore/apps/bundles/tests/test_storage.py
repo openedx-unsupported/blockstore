@@ -14,11 +14,13 @@ class _MockS3backend:
     A fake replacment for S3Boto3Backend in these tests.
     """
     def __init__(self, **settings):
-        self.accesss_key = settings["access_key"]
+        self.access_key = settings["access_key"]
         self.secret_key = settings["secret_key"]
+        self.bucket_name = settings["bucket_name"]
+        self.location = settings["location"]
 
     def url(self, name):
-        return f"https://example.com/s3/{name}"
+        return f"https://{self.bucket_name}/{self.location}{name}"
 
 
 _patch_default_storage = patch.object(
@@ -28,7 +30,8 @@ _patch_get_storage_class = patch.object(
     storage_module, 'get_storage_class', autospec=True, return_value=_MockS3backend
 )
 _patch_s3_credentials = override_settings(
-    BUNDLE_ASSET_URL_STORAGE_KEY="a-key", BUNDLE_ASSET_URL_STORAGE_SECRET="a-secret"
+    BUNDLE_ASSET_URL_STORAGE_KEY="a-key", BUNDLE_ASSET_URL_STORAGE_SECRET="a-secret",
+    BUNDLE_ASSET_URL_STORAGE_BUCKET='example-bucket', BUNDLE_ASSET_URL_STORAGE_PREFIX='s3/',
 )
 
 
@@ -58,9 +61,11 @@ def test_asset_storage_long_lived_urls_enabled(mock_default_storage, *_args):
     """
     backend = storage_module.AssetStorage()
     assert isinstance(backend.url_backend, storage_module.LongLivedSignedUrlStorage)
-    assert backend.url_backend.s3_backend.accesss_key == "a-key"
+    assert backend.url_backend.s3_backend.access_key == "a-key"
     assert backend.url_backend.s3_backend.secret_key == "a-secret"
-    assert backend.url('abc') == "https://example.com/s3/abc"
+    assert backend.url_backend.s3_backend.bucket_name == "example-bucket"
+    assert backend.url_backend.s3_backend.location == "s3/"
+    assert backend.url('abc') == "https://example-bucket/s3/abc"
     backend.listdir('123')
     backend.get_accessed_time('xyz')
     assert not mock_default_storage.url.called

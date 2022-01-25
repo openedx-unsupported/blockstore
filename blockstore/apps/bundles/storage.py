@@ -90,11 +90,20 @@ class LongLivedSignedUrlStorage(Storage):  # pylint: disable=abstract-method
             raise self.BackendNotAvailable from attr_error
         if not (key and secret):
             raise self.BackendNotAvailable
-        self.s3_backend = S3Boto3Storage(
-            # All other S3 settings will be pulled in automatically from Django settings
-            # (such as AWS_QUERYSTRING_EXPIRE and AWS_STORAGE_BUCKET_NAME).
-            access_key=key, secret_key=secret
+
+        # Provide the bucket name and prefix if configured;
+        # All other S3 settings will be pulled in automatically from Django settings
+        # (such as AWS_QUERYSTRING_EXPIRE and AWS_STORAGE_BUCKET_NAME).
+        s3_backend_args = dict(
+            access_key=key,
+            secret_key=secret,
         )
+        if settings.BUNDLE_ASSET_URL_STORAGE_BUCKET:
+            s3_backend_args['bucket_name'] = settings.BUNDLE_ASSET_URL_STORAGE_BUCKET
+        if settings.BUNDLE_ASSET_URL_STORAGE_PREFIX:
+            s3_backend_args['location'] = settings.BUNDLE_ASSET_URL_STORAGE_PREFIX
+
+        self.s3_backend = S3Boto3Storage(**s3_backend_args)
 
     def url(self, name):
         """
