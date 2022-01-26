@@ -76,7 +76,7 @@ def get_bundles(uuids=None, text_search=None):
     """
     Get the details of all bundles.
     """
-    bundles_queryset = models.Bundle.objects.all()
+    bundles_queryset = _bundle_queryset()
     if uuids:
         bundles_queryset = bundles_queryset.filter(uuid__in=uuids)
     if text_search:
@@ -154,7 +154,7 @@ def get_or_create_bundle_draft(bundle_uuid, draft_name):
     Retrieve metadata about the specified draft, creating a new one if it does not exist yet.
     """
     try:
-        draft_model = models.Draft.objects.get(bundle__uuid=bundle_uuid, name=draft_name)
+        draft_model = _draft_queryset().get(bundle__uuid=bundle_uuid, name=draft_name)
     except models.Draft.DoesNotExist:
         bundle_model = _get_bundle_model(bundle_uuid)
         draft_model = models.Draft(
@@ -201,6 +201,8 @@ def get_bundle_version(bundle_uuid, version_number=None):
     Get the details of the specified bundle version
     """
     bundle_version_model = _get_bundle_version_model(bundle_uuid, version_number)
+    if bundle_version_model is None:
+        return None
     return _bundle_version_data_from_model(bundle_version_model)
 
 
@@ -209,8 +211,12 @@ def get_bundle_version_files(bundle_uuid, version_number):
     Get a list of the files in the specified bundle version
     """
     if version_number == 0:
+        # There are no files in the initial version of a bundle
         return []
-    return get_bundle_version(bundle_uuid, version_number).files.values()
+    bundle_version = get_bundle_version(bundle_uuid, version_number)
+    if bundle_version:
+        return bundle_version.files.values()
+    return []
 
 
 def get_bundle_version_links(bundle_uuid, version_number):
@@ -218,26 +224,33 @@ def get_bundle_version_links(bundle_uuid, version_number):
     Get a dictionary of the links in the specified bundle version
     """
     if version_number == 0:
+        # There are no links in the initial version of a bundle
         return {}
-    return get_bundle_version(bundle_uuid, version_number).links
+    bundle_version = get_bundle_version(bundle_uuid, version_number)
+    if bundle_version:
+        return bundle_version.links
+    return {}
 
 
 def get_bundle_files_dict(bundle_uuid, use_draft=None):
     """
-    Get a dict of all the files in the specified bundle.
+    Get a dict of all the files in the specified bundle or draft.
 
     Returns a dict where the keys are the paths (strings) and the values are
     BundleFileData or DraftFileData tuples.
     """
     if use_draft:
         try:
-            draft_model = models.Draft.objects.get(bundle__uuid=bundle_uuid, name=use_draft)
+            draft_model = _draft_queryset().get(bundle__uuid=bundle_uuid, name=use_draft)
         except models.Draft.DoesNotExist:
             pass
         else:
             return _draft_data_from_model(draft_model).files
 
-    return get_bundle_version(bundle_uuid).files
+    bundle_version = get_bundle_version(bundle_uuid)
+    if bundle_version:
+        return bundle_version.files
+    return {}
 
 
 def get_bundle_files(bundle_uuid, use_draft=None):
@@ -256,13 +269,16 @@ def get_bundle_links(bundle_uuid, use_draft=None):
     """
     if use_draft:
         try:
-            draft_model = models.Draft.objects.get(bundle__uuid=bundle_uuid, name=use_draft)
+            draft_model = _draft_queryset().get(bundle__uuid=bundle_uuid, name=use_draft)
         except models.Draft.DoesNotExist:
             pass
         else:
             return _draft_data_from_model(draft_model).links
 
-    return get_bundle_version(bundle_uuid).links
+    bundle_version = get_bundle_version(bundle_uuid)
+    if bundle_version:
+        return get_bundle_version(bundle_uuid).links
+    return {}
 
 
 def get_bundle_file_metadata(bundle_uuid, path, use_draft=None):
@@ -288,7 +304,7 @@ def get_bundle_file_data(bundle_uuid, path, use_draft=None):
 
     if use_draft:
         try:
-            draft_model = models.Draft.objects.get(bundle__uuid=bundle_uuid, name=use_draft)
+            draft_model = _draft_queryset().get(bundle__uuid=bundle_uuid, name=use_draft)
         except models.Draft.DoesNotExist:
             pass
         else:
@@ -297,7 +313,7 @@ def get_bundle_file_data(bundle_uuid, path, use_draft=None):
             with draft_repo.open(staged_draft, path) as file:
                 return file.read()
 
-    bundle_version_model = _get_bundle_version_model(bundle_uuid)
+    bundle_version_model = _get_bundle_version_model(bundle_uuid, 0)
 
     snapshot_repo = SnapshotRepo()
     snapshot = bundle_version_model.snapshot()
@@ -391,6 +407,15 @@ def _collection_data_from_model(collection_model):
     return CollectionData(uuid=collection_model.uuid, title=collection_model.title)
 
 
+def _bundle_queryset():
+    """
+    Returns the bundle model queryset.
+
+    Prefetch the data needed to create BundleData objects.
+    """
+    return models.Bundle.objects.prefetch_related('drafts', 'versions')
+
+
 def _get_bundle_model(bundle_uuid):
     """
     Get Bundle model from UUID.
@@ -398,7 +423,7 @@ def _get_bundle_model(bundle_uuid):
     Raises BundleNotFound if bundle with UUID does not exist.
     """
     try:
-        bundle_model = models.Bundle.objects.get(uuid=bundle_uuid)
+        bundle_model = _bundle_queryset().get(uuid=bundle_uuid)
     except models.Bundle.DoesNotExist as exc:
         raise BundleNotFound("Bundle {} does not exist.".format(bundle_uuid)) from exc
     return bundle_model
@@ -408,15 +433,26 @@ def _bundle_data_from_model(bundle_model):
     """
     Create and return BundleData from bundle model.
     """
-    latest_bundle_version_model = bundle_model.get_bundle_version()
+    latest_version = bundle_model.versions.order_by('-version_num').first()
+    latest_version_num = latest_version.version_num if latest_version else 0
+
     return BundleData(
         uuid=bundle_model.uuid,
         title=bundle_model.title,
         description=bundle_model.description,
         slug=bundle_model.slug,
         drafts={draft.name: draft.uuid for draft in bundle_model.drafts.all()},
-        latest_version=latest_bundle_version_model.version_num if latest_bundle_version_model else 0,
+        latest_version=latest_version_num,
     )
+
+
+def _draft_queryset():
+    """
+    Returns the draft model queryset.
+
+    Prefetch the data needed to create DraftData objects.
+    """
+    return models.Draft.objects.select_related('bundle')
 
 
 def _get_draft_model(draft_uuid):
@@ -426,7 +462,7 @@ def _get_draft_model(draft_uuid):
     Raises DraftNotFound if draft with UUID does not exist.
     """
     try:
-        draft_model = models.Draft.objects.get(uuid=draft_uuid)
+        draft_model = _draft_queryset().get(uuid=draft_uuid)
     except models.Draft.DoesNotExist as exc:
         raise DraftNotFound("Draft {} does not exist.".format(draft_uuid)) from exc
     return draft_model
@@ -475,6 +511,15 @@ def _draft_data_from_model(draft_model):
     )
 
 
+def _bundle_version_queryset():
+    """
+    Returns the bundle version model queryset.
+
+    Prefetch the data needed to create BundleVersionData objects.
+    """
+    return models.BundleVersion.objects.select_related('bundle')
+
+
 def _get_bundle_version_model(bundle_uuid, version_number=None):
     """
     Get BundleVersion from bundle UUID and version number.
@@ -487,8 +532,8 @@ def _get_bundle_version_model(bundle_uuid, version_number=None):
     if version_number:
         filter_kwargs['version_num'] = version_number
 
-    bundle_version_model = models.BundleVersion.objects.filter(**filter_kwargs).order_by('-version_num').first()
-    if bundle_version_model is None:
+    bundle_version_model = _bundle_version_queryset().filter(**filter_kwargs).order_by('-version_num').first()
+    if version_number and bundle_version_model is None:
         raise BundleVersionNotFound("Bundle Version {},{} does not exist.".format(bundle_uuid, version_number))
     return bundle_version_model
 
