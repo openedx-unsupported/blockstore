@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-asgiref==3.4.1
+asgiref==3.5.0
     # via django
 attrs==21.4.0
     # via -r requirements/base.in
@@ -68,7 +68,7 @@ edx-auth-backends==4.0.1
     # via -r requirements/base.in
 edx-django-release-util==1.1.1
     # via -r requirements/base.in
-edx-django-utils==4.4.1
+edx-django-utils==4.4.2
     # via -r requirements/base.in
 idna==3.3
     # via requests
@@ -82,7 +82,7 @@ markupsafe==2.0.1
     # via jinja2
 mysqlclient==2.1.0
     # via -r requirements/base.in
-newrelic==7.2.4.171
+newrelic==7.4.0.172
     # via edx-django-utils
 oauthlib==3.1.1
     # via
@@ -102,7 +102,7 @@ pyjwt[crypto]==2.3.0
     # via
     #   edx-auth-backends
     #   social-auth-core
-pyparsing==3.0.6
+pyparsing==3.0.7
     # via packaging
 python3-openid==3.2.0
     # via social-auth-core
