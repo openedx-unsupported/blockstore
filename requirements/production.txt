@@ -4,17 +4,17 @@
 #
 #    make upgrade
 #
-asgiref==3.4.1
+asgiref==3.5.0
     # via
     #   -r requirements/base.txt
     #   django
 attrs==21.4.0
     # via -r requirements/base.txt
-boto3==1.20.39
+boto3==1.20.44
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.23.39
+botocore==1.23.44
     # via
     #   boto3
     #   s3transfer
@@ -96,7 +96,7 @@ edx-auth-backends==4.0.1
     # via -r requirements/base.txt
 edx-django-release-util==1.1.1
     # via -r requirements/base.txt
-edx-django-utils==4.4.1
+edx-django-utils==4.4.2
     # via -r requirements/base.txt
 gevent==21.12.0
     # via -r requirements/production.in
@@ -130,7 +130,7 @@ markupsafe==2.0.1
     #   jinja2
 mysqlclient==2.1.0
     # via -r requirements/base.txt
-newrelic==7.2.4.171
+newrelic==7.4.0.172
     # via
     #   -r requirements/base.txt
     #   -r requirements/production.in
@@ -163,7 +163,7 @@ pyjwt[crypto]==2.3.0
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-core
-pyparsing==3.0.6
+pyparsing==3.0.7
     # via
     #   -r requirements/base.txt
     #   packaging
