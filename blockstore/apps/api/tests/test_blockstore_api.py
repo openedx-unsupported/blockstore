@@ -64,6 +64,16 @@ class BlockstoreApiClientTest(unittest.TestCase):
         with pytest.raises(api.BundleNotFound):
             api.get_bundle(BAD_UUID)
 
+    def test_nonexistent_bundle_version(self):
+        """
+        Request a bundle version that doesn't exist.
+        """
+        # If you don't pass a version number, then it just returns None.
+        assert api.get_bundle_version(BAD_UUID) is None
+        # But if you do want a specific version, it 404s
+        with pytest.raises(api.BundleVersionNotFound):
+            api.get_bundle_version(BAD_UUID, '1')
+
     def test_bundle_crud(self):
         """ Create, Fetch, Update, and Delete a Bundle """
         coll = api.create_collection("Test Collection")
@@ -213,7 +223,7 @@ class BlockstoreApiClientTest(unittest.TestCase):
         )
 
         no_files = api.get_bundle_version_files(bundle.uuid, 0)
-        assert no_files == []
+        assert not no_files
 
         # Create and commit a draft
         draft = api.get_or_create_bundle_draft(bundle.uuid, draft_name="test-draft")
@@ -260,7 +270,7 @@ class BlockstoreApiClientTest(unittest.TestCase):
         lib2_draft = api.get_or_create_bundle_draft(lib2_bundle.uuid, draft_name="other-draft")
         course_bundle = api.create_bundle(coll.uuid, title="Library 1", slug="course")
         course_draft = api.get_or_create_bundle_draft(course_bundle.uuid, draft_name="test-draft")
-        assert api.get_bundle_version_links(course_bundle.uuid, 0) == {}
+        assert not api.get_bundle_version_links(course_bundle.uuid, 0)
 
         # To create links, we need valid BundleVersions, which requires having committed at least one change:
         api.write_draft_file(lib1_draft.uuid, "lib1-data.txt", "hello world")
@@ -307,3 +317,12 @@ class BlockstoreApiClientTest(unittest.TestCase):
         api.delete_draft(course_draft.uuid)
         course_links2 = api.get_bundle_links(course_bundle.uuid, use_draft=course_draft.name)
         assert course_links == course_links2
+
+    def test_force_browser_url(self):
+        """
+        Test the browser URL hack for devstacks.
+        """
+        assert api.force_browser_url('http://edx.devstack.studio:18010/media/snapshot/definition.xml') ==\
+            'http://localhost:18010/media/snapshot/definition.xml'
+        assert api.force_browser_url('http://edx.devstack.lms:18000/media/snapshot/definition.xml') ==\
+            'http://localhost:18000/media/snapshot/definition.xml'

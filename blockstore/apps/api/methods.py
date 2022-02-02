@@ -3,6 +3,7 @@ API Client methods for working with Blockstore bundles and drafts
 """
 
 import base64
+import re
 import crum
 
 from django.db.models import Q
@@ -214,9 +215,7 @@ def get_bundle_version_files(bundle_uuid, version_number):
         # There are no files in the initial version of a bundle
         return []
     bundle_version = get_bundle_version(bundle_uuid, version_number)
-    if bundle_version:
-        return bundle_version.files.values()
-    return []
+    return list(bundle_version.files.values() if bundle_version else [])
 
 
 def get_bundle_version_links(bundle_uuid, version_number):
@@ -227,9 +226,7 @@ def get_bundle_version_links(bundle_uuid, version_number):
         # There are no links in the initial version of a bundle
         return {}
     bundle_version = get_bundle_version(bundle_uuid, version_number)
-    if bundle_version:
-        return bundle_version.links
-    return {}
+    return bundle_version.links if bundle_version else {}
 
 
 def get_bundle_files_dict(bundle_uuid, use_draft=None):
@@ -248,9 +245,7 @@ def get_bundle_files_dict(bundle_uuid, use_draft=None):
             return _draft_data_from_model(draft_model).files
 
     bundle_version = get_bundle_version(bundle_uuid)
-    if bundle_version:
-        return bundle_version.files
-    return {}
+    return bundle_version.files if bundle_version else {}
 
 
 def get_bundle_files(bundle_uuid, use_draft=None):
@@ -276,9 +271,7 @@ def get_bundle_links(bundle_uuid, use_draft=None):
             return _draft_data_from_model(draft_model).links
 
     bundle_version = get_bundle_version(bundle_uuid)
-    if bundle_version:
-        return get_bundle_version(bundle_uuid).links
-    return {}
+    return get_bundle_version(bundle_uuid).links if bundle_version else {}
 
 
 def get_bundle_file_metadata(bundle_uuid, path, use_draft=None):
@@ -374,6 +367,25 @@ def set_draft_link(draft_uuid, link_name, bundle_uuid, version):
         draft_repo.update(draft_uuid, files_to_write, dependencies_to_write)
     except LinkCycleError as exc:
         raise serializers.ValidationError("Link cycle detected: Cannot create draft.") from exc
+
+
+REGEX_BROWSER_URL = re.compile(r'http://edx.devstack.(studio|lms):')
+
+
+def force_browser_url(blockstore_file_url):
+    """
+    Ensure that the given devstack URL is a URL accessible from the end user's browser.
+    """
+    # Hack: on some devstacks, we must necessarily use different URLs for
+    # accessing Blockstore file data from within and outside of docker
+    # containers, but Blockstore has no way of knowing which case any particular
+    # request is for. So it always returns a URL suitable for use from within
+    # the container. Only this edxapp can transform the URL at the last second,
+    # knowing that in this case it's going to the user's browser and not being
+    # read by edxapp.
+    # In production, the same S3 URLs get used for internal and external access
+    # so this hack is not necessary.
+    return re.sub(REGEX_BROWSER_URL, 'http://localhost:', blockstore_file_url)
 
 
 def _encode_str_for_draft(input_str):
