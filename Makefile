@@ -85,7 +85,7 @@ static:  ## Collect static files
 	${VENV_BIN}/python manage.py collectstatic --noinput
 
 test: clean ## Run tests and generate coverage report
-	${VENV_BIN}/coverage run ./manage.py test blockstore --settings=blockstore.settings.test
+	${VENV_BIN}/coverage run ${VENV_BIN}/pytest blockstore --ds=blockstore.settings.test
 	${VENV_BIN}/coverage html
 	${VENV_BIN}/coverage xml
 	${VENV_BIN}/diff-cover coverage.xml --html-report diff-cover.html --compare-branch=origin/master

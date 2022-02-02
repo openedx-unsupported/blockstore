@@ -13,6 +13,7 @@ from blockstore.apps import api
 BAD_UUID = UUID('12345678-0000-0000-0000-000000000000')
 
 
+@pytest.mark.django_db
 class BlockstoreApiClientTest(unittest.TestCase):
     """
     Test for the Blockstore API Client.
