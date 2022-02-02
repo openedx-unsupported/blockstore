@@ -31,7 +31,12 @@ _patch_get_storage_class = patch.object(
 )
 _patch_s3_credentials = override_settings(
     BUNDLE_ASSET_URL_STORAGE_KEY="a-key", BUNDLE_ASSET_URL_STORAGE_SECRET="a-secret",
-    BUNDLE_ASSET_URL_STORAGE_BUCKET='example-bucket', BUNDLE_ASSET_URL_STORAGE_PREFIX='s3/',
+    BUNDLE_ASSET_STORAGE_SETTINGS={
+        'STORAGE_KWARGS': {
+            'bucket_name': 'example-bucket',
+            'location': 's3/',
+        },
+    },
 )
 
 

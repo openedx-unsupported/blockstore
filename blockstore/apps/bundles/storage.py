@@ -97,11 +97,8 @@ class LongLivedSignedUrlStorage(Storage):  # pylint: disable=abstract-method
         s3_backend_args = dict(
             access_key=key,
             secret_key=secret,
+            **settings.BUNDLE_ASSET_STORAGE_SETTINGS['STORAGE_KWARGS']
         )
-        if settings.BUNDLE_ASSET_URL_STORAGE_BUCKET:
-            s3_backend_args['bucket_name'] = settings.BUNDLE_ASSET_URL_STORAGE_BUCKET
-        if settings.BUNDLE_ASSET_URL_STORAGE_PREFIX:
-            s3_backend_args['location'] = settings.BUNDLE_ASSET_URL_STORAGE_PREFIX
 
         self.s3_backend = S3Boto3Storage(**s3_backend_args)
 

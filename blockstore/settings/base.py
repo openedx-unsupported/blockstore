@@ -323,18 +323,17 @@ BUNDLE_ASSET_URL_STORAGE_KEY = None
 #  See `blockstore.apps.bundles.storage.LongLivedSignedUrlStorage` for details.
 BUNDLE_ASSET_URL_STORAGE_SECRET = None
 
-# .. setting_name: BUNDLE_ASSET_URL_STORAGE_BUCKET
-# .. setting_default: None
+# .. setting_name: BUNDLE_ASSET_STORAGE_SETTINGS
+# .. setting_default: dict, appropriate for file system storage.
 # .. setting_description: When this is set, `BUNDLE_ASSET_URL_STORAGE_KEY` is
-#  set, and `boto3` is installed, this is used as the bucket name for blockstore assets stored in S3.
-#  Otherwise, the default AWS_STORAGE_BUCKET_NAME is used instead.
+#  set, and `boto3` is installed, this provides the bucket name and location for blockstore assets stored in S3.
 #  See `blockstore.apps.bundles.storage.LongLivedSignedUrlStorage` for details.
-BUNDLE_ASSET_URL_STORAGE_BUCKET = None
-
-# .. setting_name: BUNDLE_ASSET_URL_STORAGE_PREFIX
-# .. setting_default: None
-# .. setting_description: When this is set, `BUNDLE_ASSET_URL_STORAGE_KEY` is
-#  set, and `boto3` is installed, this is used as the path prefix for blockstore assets stored in S3.
-#  Otherwise, the default AWS_LOCATION is used instead.
-#  See `blockstore.apps.bundles.storage.LongLivedSignedUrlStorage` for details.
-BUNDLE_ASSET_URL_STORAGE_PREFIX = None
+BUNDLE_ASSET_STORAGE_SETTINGS = dict(
+    # Backend storage
+    # STORAGE_CLASS='storages.backends.s3boto.S3BotoStorage',
+    # STORAGE_KWARGS=dict(bucket='bundle-asset-bucket', location='/path-to-bundles/'),
+    STORAGE_KWARGS=dict(
+        location=MEDIA_ROOT,
+        base_url=MEDIA_URL,
+    ),
+)
