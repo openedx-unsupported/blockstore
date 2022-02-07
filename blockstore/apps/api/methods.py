@@ -4,7 +4,7 @@ API Client methods for working with Blockstore bundles and drafts
 
 import base64
 import re
-import crum
+from crum import get_current_request
 
 from django.db.models import Q
 from rest_framework import serializers
@@ -484,7 +484,7 @@ def _build_absolute_uri(url):
     """
     Build an absolute URI from the given url, using the CRUM middleware's stored request.
     """
-    request = crum.get_current_request()
+    request = get_current_request()
     return request.build_absolute_uri(url)
 
 
