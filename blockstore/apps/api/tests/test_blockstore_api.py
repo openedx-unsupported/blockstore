@@ -17,10 +17,6 @@ BAD_UUID = UUID('12345678-0000-0000-0000-000000000000')
 class BlockstoreApiClientTest(unittest.TestCase):
     """
     Test for the Blockstore API Client.
-
-    The goal of these tests is not to test that Blockstore works correctly, but
-    that the API client can interact with it and all the API client methods
-    work.
     """
     def setUp(self):
         super().setUp()
