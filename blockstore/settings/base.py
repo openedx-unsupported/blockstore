@@ -324,16 +324,8 @@ BUNDLE_ASSET_URL_STORAGE_KEY = None
 BUNDLE_ASSET_URL_STORAGE_SECRET = None
 
 # .. setting_name: BUNDLE_ASSET_STORAGE_SETTINGS
-# .. setting_default: dict, appropriate for file system storage.
-# .. setting_description: When this is set, `BUNDLE_ASSET_URL_STORAGE_KEY` is
-#  set, and `boto3` is installed, this provides the bucket name and location for blockstore assets stored in S3.
-#  See `blockstore.apps.bundles.storage.LongLivedSignedUrlStorage` for details.
-BUNDLE_ASSET_STORAGE_SETTINGS = dict(
-    # Backend storage
-    # STORAGE_CLASS='storages.backends.s3boto.S3BotoStorage',
-    # STORAGE_KWARGS=dict(bucket='bundle-asset-bucket', location='/path-to-bundles/'),
-    STORAGE_KWARGS=dict(
-        location=MEDIA_ROOT,
-        base_url=MEDIA_URL,
-    ),
-)
+# .. setting_default: empty dict, uses django DEFAULT_STORAGE_CLASS and settings.
+# .. setting_description: Provide `STORAGE_CLASS` and (optional) `STORAGE_KWARGS`
+#  to configure the storage settings for bundle asset files.
+#  See `blockstore.apps.bundles.storage.AssetStorage` for details.
+BUNDLE_ASSET_STORAGE_SETTINGS = {}
