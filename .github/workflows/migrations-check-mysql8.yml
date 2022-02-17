@@ -62,14 +62,14 @@ jobs:
           UPDATE mysql.user SET authentication_string = null WHERE user = 'root';
           FLUSH PRIVILEGES;
         EOF
-    - name: Run Tests
+    - name: Run migrations
       env:
         DB_ENGINE: django.db.backends.mysql
-        DB_NAME: blockstore
-        DB_USER: root
-        DB_PASSWORD:
-        DB_HOST: localhost
-        DB_PORT: 3306
+        MYSQL_DATABASE: blockstore
+        MYSQL_USER: root
+        MYSQL_ROOT_PASSWORD:
+        MYSQL_HOST: localhost
+        MYSQL_PORT: 3306
       run: |
         echo "CREATE DATABASE IF NOT EXISTS blockstore;" | sudo mysql -u root
         echo "Running the migrations."
