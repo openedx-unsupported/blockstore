@@ -74,4 +74,3 @@ jobs:
         echo "CREATE DATABASE IF NOT EXISTS blockstore;" | sudo mysql -u root
         echo "Running the migrations."
         python manage.py migrate --settings=blockstore.settings.test
-        echo "use mysql; select * from user;" | sudo mysql -u root
