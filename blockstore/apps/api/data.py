@@ -7,13 +7,7 @@ from uuid import UUID
 
 import attr
 
-from blockstore.apps.bundles.links import Dependency
-
-
-def _convert_to_uuid(value):
-    if not isinstance(value, UUID):
-        return UUID(value)
-    return value
+from blockstore.apps.bundles.links import convert_to_uuid, Dependency
 
 
 @attr.s(frozen=True)
@@ -21,7 +15,7 @@ class CollectionData:
     """
     Metadata about a blockstore collection
     """
-    uuid = attr.ib(type=UUID, converter=_convert_to_uuid)
+    uuid = attr.ib(type=UUID, converter=convert_to_uuid)
     title = attr.ib(type=str)
 
 
@@ -30,7 +24,7 @@ class BundleData:
     """
     Metadata about a blockstore bundle
     """
-    uuid = attr.ib(type=UUID, converter=_convert_to_uuid)
+    uuid = attr.ib(type=UUID, converter=convert_to_uuid)
     title = attr.ib(type=str)
     description = attr.ib(type=str)
     slug = attr.ib(type=str)
@@ -44,8 +38,8 @@ class DraftData:
     """
     Metadata about a blockstore draft
     """
-    uuid = attr.ib(type=UUID, converter=_convert_to_uuid)
-    bundle_uuid = attr.ib(type=UUID, converter=_convert_to_uuid)
+    uuid = attr.ib(type=UUID, converter=convert_to_uuid)
+    bundle_uuid = attr.ib(type=UUID, converter=convert_to_uuid)
     name = attr.ib(type=str)
     created_at = attr.ib(type=datetime, validator=attr.validators.instance_of(datetime))
     updated_at = attr.ib(type=datetime, validator=attr.validators.instance_of(datetime))
@@ -58,7 +52,7 @@ class BundleVersionData:
     """
     Metadata about a blockstore bundle version.
     """
-    bundle_uuid = attr.ib(type=UUID, converter=_convert_to_uuid)
+    bundle_uuid = attr.ib(type=UUID, converter=convert_to_uuid)
     version = attr.ib(type=int, validator=attr.validators.instance_of(int))
     change_description = attr.ib(type=str)
     created_at = attr.ib(type=datetime, validator=attr.validators.instance_of(datetime))
