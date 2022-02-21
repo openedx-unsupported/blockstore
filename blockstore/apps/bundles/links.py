@@ -12,9 +12,12 @@ import attr
 
 
 def convert_to_uuid(value):
-    if not isinstance(value, UUID):
-        return UUID(value)
-    return value
+    """
+    Returns a UUID from the given (string or UUID) value.
+    """
+    if isinstance(value, UUID):
+        return value
+    return UUID(value)
 
 
 @attr.s(frozen=True)
