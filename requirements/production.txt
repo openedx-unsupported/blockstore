@@ -10,11 +10,11 @@ asgiref==3.5.0
     #   django
 attrs==21.4.0
     # via -r requirements/base.txt
-boto3==1.21.6
+boto3==1.21.11
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.24.6
+botocore==1.24.11
     # via
     #   boto3
     #   s3transfer
@@ -130,7 +130,7 @@ markupsafe==2.1.0
     #   jinja2
 mysqlclient==2.1.0
     # via -r requirements/base.txt
-newrelic==7.4.0.172
+newrelic==7.6.0.173
     # via
     #   -r requirements/base.txt
     #   -r requirements/production.in
@@ -203,7 +203,7 @@ ruamel-yaml-clib==0.2.6
     # via
     #   -r requirements/base.txt
     #   ruamel-yaml
-s3transfer==0.5.1
+s3transfer==0.5.2
     # via boto3
 six==1.16.0
     # via
