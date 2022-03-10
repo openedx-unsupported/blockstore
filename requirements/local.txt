@@ -145,7 +145,7 @@ edx-sphinx-theme==3.0.0
     # via -r requirements/docs.txt
 factory-boy==3.2.1
     # via -r requirements/test.txt
-faker==13.3.0
+faker==13.3.1
     # via
     #   -r requirements/test.txt
     #   factory-boy

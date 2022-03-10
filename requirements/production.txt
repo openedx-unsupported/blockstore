@@ -10,11 +10,11 @@ asgiref==3.5.0
     #   django
 attrs==21.4.0
     # via -r requirements/base.txt
-boto3==1.21.11
+boto3==1.21.16
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.24.11
+botocore==1.24.16
     # via
     #   boto3
     #   s3transfer
