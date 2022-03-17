@@ -20,7 +20,7 @@ coreschema==0.0.4
     # via
     #   coreapi
     #   drf-yasg
-cryptography==36.0.1
+cryptography==36.0.2
     # via
     #   pyjwt
     #   social-auth-core
@@ -78,7 +78,7 @@ itypes==1.2.0
     # via coreapi
 jinja2==3.0.3
     # via coreschema
-markupsafe==2.1.0
+markupsafe==2.1.1
     # via jinja2
 mysqlclient==2.1.0
     # via -r requirements/base.in
@@ -144,5 +144,5 @@ uritemplate==4.1.1
     # via
     #   coreapi
     #   drf-yasg
-urllib3==1.26.8
+urllib3==1.26.9
     # via requests
