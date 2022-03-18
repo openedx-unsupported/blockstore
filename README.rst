@@ -1,23 +1,53 @@
 Blockstore
 ===================================================
 
-Blockstore is a system for authoring, discovering, and reusing educational content for Open edX.
-It is meant to be a lower-level service than the modulestore, and is designed around the concept of storing small, reusable pieces of content, rather than large, fixed content structures such as courses.
-For Open edX, Blockstore is designed to facilitate a much greater level of content re-use than is currently possible, enable new adaptive learning features, and enable delivery of learning content in new ways (not just large traditional courses).
+Blockstore is a system for storing versioned, reusable educational content for Open edX.
 
-See DESIGN_ for more details, although note that some aspects of the approach have changed since that document was created.
+It is designed as a replacement for `modulestore <https://github.com/openedx/edx-platform/tree/master/common/lib/xmodule/xmodule/modulestore>`_. It is meant to be a lower-level service than the modulestore, and is designed around the concept of storing small, reusable pieces of content, rather than large, fixed content structures such as courses. For Open edX, Blockstore is designed to facilitate a much greater level of content re-use than is currently possible, enable new adaptive learning features, and enable delivery of learning content in new ways (not just large traditional courses).
 
-Blockstore is currently implemented as an independently deployed application (IDA), and is **not** included by default in a standard installation of Open edX or Open edX devstack. We plan to move Blockstore into Studio in the future - see `App, Not Service <decisions/0002-app-not-service.rst>`_ for details.
+.. list-table:: Comparison
+   :widths: 20 40 40
+   :header-rows: 1
 
-Blockstore has been developed by Harvard's LabXchange_ and the `Amgen Foundation`_, with significant in-kind contributions from edX_.
+   * - System
+     - Modulestore
+     - Blockstore
+   * - Goal
+     - Designed to store courses consisting of a hierarchy of XModules (and later, XBlocks)
+     - Designed around the concept of storing small, reusable pieces of content which are simply files. Can be used for content libraries, courses, or any other purpose.
+   * - Stores data in
+     - MongoDB
+     - S3 (or similar)
+   * - Stores XBlock data as
+     - JSON field data, with "settings" and "content" fields separated in different documents
+     - `OLX <https://edx.readthedocs.io/projects/edx-open-learning-xml/en/latest/what-is-olx.html>`_
+   * - Content re-use
+     - Very limited support
+     - Built in support
+   * - Focus
+     - Includes deeply integrated XModule runtime, increasing complexity
+     - Not aware of XBlocks; XBlock runtime is implemented `separately <https://github.com/openedx/edx-platform/blob/master/openedx/core/djangoapps/xblock/runtime/blockstore_runtime.py>`_
+   * - Image/PDF/other asset files used for each XBlock are stored
+     - In MongoDB at the course level (contentstore/GridFS)
+     - Alongside each XBlock's OLX file. Associated with the individual XBlock, not the course.
 
-.. _DESIGN: https://openedx.atlassian.net/wiki/spaces/AC/pages/737149430/Blockstore+Design
+Blockstore was originally developed by Harvard's  `LabXchange <https://www.labxchange.org/>`_ and the `Amgen Foundation <https://www.amgen.com/responsibility/amgen-foundation/>`_, along with `edX <https://www.edx.org>`_.
 
-.. _LabXchange: https://about.labxchange.org
+Current Status
+--------------
 
-.. _`Amgen Foundation`: https://www.amgen.com/responsibility/amgen-foundation/
+Blockstore is currently implemented as an independently deployed application (IDA), and is used to power `Content Libraries v2 <https://github.com/openedx/frontend-app-library-authoring#readme>`_ as well as `LabXchange <https://www.labxchange.org/>`_.
 
-.. _edX: https://www.edx.org
+Blockstore is **not** included by default in a standard installation of Open edX or Open edX devstack. However, we are current (March 2022) `moving blockstore into edx-platform <decisions/0002-app-not-service.rst>`_ - see https://github.com/openedx/blockstore/pull/149 and https://github.com/openedx/edx-platform/pull/29779 for the current status of that work.
+
+Design Details
+--------------
+
+This will talk about the Blockstore design.
+
+
+See `DESIGN <https://openedx.atlassian.net/wiki/spaces/AC/pages/737149430/Blockstore+Design>`_ for older description of the approach, although note that some aspects of the approach have changed since that document was created.
+
 
 Using with Docker Devstack
 --------------------------
