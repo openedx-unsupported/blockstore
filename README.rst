@@ -1,5 +1,6 @@
+==========
 Blockstore
-===================================================
+==========
 
 Blockstore is a system for storing versioned, reusable educational content for Open edX.
 
@@ -33,22 +34,22 @@ It is designed as a replacement for `modulestore <https://github.com/openedx/edx
 
 Blockstore was originally developed by Harvard's  `LabXchange <https://www.labxchange.org/>`_ and the `Amgen Foundation <https://www.amgen.com/responsibility/amgen-foundation/>`_, along with `edX <https://www.edx.org>`_.
 
+--------------
 Current Status
 --------------
 
 Blockstore is currently implemented as an independently deployed application (IDA), and is used to power `Content Libraries v2 <https://github.com/openedx/frontend-app-library-authoring#readme>`_ as well as `LabXchange <https://www.labxchange.org/>`_.
 
-Blockstore is **not** included by default in a standard installation of Open edX or Open edX devstack. However, we are current (March 2022) `moving blockstore into edx-platform <decisions/0002-app-not-service.rst>`_ - see https://github.com/openedx/blockstore/pull/149 and https://github.com/openedx/edx-platform/pull/29779 for the current status of that work.
+Blockstore is **not** included by default in a standard installation of Open edX or Open edX devstack. However, we are currently (March 2022) `moving blockstore into edx-platform <decisions/0002-app-not-service.rst>`_ - see https://github.com/openedx/blockstore/pull/149 and https://github.com/openedx/edx-platform/pull/29779 for the current status of that work.
 
+--------------
 Design Details
 --------------
 
-This will talk about the Blockstore design.
+See `DESIGN <DESIGN.rst>`_ for an overview of Blockstore's design as it exists today. See `"Blockstore Design" <https://openedx.atlassian.net/wiki/spaces/AC/pages/737149430/Blockstore+Design>`_ on the wiki for historical context.
 
 
-See `DESIGN <https://openedx.atlassian.net/wiki/spaces/AC/pages/737149430/Blockstore+Design>`_ for older description of the approach, although note that some aspects of the approach have changed since that document was created.
-
-
+--------------------------
 Using with Docker Devstack
 --------------------------
 
@@ -109,8 +110,9 @@ Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ p
    ``OPENEDX_PROJECT_NAME`` and substitute the container names in the commands
    above accordingly.
 
+-------------
 Running Tests
-=============
+-------------
 
 Unit Tests
 ----------
@@ -160,6 +162,7 @@ To run these integration tests while using a specific container's version of Ela
    EDXAPP_RUN_BLOCKSTORE_TESTS=1 EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 EDXAPP_TEST_ELASTICSEARCH_HOST=edx.devstack.elasticsearch710 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
    EDXAPP_RUN_BLOCKSTORE_TESTS=1 EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 EDXAPP_TEST_ELASTICSEARCH_HOST=edx.devstack.elasticsearch710 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
 
+-------------------
 Using in Production
 -------------------
 
@@ -194,11 +197,13 @@ Here is an example of setting the ansible variables to deploy Blockstore, assumi
    EDXAPP_CMS_ENV_EXTRA:
        BLOCKSTORE_API_AUTH_TOKEN: secretvalue1here
 
+--------
 Get Help
 --------
 
 Ask questions and discuss this project on `Slack <https://openedx.slack.com/messages/general/>`_ or the `Open edX Community Discussion Forum <https://discuss.openedx.org/>`_.
 
+-------
 License
 -------
 
@@ -206,11 +211,13 @@ The code in this repository is licensed under version 3 of the AGPL unless other
 
 .. _LICENSE: https://github.com/edx/blockstore/blob/master/LICENSE
 
+-----------------
 How To Contribute
 -----------------
 
 Contributions are welcome. Please read `How To Contribute <https://github.com/edx/edx-platform/blob/master/CONTRIBUTING.rst>`_ for details. Even though it was written with ``edx-platform`` in mind, these guidelines should be followed for Open edX code in general.
 
+-------------------------
 Reporting Security Issues
 -------------------------
 
