@@ -68,7 +68,7 @@ edx-auth-backends==4.1.0
     # via -r requirements/base.in
 edx-django-release-util==1.2.0
     # via -r requirements/base.in
-edx-django-utils==4.5.0
+edx-django-utils==4.6.0
     # via -r requirements/base.in
 idna==3.3
     # via requests
@@ -106,7 +106,7 @@ pyparsing==3.0.7
     # via packaging
 python3-openid==3.2.0
     # via social-auth-core
-pytz==2021.3
+pytz==2022.1
     # via
     #   -r requirements/base.in
     #   django
