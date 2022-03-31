@@ -27,3 +27,16 @@ _____
   This code has been copied over so it is easier to review the Python API
   implementation in development.
 * Make code into an installable package.
+
+[1.2.0] - 2021-01-25
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Added
+_____
+
+* Adds API unit tests to improve test coverage.
+
+Changed
+_______
+
+* Updates the Python API to use the models directly.

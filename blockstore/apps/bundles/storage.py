@@ -90,11 +90,19 @@ class LongLivedSignedUrlStorage(Storage):  # pylint: disable=abstract-method
             raise self.BackendNotAvailable from attr_error
         if not (key and secret):
             raise self.BackendNotAvailable
-        self.s3_backend = S3Boto3Storage(
-            # All other S3 settings will be pulled in automatically from Django settings
-            # (such as AWS_QUERYSTRING_EXPIRE and AWS_STORAGE_BUCKET_NAME).
-            access_key=key, secret_key=secret
+
+        # Merge the special key and secret with extra storage args when configuring
+        # the S3 URLs backend.
+        # All other S3 settings will be pulled in automatically from Django settings
+        # (such as AWS_QUERYSTRING_EXPIRE and AWS_STORAGE_BUCKET_NAME).
+        s3_backend_args = dict(
+            **settings.BUNDLE_ASSET_STORAGE_SETTINGS['STORAGE_KWARGS']
         )
+        s3_backend_args.update(
+            access_key=key,
+            secret_key=secret,
+        )
+        self.s3_backend = S3Boto3Storage(**s3_backend_args)
 
     def url(self, name):
         """
@@ -116,55 +124,65 @@ class AssetStorage(Storage):
         """
         Initialize an instance of AssetStorage.
 
+        Use the BUNDLE_ASSET_STORAGE_SETTINGS['STORAGE_CLASS'] if provided; otherwise
+        fall back to the default storage class.
+
         If `LongLivedSignedUrlStorage` is active, then instantiate an instance of
-        it for generating URLs; otherwise, fall back to the default storage class.
+        it for generating URLs; otherwise, use the asset storage class defined above.
         """
+        storage_class = settings.BUNDLE_ASSET_STORAGE_SETTINGS.get('STORAGE_CLASS')
+        storage_kwargs = settings.BUNDLE_ASSET_STORAGE_SETTINGS.get('STORAGE_KWARGS', {})
+        if storage_class:
+            self.asset_backend = get_storage_class(storage_class)(**storage_kwargs)
+        else:
+            self.asset_backend = default_storage
+
         try:
             self.url_backend = LongLivedSignedUrlStorage()
         except LongLivedSignedUrlStorage.BackendNotAvailable:
-            self.url_backend = default_storage
+            self.url_backend = self.asset_backend
 
     def url(self, name):
         return self.url_backend.url(name)
 
     def delete(self, name):
-        return default_storage.delete(name)
+        return self.asset_backend.delete(name)
 
     def exists(self, name):
-        return default_storage.exists(name)
+        return self.asset_backend.exists(name)
 
     def listdir(self, path):
-        return default_storage.listdir(path)
+        return self.asset_backend.listdir(path)
 
     def path(self, name):
-        return default_storage.path(name)
+        return self.asset_backend.path(name)
 
     def size(self, name):
-        return default_storage.size(name)
+        return self.asset_backend.size(name)
 
     def get_accessed_time(self, name):
-        return default_storage.get_accessed_time(name)
+        return self.asset_backend.get_accessed_time(name)
 
     def get_created_time(self, name):
-        return default_storage.get_created_time(name)
+        return self.asset_backend.get_created_time(name)
 
     def get_modified_time(self, name):
-        return default_storage.get_modified_time(name)
+        return self.asset_backend.get_modified_time(name)
 
     def get_valid_name(self, name):
-        return default_storage.get_valid_name(name)
+        return self.asset_backend.get_valid_name(name)
 
     def get_alternative_name(self, file_root, file_ext):
-        return default_storage.get_alternative_name(file_root, file_ext)
+        return self.asset_backend.get_alternative_name(file_root, file_ext)
 
     def get_available_name(self, name, max_length=None):
-        return default_storage.get_available_name(name, max_length=None)
+        return self.asset_backend.get_available_name(name, max_length=None)
 
     def _open(self, name, mode='rb'):
-        return default_storage._open(name, mode=mode)  # pylint: disable=protected-access
+        return self.asset_backend._open(name, mode=mode)  # pylint: disable=protected-access
 
     def _save(self, name, content):
-        return default_storage._save(name, content)  # pylint: disable=protected-access
+        return self.asset_backend._save(name, content)  # pylint: disable=protected-access
 
 
 default_asset_storage = AssetStorage()

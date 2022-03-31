@@ -11,12 +11,21 @@ import codecs
 import attr
 
 
+def convert_to_uuid(value):
+    """
+    Returns a UUID from the given (string or UUID) value.
+    """
+    if isinstance(value, UUID):
+        return value
+    return UUID(value)
+
+
 @attr.s(frozen=True)
 class Dependency:
     """
     A Dependency is a pointer to exactly one Bundle + Version + Snapshot.
     """
-    bundle_uuid = attr.ib(type=UUID)
+    bundle_uuid = attr.ib(type=UUID, converter=convert_to_uuid)
     version = attr.ib(type=int)
     snapshot_digest = attr.ib(type=bytes)
 

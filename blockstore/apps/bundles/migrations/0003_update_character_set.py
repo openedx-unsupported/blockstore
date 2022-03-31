@@ -3,6 +3,9 @@
 from django.db import migrations, models
 
 
+from blockstore.apps.bundles.models import DB_COLLATION
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -13,31 +16,31 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='bundle',
             name='description',
-            field=models.TextField(blank=True, db_collation='utf8mb4_general_ci', max_length=10000),
+            field=models.TextField(blank=True, db_collation=DB_COLLATION, max_length=10000),
         ),
         migrations.AlterField(
             model_name='bundle',
             name='slug',
-            field=models.SlugField(allow_unicode=True, db_collation='utf8mb4_general_ci'),
+            field=models.SlugField(allow_unicode=True, db_collation=DB_COLLATION),
         ),
         migrations.AlterField(
             model_name='bundle',
             name='title',
-            field=models.CharField(db_collation='utf8mb4_general_ci', db_index=True, max_length=180),
+            field=models.CharField(db_collation=DB_COLLATION, db_index=True, max_length=180),
         ),
         migrations.AlterField(
             model_name='bundleversion',
             name='change_description',
-            field=models.TextField(blank=True, db_collation='utf8mb4_general_ci', max_length=1000),
+            field=models.TextField(blank=True, db_collation=DB_COLLATION, max_length=1000),
         ),
         migrations.AlterField(
             model_name='collection',
             name='title',
-            field=models.CharField(db_collation='utf8mb4_general_ci', db_index=True, max_length=180),
+            field=models.CharField(db_collation=DB_COLLATION, db_index=True, max_length=180),
         ),
         migrations.AlterField(
             model_name='draft',
             name='name',
-            field=models.CharField(db_collation='utf8mb4_general_ci', max_length=180),
+            field=models.CharField(db_collation=DB_COLLATION, max_length=180),
         ),
     ]

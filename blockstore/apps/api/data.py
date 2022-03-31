@@ -7,28 +7,24 @@ from uuid import UUID
 
 import attr
 
-
-def _convert_to_uuid(value):
-    if not isinstance(value, UUID):
-        return UUID(value)
-    return value
+from blockstore.apps.bundles.links import convert_to_uuid, Dependency
 
 
 @attr.s(frozen=True)
-class Collection:
+class CollectionData:
     """
     Metadata about a blockstore collection
     """
-    uuid = attr.ib(type=UUID, converter=_convert_to_uuid)
+    uuid = attr.ib(type=UUID, converter=convert_to_uuid)
     title = attr.ib(type=str)
 
 
 @attr.s(frozen=True)
-class Bundle:
+class BundleData:
     """
     Metadata about a blockstore bundle
     """
-    uuid = attr.ib(type=UUID, converter=_convert_to_uuid)
+    uuid = attr.ib(type=UUID, converter=convert_to_uuid)
     title = attr.ib(type=str)
     description = attr.ib(type=str)
     slug = attr.ib(type=str)
@@ -38,20 +34,34 @@ class Bundle:
 
 
 @attr.s(frozen=True)
-class Draft:
+class DraftData:
     """
     Metadata about a blockstore draft
     """
-    uuid = attr.ib(type=UUID, converter=_convert_to_uuid)
-    bundle_uuid = attr.ib(type=UUID, converter=_convert_to_uuid)
+    uuid = attr.ib(type=UUID, converter=convert_to_uuid)
+    bundle_uuid = attr.ib(type=UUID, converter=convert_to_uuid)
     name = attr.ib(type=str)
+    created_at = attr.ib(type=datetime, validator=attr.validators.instance_of(datetime))
     updated_at = attr.ib(type=datetime, validator=attr.validators.instance_of(datetime))
     files = attr.ib(type=dict)
     links = attr.ib(type=dict)
 
 
 @attr.s(frozen=True)
-class BundleFile:
+class BundleVersionData:
+    """
+    Metadata about a blockstore bundle version.
+    """
+    bundle_uuid = attr.ib(type=UUID, converter=convert_to_uuid)
+    version = attr.ib(type=int, validator=attr.validators.instance_of(int))
+    change_description = attr.ib(type=str)
+    created_at = attr.ib(type=datetime, validator=attr.validators.instance_of(datetime))
+    files = attr.ib(type=dict)
+    links = attr.ib(type=dict)
+
+
+@attr.s(frozen=True)
+class BundleFileData:
     """
     Metadata about a file in a blockstore bundle or draft.
     """
@@ -62,7 +72,7 @@ class BundleFile:
 
 
 @attr.s(frozen=True)
-class DraftFile(BundleFile):
+class DraftFileData(BundleFileData):
     """
     Metadata about a file in a blockstore draft.
     """
@@ -70,27 +80,17 @@ class DraftFile(BundleFile):
 
 
 @attr.s(frozen=True)
-class LinkReference:
-    """
-    A pointer to a specific BundleVersion
-    """
-    bundle_uuid = attr.ib(type=UUID, converter=_convert_to_uuid)
-    version = attr.ib(type=int)
-    snapshot_digest = attr.ib(type=str)
-
-
-@attr.s(frozen=True)
-class LinkDetails:
+class BundleLinkData:
     """
     Details about a specific link in a BundleVersion or Draft
     """
     name = attr.ib(type=str)
-    direct = attr.ib(type=LinkReference)
-    indirect = attr.ib(type=list)  # List of LinkReference objects
+    direct = attr.ib(type=Dependency)
+    indirect = attr.ib(type=list)  # List of Dependency objects
 
 
 @attr.s(frozen=True)
-class DraftLinkDetails(LinkDetails):
+class DraftLinkData(BundleLinkData):
     """
     Details about a specific link in a Draft
     """

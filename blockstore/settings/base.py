@@ -302,11 +302,14 @@ LOGGING = {
     }
 }
 
+################################################################################
+# BUNDLES CONFIGURATION
+
 # .. setting_name: BUNDLE_ASSET_URL_STORAGE_KEY
 # .. setting_default: None
 # .. setting_description: When this is set, `BUNDLE_ASSET_URL_STORAGE_SECRET` is
 #  set, and `boto3` is installed, this is used as an AWS IAM access key for
-#  generating signed, read-only URLs for assets stored in S3.
+#  generating signed, read-only URLs for blockstore assets stored in S3.
 #  Otherwise, URLs are generated based on the default storage configuration.
 #  See `blockstore.apps.bundles.storage.LongLivedSignedUrlStorage` for details.
 BUNDLE_ASSET_URL_STORAGE_KEY = None
@@ -315,7 +318,14 @@ BUNDLE_ASSET_URL_STORAGE_KEY = None
 # .. setting_default: None
 # .. setting_description: When this is set, `BUNDLE_ASSET_URL_STORAGE_KEY` is
 #  set, and `boto3` is installed, this is used as an AWS IAM secret key for
-#  generating signed, read-only URLs for assets stored in S3.
+#  generating signed, read-only URLs for blockstore assets stored in S3.
 #  Otherwise, URLs are generated based on the default storage configuration.
 #  See `blockstore.apps.bundles.storage.LongLivedSignedUrlStorage` for details.
 BUNDLE_ASSET_URL_STORAGE_SECRET = None
+
+# .. setting_name: BUNDLE_ASSET_STORAGE_SETTINGS
+# .. setting_default: empty dict, uses django DEFAULT_STORAGE_CLASS and settings.
+# .. setting_description: Provide `STORAGE_CLASS` and (optional) `STORAGE_KWARGS`
+#  to configure the storage settings for bundle asset files.
+#  See `blockstore.apps.bundles.storage.AssetStorage` for details.
+BUNDLE_ASSET_STORAGE_SETTINGS = {}
