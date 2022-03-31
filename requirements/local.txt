@@ -12,7 +12,7 @@ asgiref==3.5.0
     # via
     #   -r requirements/test.txt
     #   django
-astroid==2.9.3
+astroid==2.11.2
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -43,7 +43,7 @@ charset-normalizer==2.0.12
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-click==8.0.4
+click==8.1.1
     # via
     #   -r requirements/test.txt
     #   click-log
@@ -82,8 +82,12 @@ defusedxml==0.7.1
     #   -r requirements/test.txt
     #   python3-openid
     #   social-auth-core
-diff-cover==6.4.4
+diff-cover==6.4.5
     # via -r requirements/test.txt
+dill==0.3.4
+    # via
+    #   -r requirements/test.txt
+    #   pylint
 django==3.2.12
     # via
     #   -c requirements/common_constraints.txt
@@ -111,7 +115,7 @@ django-environ==0.8.1
     # via -r requirements/test.txt
 django-filter==21.1
     # via -r requirements/test.txt
-django-waffle==2.3.0
+django-waffle==2.4.1
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -139,13 +143,13 @@ edx-django-release-util==1.2.0
     # via -r requirements/test.txt
 edx-django-utils==4.6.0
     # via -r requirements/test.txt
-edx-lint==5.2.1
+edx-lint==5.2.2
     # via -r requirements/test.txt
 edx-sphinx-theme==3.0.0
     # via -r requirements/docs.txt
 factory-boy==3.2.1
     # via -r requirements/test.txt
-faker==13.3.3
+faker==13.3.4
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -178,7 +182,7 @@ itypes==1.2.0
     # via
     #   -r requirements/test.txt
     #   coreapi
-jinja2==3.0.3
+jinja2==3.1.1
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -195,11 +199,11 @@ markupsafe==2.1.1
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   jinja2
-mccabe==0.6.1
+mccabe==0.7.0
     # via
     #   -r requirements/test.txt
     #   pylint
-mypy==0.941
+mypy==0.942
     # via -r requirements/test.txt
 mypy-extensions==0.4.3
     # via
@@ -263,7 +267,7 @@ pyjwt[crypto]==2.3.0
     #   -r requirements/test.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.12.2
+pylint==2.13.3
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -274,7 +278,7 @@ pylint-celery==0.3
     # via
     #   -r requirements/test.txt
     #   edx-lint
-pylint-django==2.5.2
+pylint-django==2.5.3
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -364,7 +368,7 @@ social-auth-core==4.2.0
     #   -r requirements/test.txt
     #   edx-auth-backends
     #   social-auth-app-django
-sphinx==4.4.0
+sphinx==4.5.0
     # via
     #   -r requirements/docs.txt
     #   edx-sphinx-theme
@@ -406,15 +410,12 @@ text-unidecode==1.3
     # via
     #   -r requirements/test.txt
     #   python-slugify
-toml==0.10.2
-    # via
-    #   -r requirements/test.txt
-    #   pylint
 tomli==2.0.1
     # via
     #   -r requirements/test.txt
     #   coverage
     #   mypy
+    #   pylint
     #   pytest
 typing-extensions==4.1.1
     # via
@@ -432,7 +433,7 @@ urllib3==1.26.9
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
-wrapt==1.13.3
+wrapt==1.14.0
     # via
     #   -r requirements/test.txt
     #   astroid
