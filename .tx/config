@@ -1,14 +1,15 @@
 [main]
 host = https://www.transifex.com
 
-[edx-platform.blockstore]
+[o:open-edx:p:edx-platform:r:blockstore]
 file_filter = blockstore/conf/locale/<lang>/LC_MESSAGES/django.po
 source_file = blockstore/conf/locale/en/LC_MESSAGES/django.po
 source_lang = en
-type = PO
+type        = PO
 
-[edx-platform.blockstore-js]
+[o:open-edx:p:edx-platform:r:blockstore-js]
 file_filter = blockstore/conf/locale/<lang>/LC_MESSAGES/djangojs.po
 source_file = blockstore/conf/locale/en/LC_MESSAGES/djangojs.po
 source_lang = en
-type = PO
+type        = PO
+
