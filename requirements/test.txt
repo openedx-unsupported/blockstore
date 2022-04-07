@@ -31,7 +31,7 @@ charset-normalizer==2.0.12
     # via
     #   -r requirements/base.txt
     #   requests
-click==8.1.1
+click==8.1.2
     # via
     #   click-log
     #   code-annotations
@@ -159,7 +159,7 @@ mypy-extensions==0.4.3
     # via mypy
 mysqlclient==2.1.0
     # via -r requirements/base.txt
-newrelic==7.6.0.173
+newrelic==7.10.0.175
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -204,7 +204,7 @@ pyjwt[crypto]==2.3.0
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.13.3
+pylint==2.13.5
     # via
     #   edx-lint
     #   pylint-celery
