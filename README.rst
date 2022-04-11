@@ -28,6 +28,9 @@ It is designed as a replacement for `modulestore <https://github.com/openedx/edx
    * - Focus
      - Includes deeply integrated XModule runtime, increasing complexity
      - Not aware of XBlocks; XBlock runtime is implemented `separately <https://github.com/openedx/edx-platform/blob/master/openedx/core/djangoapps/xblock/runtime/blockstore_runtime.py>`_
+   * - Associated XBlock runtime (LMS)
+     -  `LmsModuleSystem <https://github.com/openedx/edx-platform/blob/db32ff2cdf678fa8edd12c9da76a76eef0478614/lms/djangoapps/lms_xblock/runtime.py#L137>`_
+     -  `BlockstoreXBlockRuntime <https://github.com/openedx/edx-platform/blob/7dc60db1d9832ae9382e08d2a686626995010338/openedx/core/djangoapps/xblock/runtime/blockstore_runtime.py#L28>`_
    * - Image/PDF/other asset files used for each XBlock are stored
      - In MongoDB at the course level (contentstore/GridFS)
      - Alongside each XBlock's OLX file. Associated with the individual XBlock, not the course.
@@ -40,7 +43,7 @@ Current Status
 
 Blockstore is currently implemented as an independently deployed application (IDA), and is used to power `Content Libraries v2 <https://github.com/openedx/frontend-app-library-authoring#readme>`_ as well as `LabXchange <https://www.labxchange.org/>`_.
 
-Blockstore is **not** included by default in a standard installation of Open edX or Open edX devstack. However, we are currently (March 2022) `moving blockstore into edx-platform <decisions/0002-app-not-service.rst>`_ - see https://github.com/openedx/blockstore/pull/149 and https://github.com/openedx/edx-platform/pull/29779 for the current status of that work.
+Blockstore is **not** included by default in a standard installation of Open edX or Open edX devstack. However, we are currently (April 2022) `moving blockstore into edx-platform <decisions/0002-app-not-service.rst>`_ - see https://github.com/openedx/edx-platform/pull/29779 for the current status of that work.
 
 --------------
 Design Details
