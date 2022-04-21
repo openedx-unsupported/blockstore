@@ -8,7 +8,7 @@ asgiref==3.5.0
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.11.2
+astroid==2.11.3
     # via
     #   -r requirements/test.in
     #   pylint
@@ -65,7 +65,7 @@ defusedxml==0.7.1
     #   -r requirements/base.txt
     #   python3-openid
     #   social-auth-core
-diff-cover==6.4.5
+diff-cover==6.5.0
     # via -r requirements/test.in
 dill==0.3.4
     # via pylint
@@ -121,7 +121,7 @@ edx-lint==5.2.2
     # via -r requirements/test.in
 factory-boy==3.2.1
     # via -r requirements/test.in
-faker==13.3.4
+faker==13.3.5
     # via factory-boy
 idna==3.3
     # via
@@ -177,7 +177,7 @@ pbr==5.8.1
     # via
     #   -r requirements/base.txt
     #   stevedore
-platformdirs==2.5.1
+platformdirs==2.5.2
     # via pylint
 pluggy==1.0.0
     # via
@@ -204,7 +204,7 @@ pyjwt[crypto]==2.3.0
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.13.5
+pylint==2.13.7
     # via
     #   edx-lint
     #   pylint-celery
@@ -301,7 +301,7 @@ tomli==2.0.1
     #   mypy
     #   pylint
     #   pytest
-typing-extensions==4.1.1
+typing-extensions==4.2.0
     # via
     #   astroid
     #   mypy
