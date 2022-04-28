@@ -10,11 +10,11 @@ asgiref==3.5.0
     #   django
 attrs==21.4.0
     # via -r requirements/base.txt
-boto3==1.21.40
+boto3==1.22.2
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.24.40
+botocore==1.25.2
     # via
     #   boto3
     #   s3transfer
@@ -39,7 +39,7 @@ coreschema==0.0.4
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-cryptography==36.0.2
+cryptography==37.0.1
     # via
     #   -r requirements/base.txt
     #   pyjwt
