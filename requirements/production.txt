@@ -4,17 +4,17 @@
 #
 #    make upgrade
 #
-asgiref==3.5.0
+asgiref==3.5.1
     # via
     #   -r requirements/base.txt
     #   django
 attrs==21.4.0
     # via -r requirements/base.txt
-boto3==1.21.40
+boto3==1.22.7
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.24.40
+botocore==1.25.7
     # via
     #   boto3
     #   s3transfer
@@ -39,7 +39,7 @@ coreschema==0.0.4
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-cryptography==36.0.2
+cryptography==37.0.2
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -116,7 +116,7 @@ itypes==1.2.0
     # via
     #   -r requirements/base.txt
     #   coreapi
-jinja2==3.1.1
+jinja2==3.1.2
     # via
     #   -r requirements/base.txt
     #   coreschema
