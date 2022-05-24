@@ -12,6 +12,7 @@ from rest_framework.generics import get_object_or_404
 from blockstore.apps.bundles.models import Bundle, BundleVersion
 
 from ...constants import UUID4_REGEX, VERSION_NUM_REGEX
+from ...permissions import IsSuperUserOrAuthorizedApplication
 from ..serializers.bundles import BundleSerializer, BundleVersionSerializer, BundleVersionWithFileDataSerializer
 
 
@@ -50,6 +51,7 @@ class BundleViewSet(viewsets.ModelViewSet):
                      .select_related('collection') \
                      .prefetch_related('drafts', 'versions')
     serializer_class = BundleSerializer
+    permission_classes = [IsSuperUserOrAuthorizedApplication]
 
 
 class BundleVersionViewSet(mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewSet):
@@ -64,6 +66,7 @@ class BundleVersionViewSet(mixins.UpdateModelMixin, viewsets.ReadOnlyModelViewSe
     filterset_fields = ('bundle__uuid', 'bundle__collection__uuid')
 
     queryset = BundleVersion.objects.all().select_related('bundle')
+    permission_classes = [IsSuperUserOrAuthorizedApplication]
 
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())

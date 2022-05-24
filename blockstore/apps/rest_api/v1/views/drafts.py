@@ -55,6 +55,7 @@ from rest_framework.reverse import reverse
 from blockstore.apps.bundles.links import LinkCycleError
 from blockstore.apps.bundles.store import DraftRepo, SnapshotRepo
 from blockstore.apps.bundles.models import BundleVersion, Draft
+from ...permissions import IsSuperUserOrAuthorizedApplication
 from ..serializers.drafts import (
     DraftFileUpdateSerializer,
     DraftSerializer,
@@ -79,6 +80,7 @@ class DraftViewSet(viewsets.ModelViewSet):
     lookup_field = 'uuid'
     page_size = 20
     http_method_names = ['get', 'head', 'options', 'patch', 'post', 'delete']
+    permission_classes = [IsSuperUserOrAuthorizedApplication]
 
     def get_serializer_class(self):
         """
