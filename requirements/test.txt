@@ -8,7 +8,7 @@ asgiref==3.5.2
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.11.5
+astroid==2.11.6
     # via
     #   -r requirements/test.in
     #   pylint
@@ -52,7 +52,7 @@ coreschema==0.0.4
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-coverage[toml]==6.4
+coverage[toml]==6.4.1
     # via
     #   -r requirements/test.in
     #   pytest-cov
@@ -96,7 +96,7 @@ django-environ==0.8.1
     # via -r requirements/base.txt
 django-filter==21.1
     # via -r requirements/base.txt
-django-waffle==2.4.1
+django-waffle==2.5.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -120,11 +120,11 @@ edx-django-release-util==1.2.0
     # via -r requirements/base.txt
 edx-django-utils==5.0.0
     # via -r requirements/base.txt
-edx-lint==5.2.2
+edx-lint==5.2.4
     # via -r requirements/test.in
 factory-boy==3.2.1
     # via -r requirements/test.in
-faker==13.12.0
+faker==13.13.0
     # via factory-boy
 idna==3.3
     # via
@@ -156,13 +156,13 @@ markupsafe==2.1.1
     #   jinja2
 mccabe==0.7.0
     # via pylint
-mypy==0.960
+mypy==0.961
     # via -r requirements/test.in
 mypy-extensions==0.4.3
     # via mypy
 mysqlclient==2.1.0
     # via -r requirements/base.txt
-newrelic==7.10.0.175
+newrelic==7.12.0.176
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -207,7 +207,7 @@ pyjwt[crypto]==2.4.0
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.14.0
+pylint==2.14.1
     # via
     #   edx-lint
     #   pylint-celery
@@ -256,7 +256,7 @@ pyyaml==6.0
     #   -r requirements/base.txt
     #   code-annotations
     #   edx-django-release-util
-requests==2.27.1
+requests==2.28.0
     # via
     #   -r requirements/base.txt
     #   coreapi
@@ -286,7 +286,7 @@ social-auth-app-django==5.0.0
     # via
     #   -r requirements/base.txt
     #   edx-auth-backends
-social-auth-core==4.2.0
+social-auth-core==4.3.0
     # via
     #   -r requirements/base.txt
     #   edx-auth-backends
