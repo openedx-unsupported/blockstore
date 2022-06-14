@@ -12,7 +12,7 @@ asgiref==3.5.2
     # via
     #   -r requirements/test.txt
     #   django
-astroid==2.11.5
+astroid==2.11.6
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -21,7 +21,7 @@ attrs==21.4.0
     # via
     #   -r requirements/test.txt
     #   pytest
-babel==2.10.1
+babel==2.10.2
     # via
     #   -r requirements/docs.txt
     #   sphinx
@@ -68,7 +68,7 @@ coreschema==0.0.4
     #   -r requirements/test.txt
     #   coreapi
     #   drf-yasg
-coverage[toml]==6.4
+coverage[toml]==6.4.1
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -117,7 +117,7 @@ django-environ==0.8.1
     # via -r requirements/test.txt
 django-filter==21.1
     # via -r requirements/test.txt
-django-waffle==2.4.1
+django-waffle==2.5.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -145,13 +145,13 @@ edx-django-release-util==1.2.0
     # via -r requirements/test.txt
 edx-django-utils==5.0.0
     # via -r requirements/test.txt
-edx-lint==5.2.2
+edx-lint==5.2.4
     # via -r requirements/test.txt
 edx-sphinx-theme==3.0.0
     # via -r requirements/docs.txt
 factory-boy==3.2.1
     # via -r requirements/test.txt
-faker==13.12.0
+faker==13.13.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -205,7 +205,7 @@ mccabe==0.7.0
     # via
     #   -r requirements/test.txt
     #   pylint
-mypy==0.960
+mypy==0.961
     # via -r requirements/test.txt
 mypy-extensions==0.4.3
     # via
@@ -213,7 +213,7 @@ mypy-extensions==0.4.3
     #   mypy
 mysqlclient==2.1.0
     # via -r requirements/test.txt
-newrelic==7.10.0.175
+newrelic==7.12.0.176
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -269,7 +269,7 @@ pyjwt[crypto]==2.4.0
     #   -r requirements/test.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.14.0
+pylint==2.14.1
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -331,7 +331,7 @@ pyyaml==6.0
     #   -r requirements/test.txt
     #   code-annotations
     #   edx-django-release-util
-requests==2.27.1
+requests==2.28.0
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -369,12 +369,12 @@ social-auth-app-django==5.0.0
     # via
     #   -r requirements/test.txt
     #   edx-auth-backends
-social-auth-core==4.2.0
+social-auth-core==4.3.0
     # via
     #   -r requirements/test.txt
     #   edx-auth-backends
     #   social-auth-app-django
-sphinx==5.0.0
+sphinx==5.0.1
     # via
     #   -r requirements/docs.txt
     #   edx-sphinx-theme
