@@ -4,8 +4,12 @@ Django Storage backends for bundles app.
 If you don't care about the specifics, just import and use `default_asset_storage`,
 which is a `Storage` instance just like `default_storage`.
 """
+import logging
 from django.conf import settings
 from django.core.files.storage import Storage, default_storage, get_storage_class
+
+
+log = logging.getLogger(__name__)
 
 
 # You probably just want to import this.
@@ -110,6 +114,13 @@ class LongLivedSignedUrlStorage(Storage):  # pylint: disable=abstract-method
         """
         return self.s3_backend.url(name)
 
+    def __repr__(self):
+        return '{}(bucket_name={}, access_key={})'.format(
+            str(self.s3_backend),
+            getattr(self.s3_backend, 'bucket_name', None),
+            getattr(self.s3_backend, 'access_key', 'NOT SET')[-8:],
+        )
+
 
 class AssetStorage(Storage):
     """
@@ -141,6 +152,8 @@ class AssetStorage(Storage):
             self.url_backend = LongLivedSignedUrlStorage()
         except LongLivedSignedUrlStorage.BackendNotAvailable:
             self.url_backend = self.asset_backend
+
+        log.info("BLOCKSTORE AssetStorage: %s", str(self))
 
     def url(self, name):
         return self.url_backend.url(name)
@@ -183,6 +196,15 @@ class AssetStorage(Storage):
 
     def _save(self, name, content):
         return self.asset_backend._save(name, content)  # pylint: disable=protected-access
+
+    def __repr__(self):
+        """Used to log details about the configured storage backend"""
+        return 'asset_backend={}(bucket_name={}, access_key={}), url_backend={})'.format(
+            str(self.asset_backend),
+            getattr(self.asset_backend, 'bucket_name', None),
+            getattr(self.asset_backend, 'access_key', 'NOT SET')[-8:],
+            str(self.url_backend),
+        )
 
 
 default_asset_storage = AssetStorage()
