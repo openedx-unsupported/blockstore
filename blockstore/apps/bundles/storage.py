@@ -199,10 +199,9 @@ class AssetStorage(Storage):
 
     def __repr__(self):
         """Used to log details about the configured storage backend"""
-        return 'asset_backend={}(bucket_name={}, access_key={}), url_backend={})'.format(
+        return 'asset_backend={}(bucket_name={}), url_backend={})'.format(
             str(self.asset_backend),
             getattr(self.asset_backend, 'bucket_name', None),
-            getattr(self.asset_backend, 'access_key', 'NOT SET')[-8:],
             str(self.url_backend),
         )
 
