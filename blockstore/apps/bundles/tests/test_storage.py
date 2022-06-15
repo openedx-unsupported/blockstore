@@ -15,8 +15,8 @@ class _MockS3backend:
     A fake replacment for S3Boto3Backend in these tests.
     """
     def __init__(self, **kwargs):
-        self.access_key = kwargs.get("access_key", getattr(settings, 'AWS_S3_ACCESS_KEY_ID', None))
-        self.secret_key = kwargs.get("secret_key", getattr(settings, 'AWS_S3_SECRET_ACCESS_KEY', None))
+        self.access_key = kwargs.get("access_key", getattr(settings, 'AWS_ACCESS_KEY_ID', None))
+        self.secret_key = kwargs.get("secret_key", getattr(settings, 'AWS_SECRET_ACCESS_KEY', None))
         self.bucket_name = kwargs.get("bucket_name", getattr(settings, 'AWS_STORAGE_BUCKET_NAME', None))
         self.location = kwargs.get("location", getattr(settings, 'AWS_LOCATION', None))
 
@@ -43,8 +43,8 @@ _patch_get_storage_class = patch.object(
 _patch_storage_class = override_settings(
     AWS_LOCATION="default/",
     AWS_STORAGE_BUCKET_NAME="default-bucket",
-    AWS_S3_ACCESS_KEY_ID="default_key",
-    AWS_S3_SECRET_ACCESS_KEY="default_secret",
+    AWS_ACCESS_KEY_ID="default_key",
+    AWS_SECRET_ACCESS_KEY="default_secret",
     BUNDLE_ASSET_URL_STORAGE_KEY="long-lived-key",
     BUNDLE_ASSET_URL_STORAGE_SECRET="long-lived-secret",
     BUNDLE_ASSET_STORAGE_SETTINGS={
@@ -55,8 +55,8 @@ _patch_storage_class = override_settings(
 _patch_s3_long_lived_credentials = override_settings(
     AWS_LOCATION="default/",
     AWS_STORAGE_BUCKET_NAME="default-bucket",
-    AWS_S3_ACCESS_KEY_ID="default_key",
-    AWS_S3_SECRET_ACCESS_KEY="default_secret",
+    AWS_ACCESS_KEY_ID="default_key",
+    AWS_SECRET_ACCESS_KEY="default_secret",
     BUNDLE_ASSET_URL_STORAGE_KEY="long-lived-key",
     BUNDLE_ASSET_URL_STORAGE_SECRET="long-lived-secret",
     BUNDLE_ASSET_STORAGE_SETTINGS={
@@ -70,8 +70,8 @@ _patch_s3_long_lived_credentials = override_settings(
 _patch_s3_credentials = override_settings(
     AWS_LOCATION="default/",
     AWS_STORAGE_BUCKET_NAME="default-bucket",
-    AWS_S3_ACCESS_KEY_ID="default_key",
-    AWS_S3_SECRET_ACCESS_KEY="default_secret",
+    AWS_ACCESS_KEY_ID="default_key",
+    AWS_SECRET_ACCESS_KEY="default_secret",
     BUNDLE_ASSET_STORAGE_SETTINGS={
         'STORAGE_CLASS': 'storages.backends.some.other.backend',
         'STORAGE_KWARGS': {
