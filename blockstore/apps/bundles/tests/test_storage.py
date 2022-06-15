@@ -35,7 +35,7 @@ def get_storage_class(class_name):
 
 
 _patch_default_storage = patch.object(
-    storage_module, 'default_storage', autospec=True
+    storage_module, 'default_storage', autospec=True,
 )
 _patch_get_storage_class = patch.object(
     storage_module, 'get_storage_class', autospec=True, side_effect=get_storage_class
@@ -60,12 +60,10 @@ _patch_s3_long_lived_credentials = override_settings(
     BUNDLE_ASSET_URL_STORAGE_KEY="long-lived-key",
     BUNDLE_ASSET_URL_STORAGE_SECRET="long-lived-secret",
     BUNDLE_ASSET_STORAGE_SETTINGS={
-        'STORAGE_CLASS': 'storages.backends.some.other.backend',
+        'STORAGE_CLASS': 'storages.backends.s3boto3.S3Boto3Storage',
         'STORAGE_KWARGS': {
             'bucket_name': 'custom-bucket',
             'location': 's3/',
-            'access_key': 'custom_key',
-            'secret_key': 'custom_secret',
         },
     },
 )
@@ -104,7 +102,7 @@ def test_asset_storage_long_lived_urls_disabled(mock_default_storage):
     mock_default_storage.get_accessed_time.assert_called_once_with('xyz')
     assert str(backend) == (
         "asset_backend=<NonCallableMagicMock name='default_storage' spec='DefaultStorage'"
-        " id='{mock_id}'>(bucket_name=None, access_key=NOT SET), url_backend=<NonCallableMagicMock"
+        " id='{mock_id}'>(bucket_name=None), url_backend=<NonCallableMagicMock"
         " name='default_storage' spec='DefaultStorage' id='{mock_id}'>)".format(
             mock_id=id(backend.asset_backend),
         )
@@ -136,9 +134,9 @@ def test_asset_storage_class(mock_default_storage, *_args):
     assert not mock_default_storage.url.called
     assert str(backend) == (
         "asset_backend=<blockstore.apps.bundles.tests.test_storage._MockS3backend object at"
-        " {mock_asset_hex}>(bucket_name=default-bucket, access_key=ault_key),"
+        " {mock_asset_hex}>(bucket_name=default-bucket),"
         " url_backend=<blockstore.apps.bundles.tests.test_storage._MockS3backend object at {mock_url_hex}>"
-        "(bucket_name=default-bucket, access_key=ived-key))".format(
+        "(bucket_name=default-bucket))".format(
             mock_asset_hex=hex(id(backend.asset_backend)),
             mock_url_hex=hex(id(backend.url_backend.s3_backend)),
         )
@@ -153,7 +151,7 @@ def test_asset_storage_long_lived_urls_enabled(mock_default_storage, *_args):
     Test that `AssetStorage` uses long-lived S3 URL signing when configured.
 
     asset_storage and url_storage both use the custom storage class at the custom bucket/location.
-    * asset_storage uses the custom credentials to write
+    * asset_storage uses the default credentials to write
     * url_storage uses the long-lived storage keys to read
     """
     backend = storage_module.AssetStorage()
@@ -162,22 +160,19 @@ def test_asset_storage_long_lived_urls_enabled(mock_default_storage, *_args):
     assert backend.url_backend.s3_backend.secret_key == "long-lived-secret"
     assert backend.url_backend.s3_backend.bucket_name == "custom-bucket"
     assert backend.url_backend.s3_backend.location == "s3/"
-    assert backend.asset_backend.access_key == "custom_key"
-    assert backend.asset_backend.secret_key == "custom_secret"
+    assert backend.asset_backend.access_key == "default_key"
+    assert backend.asset_backend.secret_key == "default_secret"
     assert backend.asset_backend.bucket_name == "custom-bucket"
     assert backend.asset_backend.location == "s3/"
     assert backend.url('abc') == "https://custom-bucket/s3/abc"
-    backend.listdir('123')
-    backend.get_accessed_time('xyz')
     assert not mock_default_storage.url.called
-    backend.asset_backend.listdir.assert_called_once_with('123')
-    backend.asset_backend.get_accessed_time.assert_called_once_with('xyz')
     assert str(backend) == (
-        "asset_backend=<NonCallableMagicMock id='{mock_id}'>(bucket_name=custom-bucket, access_key=stom_key),"
+        "asset_backend=<blockstore.apps.bundles.tests.test_storage._MockS3backend object at"
+        " {mock_asset_hex}>(bucket_name=custom-bucket),"
         " url_backend=<blockstore.apps.bundles.tests.test_storage._MockS3backend object at"
-        " {mock_hex}>(bucket_name=custom-bucket, access_key=ived-key))".format(
-            mock_id=id(backend.asset_backend),
-            mock_hex=hex(id(backend.url_backend.s3_backend)),
+        " {mock_url_hex}>(bucket_name=custom-bucket))".format(
+            mock_asset_hex=hex(id(backend.asset_backend)),
+            mock_url_hex=hex(id(backend.url_backend.s3_backend)),
         )
     )
 
@@ -205,7 +200,7 @@ def test_asset_storage_basic_s3(mock_default_storage, *_args):
     backend.asset_backend.listdir.assert_called_once_with('123')
     backend.asset_backend.get_accessed_time.assert_called_once_with('xyz')
     assert str(backend) == (
-        "asset_backend=<NonCallableMagicMock id='{mock_id}'>(bucket_name=custom-bucket, access_key=stom_key),"
+        "asset_backend=<NonCallableMagicMock id='{mock_id}'>(bucket_name=custom-bucket),"
         " url_backend=<NonCallableMagicMock id='{mock_id}'>)".format(
             mock_id=id(backend.url_backend)
         )
