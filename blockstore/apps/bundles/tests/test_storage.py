@@ -41,36 +41,46 @@ _patch_get_storage_class = patch.object(
     storage_module, 'get_storage_class', autospec=True, side_effect=get_storage_class
 )
 _patch_storage_class = override_settings(
-    AWS_LOCATION="s3/",
-    AWS_STORAGE_BUCKET_NAME="example-bucket",
-    AWS_S3_ACCESS_KEY_ID="another_key",
-    AWS_S3_SECRET_ACCESS_KEY="another_secret",
-    BUNDLE_ASSET_URL_STORAGE_KEY="a-key",
-    BUNDLE_ASSET_URL_STORAGE_SECRET="a-secret",
+    AWS_LOCATION="default/",
+    AWS_STORAGE_BUCKET_NAME="default-bucket",
+    AWS_S3_ACCESS_KEY_ID="default_key",
+    AWS_S3_SECRET_ACCESS_KEY="default_secret",
+    BUNDLE_ASSET_URL_STORAGE_KEY="long-lived-key",
+    BUNDLE_ASSET_URL_STORAGE_SECRET="long-lived-secret",
     BUNDLE_ASSET_STORAGE_SETTINGS={
         'STORAGE_CLASS': 'storages.backends.s3boto3.S3Boto3Storage',
     },
 )
+# This config is the most like edxapp's
 _patch_s3_long_lived_credentials = override_settings(
-    BUNDLE_ASSET_URL_STORAGE_KEY="a-key", BUNDLE_ASSET_URL_STORAGE_SECRET="a-secret",
+    AWS_LOCATION="default/",
+    AWS_STORAGE_BUCKET_NAME="default-bucket",
+    AWS_S3_ACCESS_KEY_ID="default_key",
+    AWS_S3_SECRET_ACCESS_KEY="default_secret",
+    BUNDLE_ASSET_URL_STORAGE_KEY="long-lived-key",
+    BUNDLE_ASSET_URL_STORAGE_SECRET="long-lived-secret",
     BUNDLE_ASSET_STORAGE_SETTINGS={
         'STORAGE_CLASS': 'storages.backends.some.other.backend',
         'STORAGE_KWARGS': {
-            'bucket_name': 'example-bucket',
+            'bucket_name': 'custom-bucket',
             'location': 's3/',
-            'access_key': 'another_key',
-            'secret_key': 'another_secret',
+            'access_key': 'custom_key',
+            'secret_key': 'custom_secret',
         },
     },
 )
 _patch_s3_credentials = override_settings(
+    AWS_LOCATION="default/",
+    AWS_STORAGE_BUCKET_NAME="default-bucket",
+    AWS_S3_ACCESS_KEY_ID="default_key",
+    AWS_S3_SECRET_ACCESS_KEY="default_secret",
     BUNDLE_ASSET_STORAGE_SETTINGS={
         'STORAGE_CLASS': 'storages.backends.some.other.backend',
         'STORAGE_KWARGS': {
-            'bucket_name': 'example-bucket',
+            'bucket_name': 'custom-bucket',
             'location': 's3/',
-            'access_key': 'another_key',
-            'secret_key': 'another_secret',
+            'access_key': 'custom_key',
+            'secret_key': 'custom_secret',
         },
     },
 )
@@ -81,6 +91,8 @@ def test_asset_storage_long_lived_urls_disabled(mock_default_storage):
     """
     Test that `AssetStorage` is just pass-through when long-lived S3
     URL signing is not configured.
+
+    asset_storage and url_storage are the same default storage object, using the default settings.
     """
     backend = storage_module.AssetStorage()
     assert backend.url_backend is mock_default_storage
@@ -90,6 +102,13 @@ def test_asset_storage_long_lived_urls_disabled(mock_default_storage):
     mock_default_storage.url.assert_called_once_with('abc')
     mock_default_storage.listdir.assert_called_once_with('123')
     mock_default_storage.get_accessed_time.assert_called_once_with('xyz')
+    assert str(backend) == (
+        "asset_backend=<NonCallableMagicMock name='default_storage' spec='DefaultStorage'"
+        " id='{mock_id}'>(bucket_name=None, access_key=NOT SET), url_backend=<NonCallableMagicMock"
+        " name='default_storage' spec='DefaultStorage' id='{mock_id}'>)".format(
+            mock_id=id(backend.asset_backend),
+        )
+    )
 
 
 @_patch_storage_class
@@ -98,19 +117,32 @@ def test_asset_storage_long_lived_urls_disabled(mock_default_storage):
 def test_asset_storage_class(mock_default_storage, *_args):
     """
     Test that overriding the storage class works without the optional setting storage kwargs.
+
+    asset_storage and url_storage both use the (mocked) S3Boto3Storage class, at the default bucket/location.
+    * asset_storage uses the default credentials to write
+    * url_storage uses the long-lived storage keys to read.
     """
     backend = storage_module.AssetStorage()
     assert isinstance(backend.url_backend, storage_module.LongLivedSignedUrlStorage)
-    assert backend.url_backend.s3_backend.access_key == "a-key"
-    assert backend.url_backend.s3_backend.secret_key == "a-secret"
-    assert backend.url_backend.s3_backend.bucket_name == "example-bucket"
-    assert backend.url_backend.s3_backend.location == "s3/"
-    assert backend.asset_backend.access_key == "another_key"
-    assert backend.asset_backend.secret_key == "another_secret"
-    assert backend.asset_backend.bucket_name == "example-bucket"
-    assert backend.asset_backend.location == "s3/"
-    assert backend.url('abc') == "https://example-bucket/s3/abc"
+    assert backend.url_backend.s3_backend.access_key == "long-lived-key"
+    assert backend.url_backend.s3_backend.secret_key == "long-lived-secret"
+    assert backend.url_backend.s3_backend.bucket_name == "default-bucket"
+    assert backend.url_backend.s3_backend.location == "default/"
+    assert backend.asset_backend.access_key == "default_key"
+    assert backend.asset_backend.secret_key == "default_secret"
+    assert backend.asset_backend.bucket_name == "default-bucket"
+    assert backend.asset_backend.location == "default/"
+    assert backend.url('abc') == "https://default-bucket/default/abc"
     assert not mock_default_storage.url.called
+    assert str(backend) == (
+        "asset_backend=<blockstore.apps.bundles.tests.test_storage._MockS3backend object at"
+        " {mock_asset_hex}>(bucket_name=default-bucket, access_key=ault_key),"
+        " url_backend=<blockstore.apps.bundles.tests.test_storage._MockS3backend object at {mock_url_hex}>"
+        "(bucket_name=default-bucket, access_key=ived-key))".format(
+            mock_asset_hex=hex(id(backend.asset_backend)),
+            mock_url_hex=hex(id(backend.url_backend.s3_backend)),
+        )
+    )
 
 
 @_patch_s3_long_lived_credentials
@@ -118,25 +150,36 @@ def test_asset_storage_class(mock_default_storage, *_args):
 @_patch_default_storage
 def test_asset_storage_long_lived_urls_enabled(mock_default_storage, *_args):
     """
-    Test that `AssetStorage` is just pass-through when long-lived S3
-    URL signing is not configured.
+    Test that `AssetStorage` uses long-lived S3 URL signing when configured.
+
+    asset_storage and url_storage both use the custom storage class at the custom bucket/location.
+    * asset_storage uses the custom credentials to write
+    * url_storage uses the long-lived storage keys to read
     """
     backend = storage_module.AssetStorage()
     assert isinstance(backend.url_backend, storage_module.LongLivedSignedUrlStorage)
-    assert backend.url_backend.s3_backend.access_key == "a-key"
-    assert backend.url_backend.s3_backend.secret_key == "a-secret"
-    assert backend.url_backend.s3_backend.bucket_name == "example-bucket"
+    assert backend.url_backend.s3_backend.access_key == "long-lived-key"
+    assert backend.url_backend.s3_backend.secret_key == "long-lived-secret"
+    assert backend.url_backend.s3_backend.bucket_name == "custom-bucket"
     assert backend.url_backend.s3_backend.location == "s3/"
-    assert backend.asset_backend.access_key == "another_key"
-    assert backend.asset_backend.secret_key == "another_secret"
-    assert backend.asset_backend.bucket_name == "example-bucket"
+    assert backend.asset_backend.access_key == "custom_key"
+    assert backend.asset_backend.secret_key == "custom_secret"
+    assert backend.asset_backend.bucket_name == "custom-bucket"
     assert backend.asset_backend.location == "s3/"
-    assert backend.url('abc') == "https://example-bucket/s3/abc"
+    assert backend.url('abc') == "https://custom-bucket/s3/abc"
     backend.listdir('123')
     backend.get_accessed_time('xyz')
     assert not mock_default_storage.url.called
     backend.asset_backend.listdir.assert_called_once_with('123')
     backend.asset_backend.get_accessed_time.assert_called_once_with('xyz')
+    assert str(backend) == (
+        "asset_backend=<NonCallableMagicMock id='{mock_id}'>(bucket_name=custom-bucket, access_key=stom_key),"
+        " url_backend=<blockstore.apps.bundles.tests.test_storage._MockS3backend object at"
+        " {mock_hex}>(bucket_name=custom-bucket, access_key=ived-key))".format(
+            mock_id=id(backend.asset_backend),
+            mock_hex=hex(id(backend.url_backend.s3_backend)),
+        )
+    )
 
 
 @_patch_s3_credentials
@@ -145,12 +188,15 @@ def test_asset_storage_long_lived_urls_enabled(mock_default_storage, *_args):
 def test_asset_storage_basic_s3(mock_default_storage, *_args):
     """
     Test that `AssetStorage` is configured as expected when there's no long-lived URL signing credentials configured.
+
+    asset_storage and url_storage both use the custom storage class, at the custom bucket/location, with the same
+    custom credentials to read+write.
     """
     backend = storage_module.AssetStorage()
     assert backend.url_backend is backend.asset_backend
-    assert backend.asset_backend.access_key == "another_key"
-    assert backend.asset_backend.secret_key == "another_secret"
-    assert backend.asset_backend.bucket_name == "example-bucket"
+    assert backend.asset_backend.access_key == "custom_key"
+    assert backend.asset_backend.secret_key == "custom_secret"
+    assert backend.asset_backend.bucket_name == "custom-bucket"
     assert backend.asset_backend.location == "s3/"
     backend.url('abc')
     backend.listdir('123')
@@ -158,6 +204,12 @@ def test_asset_storage_basic_s3(mock_default_storage, *_args):
     assert not mock_default_storage.url.called
     backend.asset_backend.listdir.assert_called_once_with('123')
     backend.asset_backend.get_accessed_time.assert_called_once_with('xyz')
+    assert str(backend) == (
+        "asset_backend=<NonCallableMagicMock id='{mock_id}'>(bucket_name=custom-bucket, access_key=stom_key),"
+        " url_backend=<NonCallableMagicMock id='{mock_id}'>)".format(
+            mock_id=id(backend.url_backend)
+        )
+    )
 
 
 @_patch_default_storage

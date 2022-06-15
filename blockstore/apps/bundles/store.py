@@ -284,6 +284,7 @@ class SnapshotRepo:
     """
     def __init__(self, storage=None):
         self.storage = storage or default_asset_storage
+        logger.info('BLOCKSTORE: SnapshotRepo.storage=%s', self.storage)
 
     def get(self, bundle_uuid: UUID, snapshot_digest: bytes) -> Snapshot:
         """
