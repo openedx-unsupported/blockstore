@@ -17,7 +17,7 @@ attrs==21.4.0
     # via
     #   -r requirements/base.txt
     #   pytest
-certifi==2022.5.18.1
+certifi==2022.6.15
     # via
     #   -r requirements/base.txt
     #   requests
@@ -92,7 +92,7 @@ django-crum==0.7.9
     #   edx-django-utils
 django-dynamic-fixture==3.1.2
     # via -r requirements/test.in
-django-environ==0.8.1
+django-environ==0.9.0
     # via -r requirements/base.txt
 django-filter==21.1
     # via -r requirements/base.txt
@@ -207,7 +207,7 @@ pyjwt[crypto]==2.4.0
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.14.1
+pylint==2.14.2
     # via
     #   edx-lint
     #   pylint-celery
