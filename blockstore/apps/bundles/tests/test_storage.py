@@ -51,12 +51,10 @@ _patch_storage_class = override_settings(
         'STORAGE_CLASS': 'storages.backends.s3boto3.S3Boto3Storage',
     },
 )
-# This config is the most like edxapp's
+# This config is the most like edx.org's
 _patch_s3_long_lived_credentials = override_settings(
     AWS_LOCATION="default/",
     AWS_STORAGE_BUCKET_NAME="default-bucket",
-    AWS_ACCESS_KEY_ID="default_key",
-    AWS_SECRET_ACCESS_KEY="default_secret",
     BUNDLE_ASSET_URL_STORAGE_KEY="long-lived-key",
     BUNDLE_ASSET_URL_STORAGE_SECRET="long-lived-secret",
     BUNDLE_ASSET_STORAGE_SETTINGS={
@@ -152,6 +150,7 @@ def test_asset_storage_long_lived_urls_enabled(mock_default_storage, *_args):
 
     asset_storage and url_storage both use the custom storage class at the custom bucket/location.
     * asset_storage uses the default credentials to write
+      (edX configures no keys, instead relying on IAM roles for the EC2 instances)
     * url_storage uses the long-lived storage keys to read
     """
     backend = storage_module.AssetStorage()
@@ -160,8 +159,8 @@ def test_asset_storage_long_lived_urls_enabled(mock_default_storage, *_args):
     assert backend.url_backend.s3_backend.secret_key == "long-lived-secret"
     assert backend.url_backend.s3_backend.bucket_name == "custom-bucket"
     assert backend.url_backend.s3_backend.location == "s3/"
-    assert backend.asset_backend.access_key == "default_key"
-    assert backend.asset_backend.secret_key == "default_secret"
+    assert backend.asset_backend.access_key is None
+    assert backend.asset_backend.secret_key is None
     assert backend.asset_backend.bucket_name == "custom-bucket"
     assert backend.asset_backend.location == "s3/"
     assert backend.url('abc') == "https://custom-bucket/s3/abc"
