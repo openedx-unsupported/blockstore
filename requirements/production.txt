@@ -10,15 +10,15 @@ asgiref==3.5.2
     #   django
 attrs==21.4.0
     # via -r requirements/base.txt
-boto3==1.24.8
+boto3==1.24.20
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.27.8
+botocore==1.27.20
     # via
     #   boto3
     #   s3transfer
-certifi==2022.5.18.1
+certifi==2022.6.15
     # via
     #   -r requirements/base.txt
     #   requests
@@ -27,7 +27,7 @@ cffi==1.15.0
     #   -r requirements/base.txt
     #   cryptography
     #   pynacl
-charset-normalizer==2.0.12
+charset-normalizer==2.1.0
     # via
     #   -r requirements/base.txt
     #   requests
@@ -73,9 +73,9 @@ django-crum==0.7.9
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-django-environ==0.8.1
+django-environ==0.9.0
     # via -r requirements/base.txt
-django-filter==21.1
+django-filter==22.1
     # via -r requirements/base.txt
 django-storages==1.12.3
     # via -r requirements/production.in
@@ -125,7 +125,7 @@ jinja2==3.1.2
     # via
     #   -r requirements/base.txt
     #   coreschema
-jmespath==1.0.0
+jmespath==1.0.1
     # via
     #   boto3
     #   botocore
@@ -133,9 +133,9 @@ markupsafe==2.1.1
     # via
     #   -r requirements/base.txt
     #   jinja2
-mysqlclient==2.1.0
+mysqlclient==2.1.1
     # via -r requirements/base.txt
-newrelic==7.12.0.176
+newrelic==7.14.0.177
     # via
     #   -r requirements/base.txt
     #   -r requirements/production.in
@@ -194,7 +194,7 @@ pyyaml==6.0
     #   -r requirements/base.txt
     #   -r requirements/production.in
     #   edx-django-release-util
-requests==2.28.0
+requests==2.28.1
     # via
     #   -r requirements/base.txt
     #   coreapi
