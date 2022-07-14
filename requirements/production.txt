@@ -10,11 +10,11 @@ asgiref==3.5.2
     #   django
 attrs==21.4.0
     # via -r requirements/base.txt
-boto3==1.24.24
+boto3==1.24.29
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.27.24
+botocore==1.27.29
     # via
     #   boto3
     #   s3transfer
@@ -234,7 +234,7 @@ sqlparse==0.4.2
     # via
     #   -r requirements/base.txt
     #   django
-stevedore==3.5.0
+stevedore==4.0.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -243,7 +243,7 @@ uritemplate==4.1.1
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-urllib3==1.26.9
+urllib3==1.26.10
     # via
     #   -r requirements/base.txt
     #   botocore

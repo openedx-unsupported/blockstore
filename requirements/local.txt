@@ -12,7 +12,7 @@ asgiref==3.5.2
     # via
     #   -r requirements/test.txt
     #   django
-astroid==2.11.6
+astroid==2.11.7
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -68,7 +68,7 @@ coreschema==0.0.4
     #   -r requirements/test.txt
     #   coreapi
     #   drf-yasg
-coverage[toml]==6.4.1
+coverage[toml]==6.4.2
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -407,7 +407,7 @@ sqlparse==0.4.2
     #   -r requirements/test.txt
     #   django
     #   django-debug-toolbar
-stevedore==3.5.0
+stevedore==4.0.0
     # via
     #   -r requirements/test.txt
     #   code-annotations
@@ -423,7 +423,7 @@ tomli==2.0.1
     #   mypy
     #   pylint
     #   pytest
-tomlkit==0.11.0
+tomlkit==0.11.1
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -438,7 +438,7 @@ uritemplate==4.1.1
     #   -r requirements/test.txt
     #   coreapi
     #   drf-yasg
-urllib3==1.26.9
+urllib3==1.26.10
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -447,7 +447,7 @@ wrapt==1.14.1
     # via
     #   -r requirements/test.txt
     #   astroid
-zipp==3.8.0
+zipp==3.8.1
     # via
     #   -r requirements/docs.txt
     #   importlib-metadata

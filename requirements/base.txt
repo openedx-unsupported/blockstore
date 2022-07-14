@@ -144,11 +144,11 @@ sqlparse==0.4.2
     # via
     #   -r requirements/base.in
     #   django
-stevedore==3.5.0
+stevedore==4.0.0
     # via edx-django-utils
 uritemplate==4.1.1
     # via
     #   coreapi
     #   drf-yasg
-urllib3==1.26.9
+urllib3==1.26.10
     # via requests
