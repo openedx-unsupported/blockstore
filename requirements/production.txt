@@ -8,13 +8,13 @@ asgiref==3.5.2
     # via
     #   -r requirements/base.txt
     #   django
-attrs==21.4.0
+attrs==22.1.0
     # via -r requirements/base.txt
-boto3==1.24.24
+boto3==1.24.44
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.27.24
+botocore==1.27.44
     # via
     #   boto3
     #   s3transfer
@@ -54,7 +54,7 @@ defusedxml==0.7.1
     #   -r requirements/base.txt
     #   python3-openid
     #   social-auth-core
-django==3.2.14
+django==3.2.15
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -79,7 +79,7 @@ django-filter==22.1
     # via -r requirements/base.txt
 django-storages==1.12.3
     # via -r requirements/production.in
-django-waffle==2.5.0
+django-waffle==2.6.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -91,7 +91,7 @@ djangorestframework==3.13.1
     #   edx-api-doc-tools
 drf-nested-routers==0.93.4
     # via -r requirements/base.txt
-drf-yasg==1.20.0
+drf-yasg==1.21.3
     # via
     #   -r requirements/base.txt
     #   edx-api-doc-tools
@@ -135,7 +135,7 @@ markupsafe==2.1.1
     #   jinja2
 mysqlclient==2.1.1
     # via -r requirements/base.txt
-newrelic==7.14.0.177
+newrelic==7.16.0.178
     # via
     #   -r requirements/base.txt
     #   -r requirements/production.in
@@ -189,6 +189,7 @@ pytz==2022.1
     #   -r requirements/base.txt
     #   django
     #   djangorestframework
+    #   drf-yasg
 pyyaml==6.0
     # via
     #   -r requirements/base.txt
@@ -234,7 +235,7 @@ sqlparse==0.4.2
     # via
     #   -r requirements/base.txt
     #   django
-stevedore==3.5.0
+stevedore==4.0.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -243,7 +244,7 @@ uritemplate==4.1.1
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-urllib3==1.26.9
+urllib3==1.26.11
     # via
     #   -r requirements/base.txt
     #   botocore
