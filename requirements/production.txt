@@ -10,11 +10,11 @@ asgiref==3.5.2
     #   django
 attrs==22.1.0
     # via -r requirements/base.txt
-boto3==1.24.45
+boto3==1.24.49
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.27.45
+botocore==1.27.49
     # via
     #   boto3
     #   s3transfer
@@ -77,7 +77,7 @@ django-environ==0.9.0
     # via -r requirements/base.txt
 django-filter==22.1
     # via -r requirements/base.txt
-django-storages==1.12.3
+django-storages==1.13.1
     # via -r requirements/production.in
 django-waffle==2.6.0
     # via
