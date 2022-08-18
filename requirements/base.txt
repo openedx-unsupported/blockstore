@@ -86,7 +86,7 @@ markupsafe==2.1.1
     # via jinja2
 mysqlclient==2.1.1
     # via -r requirements/base.in
-newrelic==7.16.0.178
+newrelic==8.0.0.179
     # via edx-django-utils
 oauthlib==3.2.0
     # via
@@ -94,7 +94,7 @@ oauthlib==3.2.0
     #   social-auth-core
 packaging==21.3
     # via drf-yasg
-pbr==5.9.0
+pbr==5.10.0
     # via stevedore
 psutil==5.9.1
     # via edx-django-utils
@@ -112,7 +112,7 @@ pyparsing==3.0.9
     # via packaging
 python3-openid==3.2.0
     # via social-auth-core
-pytz==2022.1
+pytz==2022.2.1
     # via
     #   -r requirements/base.in
     #   django
