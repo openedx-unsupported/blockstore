@@ -68,7 +68,7 @@ coreschema==0.0.4
     #   -r requirements/test.txt
     #   coreapi
     #   drf-yasg
-coverage[toml]==6.4.3
+coverage[toml]==6.4.4
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -109,7 +109,7 @@ django-crum==0.7.9
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
-django-debug-toolbar==3.5.0
+django-debug-toolbar==3.6.0
     # via -r requirements/local.in
 django-dynamic-fixture==3.1.2
     # via -r requirements/test.txt
@@ -151,7 +151,7 @@ edx-sphinx-theme==3.0.0
     # via -r requirements/docs.txt
 factory-boy==3.2.1
     # via -r requirements/test.txt
-faker==13.15.1
+faker==14.1.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -213,7 +213,7 @@ mypy-extensions==0.4.3
     #   mypy
 mysqlclient==2.1.1
     # via -r requirements/test.txt
-newrelic==7.16.0.178
+newrelic==8.0.0.179
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -229,7 +229,7 @@ packaging==21.3
     #   drf-yasg
     #   pytest
     #   sphinx
-pbr==5.9.0
+pbr==5.10.0
     # via
     #   -r requirements/test.txt
     #   stevedore
@@ -258,7 +258,7 @@ pycparser==2.21
     # via
     #   -r requirements/test.txt
     #   cffi
-pygments==2.12.0
+pygments==2.13.0
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -319,7 +319,7 @@ python3-openid==3.2.0
     # via
     #   -r requirements/test.txt
     #   social-auth-core
-pytz==2022.1
+pytz==2022.2.1
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -424,7 +424,7 @@ tomli==2.0.1
     #   mypy
     #   pylint
     #   pytest
-tomlkit==0.11.3
+tomlkit==0.11.4
     # via
     #   -r requirements/test.txt
     #   pylint

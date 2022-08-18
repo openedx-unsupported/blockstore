@@ -10,11 +10,11 @@ asgiref==3.5.2
     #   django
 attrs==22.1.0
     # via -r requirements/base.txt
-boto3==1.24.49
+boto3==1.24.54
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.27.49
+botocore==1.27.54
     # via
     #   boto3
     #   s3transfer
@@ -135,7 +135,7 @@ markupsafe==2.1.1
     #   jinja2
 mysqlclient==2.1.1
     # via -r requirements/base.txt
-newrelic==7.16.0.178
+newrelic==8.0.0.179
     # via
     #   -r requirements/base.txt
     #   -r requirements/production.in
@@ -149,7 +149,7 @@ packaging==21.3
     # via
     #   -r requirements/base.txt
     #   drf-yasg
-pbr==5.9.0
+pbr==5.10.0
     # via
     #   -r requirements/base.txt
     #   stevedore
@@ -184,7 +184,7 @@ python3-openid==3.2.0
     # via
     #   -r requirements/base.txt
     #   social-auth-core
-pytz==2022.1
+pytz==2022.2.1
     # via
     #   -r requirements/base.txt
     #   django
