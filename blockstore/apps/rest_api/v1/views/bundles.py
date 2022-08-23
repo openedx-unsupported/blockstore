@@ -20,6 +20,13 @@ class BundleFilter(FilterSet):
     """
     Filter for BundleViewSet.
     """
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        # There could be a lot of bundles, so we can't use query params because it will
+        # raise the "Request-URI Too Long" error. Use the request data in such case.
+        # NOTE: query_params (data arg) have a higher priority than the request.data
+        data = data or request.data or {}
+        super().__init__(data, queryset, request=request, prefix=prefix)
+
     uuid = AllValuesMultipleFilter(widget=CSVWidget)  # Accepts multiple comma-separated UUIDs
     text_search = CharFilter(method='search')
 
