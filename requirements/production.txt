@@ -10,11 +10,11 @@ asgiref==3.5.2
     #   django
 attrs==22.1.0
     # via -r requirements/base.txt
-boto3==1.24.54
+boto3==1.24.59
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.27.54
+botocore==1.27.59
     # via
     #   boto3
     #   s3transfer
@@ -27,7 +27,7 @@ cffi==1.15.1
     #   -r requirements/base.txt
     #   cryptography
     #   pynacl
-charset-normalizer==2.1.0
+charset-normalizer==2.1.1
     # via
     #   -r requirements/base.txt
     #   requests
@@ -79,7 +79,7 @@ django-filter==22.1
     # via -r requirements/base.txt
 django-storages==1.13.1
     # via -r requirements/production.in
-django-waffle==2.6.0
+django-waffle==2.7.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -244,7 +244,7 @@ uritemplate==4.1.1
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-urllib3==1.26.11
+urllib3==1.26.12
     # via
     #   -r requirements/base.txt
     #   botocore
