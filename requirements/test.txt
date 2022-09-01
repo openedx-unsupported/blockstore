@@ -8,7 +8,7 @@ asgiref==3.5.2
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.11.7
+astroid==2.12.5
     # via
     #   -r requirements/test.in
     #   pylint
@@ -96,7 +96,7 @@ django-environ==0.9.0
     # via -r requirements/base.txt
 django-filter==22.1
     # via -r requirements/base.txt
-django-waffle==2.7.0
+django-waffle==3.0.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -124,7 +124,7 @@ edx-lint==5.2.4
     # via -r requirements/test.in
 factory-boy==3.2.1
     # via -r requirements/test.in
-faker==14.1.0
+faker==14.2.0
     # via factory-boy
 idna==3.3
     # via
@@ -207,7 +207,7 @@ pyjwt[crypto]==2.4.0
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.14.5
+pylint==2.15.0
     # via
     #   edx-lint
     #   pylint-celery
@@ -327,6 +327,3 @@ urllib3==1.26.12
     #   requests
 wrapt==1.14.1
     # via astroid
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools

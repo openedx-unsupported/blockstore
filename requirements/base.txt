@@ -52,7 +52,7 @@ django-environ==0.9.0
     # via -r requirements/base.in
 django-filter==22.1
     # via -r requirements/base.in
-django-waffle==2.7.0
+django-waffle==3.0.0
     # via
     #   -r requirements/base.in
     #   edx-django-utils
