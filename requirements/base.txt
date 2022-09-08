@@ -24,7 +24,7 @@ coreschema==0.0.4
     # via
     #   coreapi
     #   drf-yasg
-cryptography==37.0.4
+cryptography==38.0.1
     # via
     #   pyjwt
     #   social-auth-core
@@ -52,7 +52,7 @@ django-environ==0.9.0
     # via -r requirements/base.in
 django-filter==22.1
     # via -r requirements/base.in
-django-waffle==2.7.0
+django-waffle==3.0.0
     # via
     #   -r requirements/base.in
     #   edx-django-utils
@@ -96,7 +96,7 @@ packaging==21.3
     # via drf-yasg
 pbr==5.10.0
     # via stevedore
-psutil==5.9.1
+psutil==5.9.2
     # via edx-django-utils
 pyblake2==1.1.2
     # via -r requirements/base.in
