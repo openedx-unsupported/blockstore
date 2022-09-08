@@ -6,7 +6,7 @@ import os
 import re
 import sys
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 def get_version(*file_paths):
@@ -70,9 +70,7 @@ setup(
     description="""Blockstore is a storage system for learning content in Open edX.""",
     long_description=README + '\n\n' + CHANGELOG,
     url='https://github.com/openedx/blockstore',
-    packages=[
-        'blockstore',
-    ],
+    packages=find_packages(include=["blockstore", "blockstore.*"], exclude=["*tests"]),
     include_package_data=True,
     install_requires=load_requirements('requirements/base.in'),
     python_requires=">=3.8",
