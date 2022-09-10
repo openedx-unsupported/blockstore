@@ -56,7 +56,7 @@ See `DESIGN <DESIGN.rst>`_ for an overview of Blockstore's design as it exists t
 Using with Docker Devstack
 --------------------------
 
-Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ properly installed and working. Your devstack must be tracking the ``master`` branch of ``edx-platform``; using Blockstore on an older devstack release is not supported.
+Prerequisite: Have your Open edX `Devstack <https://github.com/openedx/devstack>`_ properly installed and working. Your devstack must be tracking the ``master`` branch of ``edx-platform``; using Blockstore on an older devstack release is not supported.
 
 #. Clone this repo and ``cd`` into it.
 
@@ -87,7 +87,7 @@ Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ p
 
 #. Now you should be able to use Blockstore in Studio.
 
-   To edit Blockstore content libraries in Studio, you'll need to install either `the Content Libraries v2 Frontend <https://github.com/edx/frontend-app-library-authoring/>`_ or `Ramshackle <https://github.com/open-craft/ramshackle/>`_. Alternatively, you can use the `Content Libraries v2 REST API <https://github.com/edx/edx-platform/blob/master/openedx/core/djangoapps/content_libraries/urls.py>`_ to create content programmatically.
+   To edit Blockstore content libraries in Studio, you'll need to install either `the Content Libraries v2 Frontend <https://github.com/openedx/frontend-app-library-authoring/>`_ or `Ramshackle <https://github.com/open-craft/ramshackle/>`_. Alternatively, you can use the `Content Libraries v2 REST API <https://github.com/openedx/edx-platform/blob/master/openedx/core/djangoapps/content_libraries/urls.py>`_ to create content programmatically.
 
    To use Blockstore library content in a course, open your course in Studio. In its advanced settings, add ``library_sourced`` to the list of "advanced block types". In the "Unit Edit View" in Studio, find the green "Add New Component" buttons. Click Advanced > Library Sourced Content. Edit the new Library Sourced Content XBlock to enter the XBlock ID of the library content that you'd like to use. It should be similar to ``lb:DeveloperInc:MyLibrary:1`` (note: ``lb:`` is short for "Library Block" and should not be confused with the ``lib:`` prefix used to identify a library).
 
@@ -109,7 +109,7 @@ Prerequisite: Have your Open edX `Devstack <https://github.com/edx/devstack>`_ p
 
 #. Optional: If running an Open edX devstack under a project name different
    than the default (support for which was introduced
-   [here](https://github.com/edx/devstack/pull/532)), simply export
+   [here](https://github.com/openedx/devstack/pull/532)), simply export
    ``OPENEDX_PROJECT_NAME`` and substitute the container names in the commands
    above accordingly.
 
@@ -169,7 +169,7 @@ To run these integration tests while using a specific container's version of Ela
 Using in Production
 -------------------
 
-You can deploy blockstore in production using the `blockstore ansible role <https://github.com/edx/configuration/tree/master/playbooks/roles/blockstore>`_.
+You can deploy blockstore in production using the `blockstore ansible role <https://github.com/openedx/configuration/tree/master/playbooks/roles/blockstore>`_.
 
 Here is an example of setting the ansible variables to deploy Blockstore, assuming you are using the ``openedx_native.yml`` playbook. You will need to create the S3 bucket first (or comment out that part), and of course change all the variables and secret values to reflect your Open edX deployment details. Whatever value you put for ``BLOCKSTORE_API_AUTH_TOKEN`` must also be entered into the Blockstore django admin at e.g. https://blockstore.openedx-example.com/admin/authtoken/token/
 
@@ -212,13 +212,13 @@ License
 
 The code in this repository is licensed under version 3 of the AGPL unless otherwise noted. Please see the LICENSE_ file for details.
 
-.. _LICENSE: https://github.com/edx/blockstore/blob/master/LICENSE
+.. _LICENSE: https://github.com/openedx/blockstore/blob/master/LICENSE
 
 -----------------
 How To Contribute
 -----------------
 
-Contributions are welcome. Please read `How To Contribute <https://github.com/edx/edx-platform/blob/master/CONTRIBUTING.rst>`_ for details. Even though it was written with ``edx-platform`` in mind, these guidelines should be followed for Open edX code in general.
+Contributions are welcome. Please read `How To Contribute <https://github.com/openedx/edx-platform/blob/master/CONTRIBUTING.rst>`_ for details. Even though it was written with ``edx-platform`` in mind, these guidelines should be followed for Open edX code in general.
 
 -------------------------
 Reporting Security Issues

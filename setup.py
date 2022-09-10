@@ -69,7 +69,7 @@ setup(
     version=VERSION,
     description="""Blockstore is a storage system for learning content in Open edX.""",
     long_description=README + '\n\n' + CHANGELOG,
-    url='https://github.com/edx/blockstore',
+    url='https://github.com/openedx/blockstore',
     packages=[
         'blockstore',
     ],
