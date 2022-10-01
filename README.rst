@@ -58,7 +58,7 @@ Using with Content Libraries on a Tutor Devstack
 The easiest way to try out the "Content Libraries v2" feature along with Blockstore is to use the Tutor devstack and
 `this library-authoring MFE Tutor plugin <https://github.com/openedx/frontend-app-library-authoring/pull/50>`_. See that plugin's README for details.
 
-
+-------------------------
 Running Integration Tests
 -------------------------
 
@@ -82,6 +82,83 @@ Using in Production
 By default, blockstore is run as an app inside of Open edX. Enable it using the waffle switch `blockstore.use_blockstore_app_api <https://edx.readthedocs.io/projects/edx-platform-technical/en/latest/featuretoggles.html#featuretoggle-blockstore.use_blockstore_app_api>`_.
 
 If you need to run blockstore as a separate service (e.g. for scalability or performance reasons), you can deploy blockstore in production using `the blockstore ansible role <https://github.com/openedx/configuration/tree/master/playbooks/roles/blockstore>`_.
+
+-------------------------------------------------------
+Running and testing as a separate service (development)
+-------------------------------------------------------
+
+Blockstore was initially developed as an independently deployed application, which runs in a separate container/proccess from the LMS. It is still possible to run blockstore that way, both in production and development.
+
+To run it as an independent application in development:
+
+#. Prerequisite: Have an Open edX `Devstack <https://github.com/openedx/devstack>`_ properly installed and working. Your devstack must use the Nutmeg release of Open edX (or newer) or be tracking the ``master`` branch of ``edx-platform``.
+
+#. Clone this repo and ``cd`` into it.
+
+#. To start the django development server inside a docker container, run this on
+   your host machine:
+
+   .. code::
+
+      make easyserver
+
+   Blockstore is now running at http://localhost:18250/ . Now we need to configure Studio/LMS to work with it.
+
+#. Run these commands on your host computer:
+
+   .. code::
+
+      # Create a service user for the edx-platform to use when authenticating and making API calls
+      docker exec -t edx.devstack.blockstore bash -c "source ~/.bashrc && echo \"from django.contrib.auth import get_user_model; from rest_framework.authtoken.models import Token; User = get_user_model(); edxapp_user, _ = User.objects.get_or_create(username='edxapp'); Token.objects.get_or_create(user=edxapp_user, key='edxapp-insecure-devstack-key')\" | ./manage.py shell"
+      # Configure the LMS and Studio to use the key
+      docker exec -t edx.devstack.lms bash -c "grep BLOCKSTORE_API_AUTH_TOKEN /edx/app/edxapp/edx-platform/lms/envs/private.py || echo BLOCKSTORE_API_AUTH_TOKEN = \'edxapp-insecure-devstack-key\' >> /edx/app/edxapp/edx-platform/lms/envs/private.py"
+      docker exec -t edx.devstack.studio bash -c "grep BLOCKSTORE_API_AUTH_TOKEN /edx/app/edxapp/edx-platform/cms/envs/private.py || echo BLOCKSTORE_API_AUTH_TOKEN = \'edxapp-insecure-devstack-key\' >> /edx/app/edxapp/edx-platform/cms/envs/private.py"
+      # Create a "Collection" that new content libraries / xblocks can be created within:
+      docker exec -t edx.devstack.blockstore bash -c "source ~/.bashrc && echo \"from blockstore.apps.bundles.models import Collection; coll, _ = Collection.objects.get_or_create(title='Devstack Content Collection', uuid='11111111-2111-4111-8111-111111111111')\" | ./manage.py shell"
+      # Create an "Organization":
+      docker exec -t edx.devstack.lms bash -c "source /edx/app/edxapp/edxapp_env && echo \"from organizations.models import Organization; Organization.objects.get_or_create(short_name='DeveloperInc', defaults={'name': 'DeveloperInc', 'active': True})\" | python /edx/app/edxapp/edx-platform/manage.py lms shell"
+
+   Then restart Studio and the LMS (``make dev.restart-devserver.lms dev.restart-devserver.studio``).
+
+#. Now you should be able to use Blockstore in Studio.
+
+   To edit Blockstore content libraries in Studio, you'll need to install either `the Content Libraries v2 Frontend <https://github.com/openedx/frontend-app-library-authoring/>`_ or `Ramshackle <https://github.com/open-craft/ramshackle/>`_. Alternatively, you can use the `Content Libraries v2 REST API <https://github.com/openedx/edx-platform/blob/master/openedx/core/djangoapps/content_libraries/urls.py>`_ to create content programmatically.
+
+   To use Blockstore library content in a course, open your course in Studio. In its advanced settings, add ``library_sourced`` to the list of "advanced block types". In the "Unit Edit View" in Studio, find the green "Add New Component" buttons. Click Advanced > Library Sourced Content. Edit the new Library Sourced Content XBlock to enter the XBlock ID of the library content that you'd like to use. It should be similar to ``lb:DeveloperInc:MyLibrary:1`` (note: ``lb:`` is short for "Library Block" and should not be confused with the ``lib:`` prefix used to identify a library).
+
+#. Optional: To log in to Blockstore in your web browser directly, you'll need to configure SSO with your devstack. Most people won't need to do this, but it's helpful for debugging or development.
+
+   #. Go to http://localhost:18000/admin/oauth2_provider/application/ and add a new application
+   #. Set "Client id" to ``blockstore-sso-key``
+   #. Set "Redirect uris" to ``http://localhost:18250/complete/edx-oauth2/``
+   #. Set "Client type" to "Confidential"
+   #. Set "Authorization grant type" to "Authorization code"
+   #. Set "Name" to ``blockstore-sso``
+   #. Check "Skip authorization"
+   #. Press "Save and continue editing"
+   #. Go to http://localhost:18000/admin/oauth_dispatch/applicationaccess/
+   #. Click "Add Application Access +", choose Application: ``blockstore-sso`` and set Scopes to ``user_id``, then hit "Save"
+   #. Copy ``blockstore/settings/private.py.example`` to ``blockstore/settings/private.py``
+   #. In ``private.py``, set ``SOCIAL_AUTH_EDX_OAUTH2_SECRET`` to the random "Client secret" value.
+   #. Now you can login at http://localhost:18250/login/
+
+#. Optional: If running an Open edX devstack under a project name different
+   than the default (support for which was introduced
+   [here](https://github.com/openedx/devstack/pull/532)), simply export
+   ``OPENEDX_PROJECT_NAME`` and substitute the container names in the commands
+   above accordingly.
+
+#. Optional: to run the unit tests in this mode:
+
+   #. Get into the blockstore container: ``make blockstore-shell``
+   #. And then run ``make test``
+
+#. Optional: to run the integration tests in this mode:
+
+   Open edX includes some integration tests for Blockstore. To run them with a separate blockstore instance, first start an isolated test version of blockstore by running ``make testserver`` from the ``blockstore`` repo root directory on your host computer. Then, from ``make dev.shell.studio``, run these commands:
+
+   #. ``EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/``
+   #. ``EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/``
 
 --------
 Get Help
