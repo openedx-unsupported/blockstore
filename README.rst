@@ -4,7 +4,7 @@ Blockstore
 
 Blockstore is a system for storing versioned, reusable educational content for Open edX.
 
-It is designed as a replacement for `modulestore <https://github.com/openedx/edx-platform/tree/master/common/lib/xmodule/xmodule/modulestore>`_. It is meant to be a lower-level service than the modulestore, and is designed around the concept of storing small, reusable pieces of content, rather than large, fixed content structures such as courses. For Open edX, Blockstore is designed to facilitate a much greater level of content re-use than is currently possible, enable new adaptive learning features, and enable delivery of learning content in new ways (not just large traditional courses).
+It is designed as a replacement for `modulestore <https://github.com/openedx/edx-platform/tree/master/xmodule/modulestore>`_. It is meant to be a lower-level service than the modulestore, and is designed around the concept of storing small, reusable pieces of content, rather than large, fixed content structures such as courses. For Open edX, Blockstore is designed to facilitate a much greater level of content re-use than is currently possible, enable new adaptive learning features, and enable delivery of learning content in new ways (not just large traditional courses).
 
 .. list-table:: Comparison
    :widths: 20 40 40
@@ -41,9 +41,9 @@ Blockstore was originally developed by Harvard's  `LabXchange <https://www.labxc
 Current Status
 --------------
 
-Blockstore is currently implemented as an independently deployed application (IDA), and is used to power `Content Libraries v2 <https://github.com/openedx/frontend-app-library-authoring#readme>`_ as well as `LabXchange <https://www.labxchange.org/>`_.
+As of **April 2022** ("master" version of Open edX) or the **Nutmeg** named release of Open edX, Blockstore is included as a django app within Open edX platform. See `moving blockstore into edx-platform <decisions/0002-app-not-service.rst>`_ for an explanation of this. Prior to those versions, Blockstore was only available as an independent application, and was not included in any Open edX installations by default.
 
-Blockstore is **not** included by default in a standard installation of Open edX or Open edX devstack. However, we are currently (April 2022) `moving blockstore into edx-platform <decisions/0002-app-not-service.rst>`_ - see https://github.com/openedx/edx-platform/pull/29779 for the current status of that work.
+Blockstore is used to power the **Content Libraries v2** feature of Open edX. It is *not* directly used for course functionality, nor for the "v1" Content Libraries feature.
 
 --------------
 Design Details
@@ -51,12 +51,47 @@ Design Details
 
 See `DESIGN <DESIGN.rst>`_ for an overview of Blockstore's design as it exists today. See `"Blockstore Design" <https://openedx.atlassian.net/wiki/spaces/AC/pages/737149430/Blockstore+Design>`_ on the wiki for historical context.
 
+------------------------------------------------
+Using with Content Libraries on a Tutor Devstack
+------------------------------------------------
 
---------------------------
-Using with Docker Devstack
---------------------------
+The easiest way to try out the "Content Libraries v2" feature along with Blockstore is to use the Tutor devstack and
+`this library-authoring MFE Tutor plugin <https://github.com/openedx/frontend-app-library-authoring/pull/50>`_. See that plugin's README for details.
 
-Prerequisite: Have your Open edX `Devstack <https://github.com/openedx/devstack>`_ properly installed and working. Your devstack must be tracking the ``master`` branch of ``edx-platform``; using Blockstore on an older devstack release is not supported.
+-------------------------
+Running Integration Tests
+-------------------------
+
+Open edX includes some integration tests for Blockstore, which run by default as part of the test suite. To run them manually, from a Studio/CMS shell, run these commands:
+
+.. code::
+
+   python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
+   python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
+
+To run these integration tests while using Elasticsearch, add ``EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1`` to the beginning of the above commands. To run these integration tests while using a specific container's version of Elasticsearch, also add ``EDXAPP_TEST_ELASTICSEARCH_HOST`` with a specific container name on the above commands:
+
+.. code::
+
+   EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 EDXAPP_TEST_ELASTICSEARCH_HOST=edx.devstack.elasticsearch710 python -Wd -m pytest ...
+
+-------------------
+Using in Production
+-------------------
+
+By default, blockstore is run as an app inside of Open edX. Enable it using the waffle switch `blockstore.use_blockstore_app_api <https://edx.readthedocs.io/projects/edx-platform-technical/en/latest/featuretoggles.html#featuretoggle-blockstore.use_blockstore_app_api>`_.
+
+If you need to run blockstore as a separate service (e.g. for scalability or performance reasons), you can deploy blockstore in production using `the blockstore ansible role <https://github.com/openedx/configuration/tree/master/playbooks/roles/blockstore>`_.
+
+-------------------------------------------------------
+Running and testing as a separate service (development)
+-------------------------------------------------------
+
+Blockstore was initially developed as an independently deployed application, which runs in a separate container/proccess from the LMS. It is still possible to run blockstore that way, both in production and development.
+
+To run it as an independent application in development:
+
+#. Prerequisite: Have an Open edX `Devstack <https://github.com/openedx/devstack>`_ properly installed and working. Your devstack must use the Nutmeg release of Open edX (or newer) or be tracking the ``master`` branch of ``edx-platform``.
 
 #. Clone this repo and ``cd`` into it.
 
@@ -113,92 +148,17 @@ Prerequisite: Have your Open edX `Devstack <https://github.com/openedx/devstack>
    ``OPENEDX_PROJECT_NAME`` and substitute the container names in the commands
    above accordingly.
 
--------------
-Running Tests
--------------
+#. Optional: to run the unit tests in this mode:
 
-Unit Tests
-----------
+   #. Get into the blockstore container: ``make blockstore-shell``
+   #. And then run ``make test``
 
-To run the unit tests, get into the blockstore container:
+#. Optional: to run the integration tests in this mode:
 
-.. code::
+   Open edX includes some integration tests for Blockstore. To run them with a separate blockstore instance, first start an isolated test version of blockstore by running ``make testserver`` from the ``blockstore`` repo root directory on your host computer. Then, from ``make dev.shell.studio``, run these commands:
 
-  make blockstore-shell
-
-
-And then run:
-
-.. code::
-
-  make test
-
-To save on overhead while running individual tests, from within the container, you can do:
-
-
-.. code::
-
-  DJANGO_SETTINGS_MODULE=blockstore.settings.test ./manage.py test dotted.path.To.test
-
-
-Running Integration Tests
--------------------------
-
-Open edX includes some integration tests for Blockstore, but they don't run by default. To run them, first start an isolated test version of blockstore by running ``make testserver`` from the ``blockstore`` repo root directory on your host computer. Then, from ``make dev.shell.studio``, run these commands:
-
-.. code::
-
-   EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
-   EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
-
-To run these integration tests while using Elasticsearch, add ``EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1`` on the above commands:
-
-.. code::
-
-   EDXAPP_RUN_BLOCKSTORE_TESTS=1 EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
-   EDXAPP_RUN_BLOCKSTORE_TESTS=1 EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
-
-To run these integration tests while using a specific container's version of Elasticsearch, add ``EDXAPP_TEST_ELASTICSEARCH_HOST`` with a specific container name on the above commands:
-
-.. code::
-
-   EDXAPP_RUN_BLOCKSTORE_TESTS=1 EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 EDXAPP_TEST_ELASTICSEARCH_HOST=edx.devstack.elasticsearch710 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
-   EDXAPP_RUN_BLOCKSTORE_TESTS=1 EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 EDXAPP_TEST_ELASTICSEARCH_HOST=edx.devstack.elasticsearch710 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/
-
--------------------
-Using in Production
--------------------
-
-You can deploy blockstore in production using the `blockstore ansible role <https://github.com/openedx/configuration/tree/master/playbooks/roles/blockstore>`_.
-
-Here is an example of setting the ansible variables to deploy Blockstore, assuming you are using the ``openedx_native.yml`` playbook. You will need to create the S3 bucket first (or comment out that part), and of course change all the variables and secret values to reflect your Open edX deployment details. Whatever value you put for ``BLOCKSTORE_API_AUTH_TOKEN`` must also be entered into the Blockstore django admin at e.g. https://blockstore.openedx-example.com/admin/authtoken/token/
-
-.. code::
-
-   # Run blockstore, and expose it publicly at 'blockstore.openedx-example.com'
-   SANDBOX_ENABLE_BLOCKSTORE: true
-   BLOCKSTORE_NGINX_HOSTNAME: 'blockstore.*'
-   BLOCKSTORE_NGINX_PORT: 80
-   BLOCKSTORE_SSL_NGINX_PORT: 443
-   BLOCKSTORE_SECRET_KEY: secretvalue2here
-   BLOCKSTORE_DATABASE_HOST: mysql.openedx-example.com
-   BLOCKSTORE_DATABASE_USER: blockstore_user
-   BLOCKSTORE_DATABASE_PASSWORD: secretvalue3here
-   BLOCKSTORE_DEFAULT_DB_NAME: my_openedx_blockstore
-
-   # Use S3 for blockstore data (optional but recommended):
-   BLOCKSTORE_SERVICE_CONFIG_OVERRIDES:
-       DEFAULT_FILE_STORAGE: storages.backends.s3boto3.S3Boto3Storage
-       AWS_ACCESS_KEY_ID: AKIAWABCDEFGHIJKLMNOPQRS
-       AWS_SECRET_ACCESS_KEY: secretvalue4here
-       AWS_STORAGE_BUCKET_NAME: blockstore-bucket
-
-   # Configure LMS/Studio to access Blockstore:
-   EDXAPP_BLOCKSTORE_API_URL: http://localhost:8250/api/v1/
-   EDXAPP_LMS_ENV_EXTRA:
-       BLOCKSTORE_API_AUTH_TOKEN: secretvalue1here
-   EDXAPP_CMS_ENV_EXTRA:
-       BLOCKSTORE_API_AUTH_TOKEN: secretvalue1here
+   #. ``EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/``
+   #. ``EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/``
 
 --------
 Get Help
