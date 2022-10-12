@@ -1,0 +1,18 @@
+# This file records information about this repo. Its use is described in OEP-55:
+# https://open-edx-proposals.readthedocs.io/en/latest/processes/oep-0055-proc-project-maintainers.html
+
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: 'Blockstore'
+  description: "A system for storing versioned, reusable educational content for Open edX."
+  annotations:
+    # (Optional) Annotation keys and values can be whatever you want.
+    # A comma-separated list of GitHub user names that might be interested in
+    # changes to the architecture of this component.
+    openedx.org/arch-interest-groups: "bradenmacdonald,ormsbee"
+spec:
+  # Maintained by https://github.com/orgs/openedx/teams/blockstore-maintainers
+  owner: group:blockstore-maintainers
+  type: 'library'  # Although blockstore can also be used as a service.
+  lifecycle: 'production'

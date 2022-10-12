@@ -2,6 +2,12 @@
 Blockstore
 ==========
 
+| |status-badge| |license-badge| |ci-badge|
+
+-------
+Purpose
+-------
+
 Blockstore is a system for storing versioned, reusable educational content for Open edX.
 
 It is designed as a replacement for `modulestore <https://github.com/openedx/edx-platform/tree/master/xmodule/modulestore>`_. It is meant to be a lower-level service than the modulestore, and is designed around the concept of storing small, reusable pieces of content, rather than large, fixed content structures such as courses. For Open edX, Blockstore is designed to facilitate a much greater level of content re-use than is currently possible, enable new adaptive learning features, and enable delivery of learning content in new ways (not just large traditional courses).
@@ -51,9 +57,9 @@ Design Details
 
 See `DESIGN <DESIGN.rst>`_ for an overview of Blockstore's design as it exists today. See `"Blockstore Design" <https://openedx.atlassian.net/wiki/spaces/AC/pages/737149430/Blockstore+Design>`_ on the wiki for historical context.
 
-------------------------------------------------
-Using with Content Libraries on a Tutor Devstack
-------------------------------------------------
+---------------
+Getting Started
+---------------
 
 The easiest way to try out the "Content Libraries v2" feature along with Blockstore is to use the Tutor devstack and
 `this library-authoring MFE Tutor plugin <https://github.com/openedx/frontend-app-library-authoring/pull/50>`_. See that plugin's README for details.
@@ -160,28 +166,51 @@ To run it as an independent application in development:
    #. ``EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=cms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/``
    #. ``EDXAPP_RUN_BLOCKSTORE_TESTS=1 python -Wd -m pytest --ds=lms.envs.test openedx/core/lib/blockstore_api/ openedx/core/djangolib/tests/test_blockstore_cache.py openedx/core/djangoapps/content_libraries/tests/``
 
---------
-Get Help
---------
+------------
+Getting Help
+------------
 
 Ask questions and discuss this project on `Slack <https://openedx.slack.com/messages/general/>`_ or the `Open edX Community Discussion Forum <https://discuss.openedx.org/>`_.
 
--------
-License
--------
-
-The code in this repository is licensed under version 3 of the AGPL unless otherwise noted. Please see the LICENSE_ file for details.
-
-.. _LICENSE: https://github.com/openedx/blockstore/blob/master/LICENSE
-
------------------
-How To Contribute
------------------
+------------
+Contributing
+------------
 
 Contributions are welcome. Please read `How To Contribute <https://github.com/openedx/edx-platform/blob/master/CONTRIBUTING.rst>`_ for details. Even though it was written with ``edx-platform`` in mind, these guidelines should be followed for Open edX code in general.
+
+----------------------------
+The Open edX Code of Conduct
+----------------------------
+
+All community members are expected to follow the `Open edX Code of Conduct`_.
+
+.. _Open edX Code of Conduct: https://openedx.org/code-of-conduct/
+
+------
+People
+------
+
+The assigned maintainers for this component and other project details may be
+found in `Backstage`_. Backstage pulls this data from the ``catalog-info.yaml``
+file in this repo.
+
+.. _Backstage: https://backstage.openedx.org/catalog/default/component/blockstore
+
 
 -------------------------
 Reporting Security Issues
 -------------------------
 
 Please do not report security issues in public. Please email security@edx.org.
+
+
+.. |ci-badge| image:: https://github.com/openedx/blockstore/workflows/CI/badge.svg?branch=master
+    :target: https://github.com/openedx/blockstore/actions
+    :alt: Test suite status
+
+.. |status-badge| image:: https://img.shields.io/badge/Status-Maintained-brightgreen
+    :alt: Maintained
+
+.. |license-badge| image:: https://img.shields.io/github/license/openedx/blockstore.svg
+    :target: https://github.com/openedx/blockstore/blob/master/LICENSE
+    :alt: License
