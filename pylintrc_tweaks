@@ -1,13 +1,13 @@
 [MASTER]
 ignore+= ,migrations, settings, setup.py, wsgi.py
+# For some reason, pylint 2.15+ isn't working without this fix. Normally
+# sys.path contains "" as the first entry, but for some reason it's missing.
+init-hook='import sys; sys.path.append("")'
 
 [BASIC]
 const-rgx = (([A-Z_][A-Z0-9_]*)|(__.*__)|log|urlpatterns|logger|User)$
 
 [MESSAGES CONTROL]
-DISABLE+= ,invalid-name
-
-# Our version of pylint doesn't understand attr() generated classes.
-# Can remove this once edx-lint is updated to the latest pylint
-[TYPECHECK]
-ignored-classes=_CountingAttr
+# The 'unsupported-binary-operation' check needs to be disabled on Python<3.10 but can be left enabled once we upgrade
+# to 3.10+
+DISABLE+= ,invalid-name,unsupported-binary-operation

@@ -16,10 +16,3 @@
 boto3<2.0
 
 django>3.2,<3.3
-
-# pylint 2.15.0 through 2.15.4 is currently not working with Blockstore
-# it gives "django.core.exceptions.ImproperlyConfigured" due to
-# "ModuleNotFoundError: No module named 'blockstore'"
-# This is a temporary constraint while we investigate the issue, so as not to
-# block other upgrades; it should be removed ASAP.
-pylint<2.15.0

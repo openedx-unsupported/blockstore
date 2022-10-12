@@ -46,7 +46,7 @@ urlpatterns = oauth2_urlpatterns + [
 urlpatterns += make_docs_urls(api_info)
 
 if settings.DEBUG:  # pragma: no cover
-    import debug_toolbar  # pylint: disable=import-error
+    import debug_toolbar  # pylint: disable=import-error,useless-suppression
     urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
 
 if settings.DEBUG or os.environ['DJANGO_SETTINGS_MODULE'] == 'blockstore.settings.test':

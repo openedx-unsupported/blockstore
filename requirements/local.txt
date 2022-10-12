@@ -12,7 +12,7 @@ asgiref==3.5.2
     # via
     #   -r requirements/test.txt
     #   django
-astroid==2.11.7
+astroid==2.12.11
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -265,9 +265,8 @@ pyjwt[crypto]==2.5.0
     #   -r requirements/test.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.14.5
+pylint==2.15.4
     # via
-    #   -c requirements/constraints.txt
     #   -r requirements/test.txt
     #   edx-lint
     #   pylint-celery
@@ -447,6 +446,3 @@ wrapt==1.14.1
     # via
     #   -r requirements/test.txt
     #   astroid
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools
