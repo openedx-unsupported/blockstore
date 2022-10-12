@@ -86,7 +86,7 @@ markupsafe==2.1.1
     # via jinja2
 mysqlclient==2.1.1
     # via -r requirements/base.in
-newrelic==8.2.0.181
+newrelic==8.2.1
     # via edx-django-utils
 oauthlib==3.2.1
     # via
