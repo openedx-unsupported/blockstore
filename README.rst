@@ -2,7 +2,7 @@
 Blockstore
 ==========
 
-| |status-badge| |license-badge| |ci-badge|
+|status-badge| |license-badge| |ci-badge|
 
 -------
 Purpose
