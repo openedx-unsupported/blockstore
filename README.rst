@@ -62,7 +62,7 @@ Getting Started
 ---------------
 
 The easiest way to try out the "Content Libraries v2" feature along with Blockstore is to use the Tutor devstack and
-`this library-authoring MFE Tutor plugin <https://github.com/openedx/frontend-app-library-authoring/pull/50>`_. See that plugin's README for details.
+`the library-authoring MFE Tutor plugin <https://github.com/openedx/frontend-app-library-authoring/tree/master/tutor-contrib-library-authoring-mfe#readme>`_. See that plugin's README for details.
 
 -------------------------
 Running Integration Tests
