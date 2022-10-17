@@ -111,7 +111,7 @@ html_coverage: ## Generate HTML coverage report
 
 quality: ## Run quality checks
 	${VENV_BIN}/pycodestyle --config=pycodestyle blockstore *.py
-	${VENV_BIN}/pylint --django-settings-module=blockstore.settings.test --rcfile=pylintrc blockstore *.py
+	${VENV_BIN}/pylint --django-settings-module=blockstore.settings.test blockstore *.py
 
 validate: test quality ## Run tests and quality checks
 

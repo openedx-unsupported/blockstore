@@ -8,7 +8,7 @@ asgiref==3.5.2
     # via django
 attrs==22.1.0
     # via -r requirements/base.in
-certifi==2022.6.15
+certifi==2022.9.24
     # via requests
 cffi==1.15.1
     # via
@@ -24,7 +24,7 @@ coreschema==0.0.4
     # via
     #   coreapi
     #   drf-yasg
-cryptography==37.0.4
+cryptography==38.0.1
     # via
     #   pyjwt
     #   social-auth-core
@@ -32,7 +32,7 @@ defusedxml==0.7.1
     # via
     #   python3-openid
     #   social-auth-core
-django==3.2.15
+django==3.2.16
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -52,11 +52,11 @@ django-environ==0.9.0
     # via -r requirements/base.in
 django-filter==22.1
     # via -r requirements/base.in
-django-waffle==2.7.0
+django-waffle==3.0.0
     # via
     #   -r requirements/base.in
     #   edx-django-utils
-djangorestframework==3.13.1
+djangorestframework==3.14.0
     # via
     #   -r requirements/base.in
     #   drf-nested-routers
@@ -64,7 +64,7 @@ djangorestframework==3.13.1
     #   edx-api-doc-tools
 drf-nested-routers==0.93.4
     # via -r requirements/base.in
-drf-yasg==1.21.3
+drf-yasg==1.21.4
     # via edx-api-doc-tools
 edx-api-doc-tools==1.6.0
     # via -r requirements/base.in
@@ -72,9 +72,9 @@ edx-auth-backends==4.1.0
     # via -r requirements/base.in
 edx-django-release-util==1.2.0
     # via -r requirements/base.in
-edx-django-utils==5.0.0
+edx-django-utils==5.2.0
     # via -r requirements/base.in
-idna==3.3
+idna==3.4
     # via requests
 inflection==0.5.1
     # via drf-yasg
@@ -86,9 +86,9 @@ markupsafe==2.1.1
     # via jinja2
 mysqlclient==2.1.1
     # via -r requirements/base.in
-newrelic==8.0.0.179
+newrelic==8.2.1
     # via edx-django-utils
-oauthlib==3.2.0
+oauthlib==3.2.1
     # via
     #   requests-oauthlib
     #   social-auth-core
@@ -96,13 +96,11 @@ packaging==21.3
     # via drf-yasg
 pbr==5.10.0
     # via stevedore
-psutil==5.9.1
+psutil==5.9.2
     # via edx-django-utils
-pyblake2==1.1.2
-    # via -r requirements/base.in
 pycparser==2.21
     # via cffi
-pyjwt[crypto]==2.4.0
+pyjwt[crypto]==2.5.0
     # via
     #   edx-auth-backends
     #   social-auth-core
@@ -112,7 +110,7 @@ pyparsing==3.0.9
     # via packaging
 python3-openid==3.2.0
     # via social-auth-core
-pytz==2022.2.1
+pytz==2022.4
     # via
     #   -r requirements/base.in
     #   django
@@ -141,12 +139,14 @@ social-auth-core==4.3.0
     # via
     #   edx-auth-backends
     #   social-auth-app-django
-sqlparse==0.4.2
+sqlparse==0.4.3
     # via
     #   -r requirements/base.in
     #   django
-stevedore==4.0.0
+stevedore==4.0.1
     # via edx-django-utils
+types-cryptography==3.3.23.1
+    # via pyjwt
 uritemplate==4.1.1
     # via
     #   coreapi
