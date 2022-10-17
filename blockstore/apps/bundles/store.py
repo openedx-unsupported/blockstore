@@ -11,6 +11,7 @@ SnapshotRepo is unaware of DraftRepo.
 """
 from contextlib import contextmanager
 from datetime import datetime, timezone
+from hashlib import blake2b
 from pathlib import Path
 from uuid import UUID
 import codecs
@@ -22,7 +23,6 @@ import pytz
 from django.core.files.base import ContentFile, File
 from django.dispatch import Signal
 import attr
-from pyblake2 import blake2b  # pylint:disable=no-name-in-module
 
 from .links import Dependency, Link, LinkCollection, LinkChangeSet
 from .storage import default_asset_storage

@@ -98,8 +98,6 @@ pbr==5.10.0
     # via stevedore
 psutil==5.9.2
     # via edx-django-utils
-pyblake2==1.1.2
-    # via -r requirements/base.in
 pycparser==2.21
     # via cffi
 pyjwt[crypto]==2.5.0
@@ -145,9 +143,9 @@ sqlparse==0.4.3
     # via
     #   -r requirements/base.in
     #   django
-stevedore==4.0.0
+stevedore==4.0.1
     # via edx-django-utils
-types-cryptography==3.3.23
+types-cryptography==3.3.23.1
     # via pyjwt
 uritemplate==4.1.1
     # via

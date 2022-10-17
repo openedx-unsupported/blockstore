@@ -1,7 +1,6 @@
 -c constraints.txt
 
 attrs
-pyblake2
 django
 django-environ
 django-waffle
