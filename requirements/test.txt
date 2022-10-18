@@ -72,7 +72,7 @@ diff-cover==6.5.1
     # via -r requirements/test.in
 dill==0.3.5.1
     # via pylint
-django==3.2.15
+django==3.2.16
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
