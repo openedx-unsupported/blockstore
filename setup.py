@@ -65,7 +65,7 @@ README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 CHANGELOG = open(os.path.join(os.path.dirname(__file__), 'CHANGELOG.rst')).read()
 
 setup(
-    name='blockstore',
+    name='openedX-blockstore',
     version=VERSION,
     description="""Blockstore is a storage system for learning content in Open edX.""",
     long_description=README + '\n\n' + CHANGELOG,
