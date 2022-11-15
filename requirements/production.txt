@@ -10,11 +10,11 @@ asgiref==3.5.2
     #   django
 attrs==22.1.0
     # via -r requirements/base.txt
-boto3==1.26.3
+boto3==1.26.8
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.29.3
+botocore==1.29.8
     # via
     #   boto3
     #   s3transfer
@@ -105,7 +105,7 @@ edx-django-utils==5.2.0
     # via -r requirements/base.txt
 gevent==22.10.2
     # via -r requirements/production.in
-greenlet==2.0.0.post0
+greenlet==2.0.1
     # via gevent
 gunicorn==20.1.0
     # via -r requirements/production.in
@@ -153,7 +153,7 @@ pbr==5.11.0
     # via
     #   -r requirements/base.txt
     #   stevedore
-psutil==5.9.3
+psutil==5.9.4
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -233,7 +233,7 @@ sqlparse==0.4.3
     # via
     #   -r requirements/base.txt
     #   django
-stevedore==4.1.0
+stevedore==4.1.1
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
