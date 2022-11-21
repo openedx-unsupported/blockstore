@@ -8,7 +8,7 @@ asgiref==3.5.2
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.12.12
+astroid==2.12.13
     # via
     #   -r requirements/test.in
     #   pylint
@@ -122,11 +122,11 @@ edx-django-utils==5.2.0
     # via -r requirements/base.txt
 edx-lint==5.3.0
     # via -r requirements/test.in
-exceptiongroup==1.0.2
+exceptiongroup==1.0.4
     # via pytest
 factory-boy==3.2.1
     # via -r requirements/test.in
-faker==15.3.1
+faker==15.3.2
     # via factory-boy
 idna==3.4
     # via
@@ -158,7 +158,7 @@ markupsafe==2.1.1
     #   jinja2
 mccabe==0.7.0
     # via pylint
-mypy==0.990
+mypy==0.991
     # via -r requirements/test.in
 mypy-extensions==0.4.3
     # via mypy
@@ -205,7 +205,7 @@ pyjwt[crypto]==2.6.0
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.15.5
+pylint==2.15.6
     # via
     #   edx-lint
     #   pylint-celery
@@ -238,7 +238,7 @@ pytest-django==4.5.2
     # via -r requirements/test.in
 python-dateutil==2.8.2
     # via faker
-python-slugify==6.1.2
+python-slugify==7.0.0
     # via code-annotations
 python3-openid==3.2.0
     # via

@@ -10,11 +10,11 @@ asgiref==3.5.2
     #   django
 attrs==22.1.0
     # via -r requirements/base.txt
-boto3==1.26.8
+boto3==1.26.13
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.29.8
+botocore==1.29.13
     # via
     #   boto3
     #   s3transfer
@@ -249,7 +249,7 @@ urllib3==1.26.12
     #   requests
 zope-event==4.5.0
     # via gevent
-zope-interface==5.5.1
+zope-interface==5.5.2
     # via gevent
 
 # The following packages are considered to be unsafe in a requirements file:
