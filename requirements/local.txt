@@ -72,7 +72,7 @@ coverage[toml]==6.5.0
     # via
     #   -r requirements/test.txt
     #   pytest-cov
-cryptography==38.0.3
+cryptography==38.0.4
     # via
     #   -r requirements/test.txt
     #   pyjwt
@@ -84,7 +84,7 @@ defusedxml==0.7.1
     #   -r requirements/test.txt
     #   python3-openid
     #   social-auth-core
-diff-cover==7.0.2
+diff-cover==7.1.0
     # via -r requirements/test.txt
 dill==0.3.6
     # via
@@ -155,7 +155,7 @@ exceptiongroup==1.0.4
     #   pytest
 factory-boy==3.2.1
     # via -r requirements/test.txt
-faker==15.3.2
+faker==15.3.3
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -168,7 +168,7 @@ imagesize==1.4.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
-importlib-metadata==5.0.0
+importlib-metadata==5.1.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
@@ -250,7 +250,7 @@ psutil==5.9.4
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
-pycodestyle==2.9.1
+pycodestyle==2.10.0
     # via -r requirements/test.txt
 pycparser==2.21
     # via
@@ -437,7 +437,7 @@ uritemplate==4.1.1
     #   -r requirements/test.txt
     #   coreapi
     #   drf-yasg
-urllib3==1.26.12
+urllib3==1.26.13
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -446,7 +446,7 @@ wrapt==1.14.1
     # via
     #   -r requirements/test.txt
     #   astroid
-zipp==3.10.0
+zipp==3.11.0
     # via
     #   -r requirements/docs.txt
     #   importlib-metadata

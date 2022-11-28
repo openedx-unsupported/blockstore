@@ -56,7 +56,7 @@ coverage[toml]==6.5.0
     # via
     #   -r requirements/test.in
     #   pytest-cov
-cryptography==38.0.3
+cryptography==38.0.4
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -68,7 +68,7 @@ defusedxml==0.7.1
     #   -r requirements/base.txt
     #   python3-openid
     #   social-auth-core
-diff-cover==7.0.2
+diff-cover==7.1.0
     # via -r requirements/test.in
 dill==0.3.6
     # via pylint
@@ -126,7 +126,7 @@ exceptiongroup==1.0.4
     # via pytest
 factory-boy==3.2.1
     # via -r requirements/test.in
-faker==15.3.2
+faker==15.3.3
     # via factory-boy
 idna==3.4
     # via
@@ -192,7 +192,7 @@ psutil==5.9.4
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-pycodestyle==2.9.1
+pycodestyle==2.10.0
     # via -r requirements/test.in
 pycparser==2.21
     # via
@@ -319,7 +319,7 @@ uritemplate==4.1.1
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-urllib3==1.26.12
+urllib3==1.26.13
     # via
     #   -r requirements/base.txt
     #   requests
