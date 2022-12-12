@@ -8,7 +8,7 @@ asgiref==3.5.2
     # via django
 attrs==22.1.0
     # via -r requirements/base.in
-certifi==2022.9.24
+certifi==2022.12.7
     # via requests
 cffi==1.15.1
     # via
@@ -86,13 +86,13 @@ markupsafe==2.1.1
     # via jinja2
 mysqlclient==2.1.1
     # via -r requirements/base.in
-newrelic==8.4.0
+newrelic==8.5.0
     # via edx-django-utils
 oauthlib==3.2.2
     # via
     #   requests-oauthlib
     #   social-auth-core
-packaging==21.3
+packaging==22.0
     # via drf-yasg
 pbr==5.11.0
     # via stevedore
@@ -106,8 +106,6 @@ pyjwt[crypto]==2.6.0
     #   social-auth-core
 pynacl==1.5.0
     # via edx-django-utils
-pyparsing==3.0.9
-    # via packaging
 python3-openid==3.2.0
     # via social-auth-core
 pytz==2022.6
