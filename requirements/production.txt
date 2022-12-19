@@ -10,11 +10,11 @@ asgiref==3.5.2
     #   django
 attrs==22.1.0
     # via -r requirements/base.txt
-boto3==1.26.27
+boto3==1.26.32
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.29.27
+botocore==1.29.32
     # via
     #   boto3
     #   s3transfer
@@ -178,7 +178,7 @@ python3-openid==3.2.0
     # via
     #   -r requirements/base.txt
     #   social-auth-core
-pytz==2022.6
+pytz==2022.7
     # via
     #   -r requirements/base.txt
     #   django
@@ -243,7 +243,7 @@ urllib3==1.26.13
     #   -r requirements/base.txt
     #   botocore
     #   requests
-zope-event==4.5.0
+zope-event==4.6
     # via gevent
 zope-interface==5.5.2
     # via gevent
