@@ -4,9 +4,9 @@
 #
 #    make upgrade
 #
-asgiref==3.5.2
+asgiref==3.6.0
     # via django
-attrs==22.1.0
+attrs==22.2.0
     # via -r requirements/base.in
 certifi==2022.12.7
     # via requests
@@ -108,7 +108,7 @@ pynacl==1.5.0
     # via edx-django-utils
 python3-openid==3.2.0
     # via social-auth-core
-pytz==2022.6
+pytz==2022.7
     # via
     #   -r requirements/base.in
     #   django
