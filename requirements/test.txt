@@ -8,7 +8,7 @@ asgiref==3.6.0
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.12.13
+astroid==2.13.2
     # via
     #   -r requirements/test.in
     #   pylint
@@ -52,7 +52,7 @@ coreschema==0.0.4
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-coverage[toml]==7.0.3
+coverage[toml]==7.0.4
     # via
     #   -r requirements/test.in
     #   pytest-cov
@@ -136,7 +136,7 @@ inflection==0.5.1
     # via
     #   -r requirements/base.txt
     #   drf-yasg
-iniconfig==1.1.1
+iniconfig==2.0.0
     # via pytest
 isort==5.11.4
     # via pylint
@@ -173,7 +173,7 @@ oauthlib==3.2.2
     #   -r requirements/base.txt
     #   requests-oauthlib
     #   social-auth-core
-packaging==22.0
+packaging==23.0
     # via
     #   -r requirements/base.txt
     #   drf-yasg
