@@ -92,7 +92,7 @@ oauthlib==3.2.2
     # via
     #   requests-oauthlib
     #   social-auth-core
-packaging==22.0
+packaging==23.0
     # via drf-yasg
 pbr==5.11.0
     # via stevedore
