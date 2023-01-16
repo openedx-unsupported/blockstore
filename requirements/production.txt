@@ -10,11 +10,11 @@ asgiref==3.6.0
     #   django
 attrs==22.2.0
     # via -r requirements/base.txt
-boto3==1.26.45
+boto3==1.26.50
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.29.45
+botocore==1.29.50
     # via
     #   boto3
     #   s3transfer
@@ -27,7 +27,7 @@ cffi==1.15.1
     #   -r requirements/base.txt
     #   cryptography
     #   pynacl
-charset-normalizer==2.1.1
+charset-normalizer==3.0.1
     # via
     #   -r requirements/base.txt
     #   requests
@@ -149,7 +149,7 @@ packaging==23.0
     # via
     #   -r requirements/base.txt
     #   drf-yasg
-pbr==5.11.0
+pbr==5.11.1
     # via
     #   -r requirements/base.txt
     #   stevedore
@@ -178,7 +178,7 @@ python3-openid==3.2.0
     # via
     #   -r requirements/base.txt
     #   social-auth-core
-pytz==2022.7
+pytz==2022.7.1
     # via
     #   -r requirements/base.txt
     #   django
@@ -189,7 +189,7 @@ pyyaml==6.0
     #   -r requirements/base.txt
     #   -r requirements/production.in
     #   edx-django-release-util
-requests==2.28.1
+requests==2.28.2
     # via
     #   -r requirements/base.txt
     #   coreapi
@@ -238,7 +238,7 @@ uritemplate==4.1.1
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-urllib3==1.26.13
+urllib3==1.26.14
     # via
     #   -r requirements/base.txt
     #   botocore
