@@ -16,17 +16,21 @@ Unreleased
 
 *
 
-[1.1.0] - 2021-10-25
+[1.3.0] - 2023-02-06
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Added
 _____
 
-* Move apps/api to apps/rest_api.
-* Copy edx-platform/openedx/core/lib/blockstore_api to blockstore/apps/api.
-  This code has been copied over so it is easier to review the Python API
-  implementation in development.
-* Make code into an installable package.
+* Adds support for installing this package as a wheel (``pip install openedx-blockstore``) rather than having to use editable mode (``pip install -e ./blockstore``).
+
+Changed
+_______
+
+* Fixes a bug where a new bundle's collection could not be set via Django admin.
+* Various configuration and build tooling fixes. See commit log of 1.2.0...1.3.0 for full details.
+
+
 
 [1.2.0] - 2021-01-25
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -40,3 +44,16 @@ Changed
 _______
 
 * Updates the Python API to use the models directly.
+
+[1.1.0] - 2021-10-25
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Added
+_____
+
+* Move apps/api to apps/rest_api.
+* Copy edx-platform/openedx/core/lib/blockstore_api to blockstore/apps/api.
+  This code has been copied over so it is easier to review the Python API
+  implementation in development.
+* Make code into an installable package.
+
