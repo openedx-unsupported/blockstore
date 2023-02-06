@@ -8,7 +8,7 @@ asgiref==3.6.0
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.13.3
+astroid==2.14.1
     # via
     #   -r requirements/test.in
     #   pylint
@@ -160,7 +160,7 @@ mccabe==0.7.0
     # via pylint
 mypy==0.991
     # via -r requirements/test.in
-mypy-extensions==0.4.3
+mypy-extensions==1.0.0
     # via mypy
 mysqlclient==2.1.1
     # via -r requirements/base.txt
@@ -205,7 +205,7 @@ pyjwt[crypto]==2.6.0
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.15.10
+pylint==2.16.1
     # via
     #   edx-lint
     #   pylint-celery
