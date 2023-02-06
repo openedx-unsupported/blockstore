@@ -74,10 +74,20 @@ class DraftInline(admin.StackedInline):
 
 
 class BundleAdmin(admin.ModelAdmin):
+    """
+    View for creating or updating Bundles and their BundleVersions & Drafts.
+    """
     list_display = ('uuid', 'slug', 'title')
-    readonly_fields = ('uuid',)
     inlines = (BundleVersionInline, DraftInline)
     search_fields = ('uuid', 'title')
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            # Editing an existing Bundle: Do not allow collection to be edited.
+            return ('uuid', 'collection')
+        else:
+            # Creating a new Bundle: Allow the collection to be set.
+            return ('uuid',)
 
 
 class CollectionAdmin(admin.ModelAdmin):
