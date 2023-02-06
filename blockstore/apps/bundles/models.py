@@ -101,7 +101,7 @@ class Bundle(models.Model):
     title = models.CharField(max_length=MAX_CHAR_FIELD_LENGTH, db_index=True, db_collation=DB_COLLATION)
 
     collection = models.ForeignKey(
-        Collection, related_name="bundles", related_query_name="bundle", editable=False,
+        Collection, related_name="bundles", related_query_name="bundle",
         on_delete=models.CASCADE,
     )
 
