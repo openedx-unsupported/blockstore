@@ -99,9 +99,9 @@ class LongLivedSignedUrlStorage(Storage):  # pylint: disable=abstract-method
         # the S3 URLs backend.
         # All other S3 settings will be pulled in automatically from Django settings
         # (such as AWS_QUERYSTRING_EXPIRE and AWS_STORAGE_BUCKET_NAME).
-        s3_backend_args = dict(
+        s3_backend_args = {
             **settings.BUNDLE_ASSET_STORAGE_SETTINGS.get('STORAGE_KWARGS', {})
-        )
+        }
         s3_backend_args.update(
             access_key=key,
             secret_key=secret,
