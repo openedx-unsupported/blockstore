@@ -75,12 +75,12 @@ class FileInfo:
                 # Used by Drafts to indicate this file should be deleted.
                 file_info_dict[pathname] = None
             else:
-                kwds = dict(
-                    path=pathname,
-                    public=file_info[0],
-                    size=file_info[1],
-                    hash_digest=bytes_from_hex_str(file_info[2])
-                )
+                kwds = {
+                    "path": pathname,
+                    "public": file_info[0],
+                    "size": file_info[1],
+                    "hash_digest": bytes_from_hex_str(file_info[2]),
+                }
                 if len(file_info) > 3:
                     kwds['mime_type'] = file_info[3]
                 file_info_dict[pathname] = cls(**kwds)
