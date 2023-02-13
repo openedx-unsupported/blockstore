@@ -24,7 +24,7 @@ coreschema==0.0.4
     # via
     #   coreapi
     #   drf-yasg
-cryptography==39.0.0
+cryptography==39.0.1
     # via
     #   pyjwt
     #   social-auth-core
@@ -64,7 +64,7 @@ djangorestframework==3.14.0
     #   edx-api-doc-tools
 drf-nested-routers==0.93.4
     # via -r requirements/base.in
-drf-yasg==1.21.4
+drf-yasg==1.21.5
     # via edx-api-doc-tools
 edx-api-doc-tools==1.6.0
     # via -r requirements/base.in
@@ -86,7 +86,7 @@ markupsafe==2.1.2
     # via jinja2
 mysqlclient==2.1.1
     # via -r requirements/base.in
-newrelic==8.5.0
+newrelic==8.6.0
     # via edx-django-utils
 oauthlib==3.2.2
     # via
@@ -141,7 +141,7 @@ sqlparse==0.4.3
     # via
     #   -r requirements/base.in
     #   django
-stevedore==4.1.1
+stevedore==5.0.0
     # via edx-django-utils
 uritemplate==4.1.1
     # via
