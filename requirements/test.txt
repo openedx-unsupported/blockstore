@@ -72,7 +72,7 @@ diff-cover==7.4.0
     # via -r requirements/test.in
 dill==0.3.6
     # via pylint
-django==3.2.17
+django==3.2.18
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -120,13 +120,13 @@ edx-django-release-util==1.2.0
     # via -r requirements/base.txt
 edx-django-utils==5.2.0
     # via -r requirements/base.txt
-edx-lint==5.3.0
+edx-lint==5.3.2
     # via -r requirements/test.in
 exceptiongroup==1.1.0
     # via pytest
 factory-boy==3.2.1
     # via -r requirements/test.in
-faker==16.8.1
+faker==17.0.0
     # via factory-boy
 idna==3.4
     # via
@@ -158,13 +158,13 @@ markupsafe==2.1.2
     #   jinja2
 mccabe==0.7.0
     # via pylint
-mypy==1.0.0
+mypy==1.0.1
     # via -r requirements/test.in
 mypy-extensions==1.0.0
     # via mypy
 mysqlclient==2.1.1
     # via -r requirements/base.txt
-newrelic==8.6.0
+newrelic==8.7.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -205,7 +205,7 @@ pyjwt[crypto]==2.6.0
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.16.1
+pylint==2.16.2
     # via
     #   edx-lint
     #   pylint-celery
@@ -305,7 +305,7 @@ tomli==2.0.1
     #   pytest
 tomlkit==0.11.6
     # via pylint
-typing-extensions==4.4.0
+typing-extensions==4.5.0
     # via
     #   astroid
     #   mypy

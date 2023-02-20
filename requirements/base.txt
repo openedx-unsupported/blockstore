@@ -32,7 +32,7 @@ defusedxml==0.7.1
     # via
     #   python3-openid
     #   social-auth-core
-django==3.2.17
+django==3.2.18
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -86,7 +86,7 @@ markupsafe==2.1.2
     # via jinja2
 mysqlclient==2.1.1
     # via -r requirements/base.in
-newrelic==8.6.0
+newrelic==8.7.0
     # via edx-django-utils
 oauthlib==3.2.2
     # via
