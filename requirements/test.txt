@@ -52,7 +52,7 @@ coreschema==0.0.4
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-coverage[toml]==7.1.0
+coverage[toml]==7.2.1
     # via
     #   -r requirements/test.in
     #   pytest-cov
@@ -68,7 +68,7 @@ defusedxml==0.7.1
     #   -r requirements/base.txt
     #   python3-openid
     #   social-auth-core
-diff-cover==7.4.0
+diff-cover==7.5.0
     # via -r requirements/test.in
 dill==0.3.6
     # via pylint
@@ -126,7 +126,7 @@ exceptiongroup==1.1.0
     # via pytest
 factory-boy==3.2.1
     # via -r requirements/test.in
-faker==17.0.0
+faker==17.3.0
     # via factory-boy
 idna==3.4
     # via
@@ -234,7 +234,7 @@ pytest-django==4.5.2
     # via -r requirements/test.in
 python-dateutil==2.8.2
     # via faker
-python-slugify==8.0.0
+python-slugify==8.0.1
     # via code-annotations
 python3-openid==3.2.0
     # via
