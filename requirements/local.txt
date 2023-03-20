@@ -68,7 +68,7 @@ coreschema==0.0.4
     #   -r requirements/test.txt
     #   coreapi
     #   drf-yasg
-coverage[toml]==7.2.1
+coverage[toml]==7.2.2
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -143,9 +143,9 @@ edx-auth-backends==4.1.0
     # via -r requirements/test.txt
 edx-django-release-util==1.2.0
     # via -r requirements/test.txt
-edx-django-utils==5.2.0
+edx-django-utils==5.3.0
     # via -r requirements/test.txt
-edx-lint==5.3.2
+edx-lint==5.3.4
     # via -r requirements/test.txt
 edx-sphinx-theme==3.1.0
     # via -r requirements/docs.txt
@@ -168,7 +168,7 @@ imagesize==1.4.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
-importlib-metadata==6.0.0
+importlib-metadata==6.1.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
@@ -359,11 +359,11 @@ snowballstemmer==2.2.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
-social-auth-app-django==5.0.0
+social-auth-app-django==5.1.0
     # via
     #   -r requirements/test.txt
     #   edx-auth-backends
-social-auth-core==4.3.0
+social-auth-core==4.4.0
     # via
     #   -r requirements/test.txt
     #   edx-auth-backends

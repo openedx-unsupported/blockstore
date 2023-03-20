@@ -10,11 +10,11 @@ asgiref==3.6.0
     #   django
 attrs==22.2.0
     # via -r requirements/base.txt
-boto3==1.26.89
+boto3==1.26.94
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.29.89
+botocore==1.29.94
     # via
     #   boto3
     #   s3transfer
@@ -101,7 +101,7 @@ edx-auth-backends==4.1.0
     # via -r requirements/base.txt
 edx-django-release-util==1.2.0
     # via -r requirements/base.txt
-edx-django-utils==5.2.0
+edx-django-utils==5.3.0
     # via -r requirements/base.txt
 gevent==22.10.2
     # via -r requirements/production.in
@@ -216,11 +216,11 @@ six==1.16.0
     #   edx-django-release-util
     #   python-dateutil
     #   python-memcached
-social-auth-app-django==5.0.0
+social-auth-app-django==5.1.0
     # via
     #   -r requirements/base.txt
     #   edx-auth-backends
-social-auth-core==4.3.0
+social-auth-core==4.4.0
     # via
     #   -r requirements/base.txt
     #   edx-auth-backends
@@ -245,7 +245,7 @@ urllib3==1.26.15
     #   requests
 zope-event==4.6
     # via gevent
-zope-interface==5.5.2
+zope-interface==6.0
     # via gevent
 
 # The following packages are considered to be unsafe in a requirements file:
