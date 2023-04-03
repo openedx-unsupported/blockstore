@@ -10,11 +10,11 @@ asgiref==3.6.0
     #   django
 attrs==22.2.0
     # via -r requirements/base.txt
-boto3==1.26.94
+boto3==1.26.104
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.29.94
+botocore==1.29.104
     # via
     #   boto3
     #   s3transfer
@@ -44,7 +44,7 @@ coreschema==0.0.4
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-cryptography==39.0.2
+cryptography==40.0.1
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -69,13 +69,14 @@ django==3.2.18
     #   edx-auth-backends
     #   edx-django-release-util
     #   edx-django-utils
+    #   social-auth-app-django
 django-crum==0.7.9
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
 django-environ==0.10.0
     # via -r requirements/base.txt
-django-filter==22.1
+django-filter==23.1
     # via -r requirements/base.txt
 django-storages==1.13.2
     # via -r requirements/production.in
@@ -135,7 +136,7 @@ markupsafe==2.1.2
     #   jinja2
 mysqlclient==2.1.1
     # via -r requirements/base.txt
-newrelic==8.7.0
+newrelic==8.8.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/production.in
@@ -178,7 +179,7 @@ python3-openid==3.2.0
     # via
     #   -r requirements/base.txt
     #   social-auth-core
-pytz==2022.7.1
+pytz==2023.3
     # via
     #   -r requirements/base.txt
     #   django
@@ -216,11 +217,11 @@ six==1.16.0
     #   edx-django-release-util
     #   python-dateutil
     #   python-memcached
-social-auth-app-django==5.1.0
+social-auth-app-django==5.2.0
     # via
     #   -r requirements/base.txt
     #   edx-auth-backends
-social-auth-core==4.4.0
+social-auth-core==4.4.1
     # via
     #   -r requirements/base.txt
     #   edx-auth-backends
