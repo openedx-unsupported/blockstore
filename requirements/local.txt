@@ -12,7 +12,7 @@ asgiref==3.6.0
     # via
     #   -r requirements/test.txt
     #   django
-astroid==2.15.0
+astroid==2.15.1
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -72,7 +72,7 @@ coverage[toml]==7.2.2
     # via
     #   -r requirements/test.txt
     #   pytest-cov
-cryptography==39.0.2
+cryptography==40.0.1
     # via
     #   -r requirements/test.txt
     #   pyjwt
@@ -105,6 +105,7 @@ django==3.2.18
     #   edx-auth-backends
     #   edx-django-release-util
     #   edx-django-utils
+    #   social-auth-app-django
 django-crum==0.7.9
     # via
     #   -r requirements/test.txt
@@ -115,7 +116,7 @@ django-dynamic-fixture==3.1.2
     # via -r requirements/test.txt
 django-environ==0.10.0
     # via -r requirements/test.txt
-django-filter==22.1
+django-filter==23.1
     # via -r requirements/test.txt
 django-waffle==3.0.0
     # via
@@ -155,7 +156,7 @@ exceptiongroup==1.1.1
     #   pytest
 factory-boy==3.2.1
     # via -r requirements/test.txt
-faker==17.6.0
+faker==18.3.2
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -217,7 +218,7 @@ mypy-extensions==1.0.0
     #   mypy
 mysqlclient==2.1.1
     # via -r requirements/test.txt
-newrelic==8.7.0
+newrelic==8.8.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -237,7 +238,7 @@ pbr==5.11.1
     # via
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==3.1.1
+platformdirs==3.2.0
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -267,7 +268,7 @@ pyjwt[crypto]==2.6.0
     #   -r requirements/test.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.17.0
+pylint==2.17.1
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -312,7 +313,7 @@ python3-openid==3.2.0
     # via
     #   -r requirements/test.txt
     #   social-auth-core
-pytz==2022.7.1
+pytz==2023.3
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -359,11 +360,11 @@ snowballstemmer==2.2.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
-social-auth-app-django==5.1.0
+social-auth-app-django==5.2.0
     # via
     #   -r requirements/test.txt
     #   edx-auth-backends
-social-auth-core==4.4.0
+social-auth-core==4.4.1
     # via
     #   -r requirements/test.txt
     #   edx-auth-backends
@@ -418,7 +419,7 @@ tomli==2.0.1
     #   mypy
     #   pylint
     #   pytest
-tomlkit==0.11.6
+tomlkit==0.11.7
     # via
     #   -r requirements/test.txt
     #   pylint
