@@ -8,13 +8,13 @@ asgiref==3.6.0
     # via
     #   -r requirements/base.txt
     #   django
-attrs==22.2.0
+attrs==23.1.0
     # via -r requirements/base.txt
-boto3==1.26.109
+boto3==1.26.114
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.29.109
+botocore==1.29.114
     # via
     #   boto3
     #   s3transfer
@@ -44,7 +44,7 @@ coreschema==0.0.4
     #   -r requirements/base.txt
     #   coreapi
     #   drf-yasg
-cryptography==40.0.1
+cryptography==40.0.2
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -102,7 +102,7 @@ edx-auth-backends==4.1.0
     # via -r requirements/base.txt
 edx-django-release-util==1.2.0
     # via -r requirements/base.txt
-edx-django-utils==5.3.0
+edx-django-utils==5.4.0
     # via -r requirements/base.txt
 gevent==22.10.2
     # via -r requirements/production.in
@@ -146,7 +146,7 @@ oauthlib==3.2.2
     #   -r requirements/base.txt
     #   requests-oauthlib
     #   social-auth-core
-packaging==23.0
+packaging==23.1
     # via
     #   -r requirements/base.txt
     #   drf-yasg
