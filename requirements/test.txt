@@ -187,7 +187,7 @@ pluggy==1.0.0
     # via
     #   diff-cover
     #   pytest
-psutil==5.9.4
+psutil==5.9.5
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -197,7 +197,7 @@ pycparser==2.21
     # via
     #   -r requirements/base.txt
     #   cffi
-pygments==2.15.0
+pygments==2.15.1
     # via diff-cover
 pyjwt[crypto]==2.6.0
     # via
@@ -280,12 +280,12 @@ social-auth-app-django==5.2.0
     # via
     #   -r requirements/base.txt
     #   edx-auth-backends
-social-auth-core==4.4.1
+social-auth-core==4.4.2
     # via
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-app-django
-sqlparse==0.4.3
+sqlparse==0.4.4
     # via
     #   -r requirements/base.txt
     #   django

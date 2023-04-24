@@ -97,7 +97,7 @@ packaging==23.1
     # via drf-yasg
 pbr==5.11.1
     # via stevedore
-psutil==5.9.4
+psutil==5.9.5
     # via edx-django-utils
 pycparser==2.21
     # via cffi
@@ -134,11 +134,11 @@ six==1.16.0
     #   edx-django-release-util
 social-auth-app-django==5.2.0
     # via edx-auth-backends
-social-auth-core==4.4.1
+social-auth-core==4.4.2
     # via
     #   edx-auth-backends
     #   social-auth-app-django
-sqlparse==0.4.3
+sqlparse==0.4.4
     # via
     #   -r requirements/base.in
     #   django
