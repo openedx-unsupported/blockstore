@@ -167,7 +167,7 @@ imagesize==1.4.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
-importlib-metadata==6.4.1
+importlib-metadata==6.6.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
@@ -245,7 +245,7 @@ pluggy==1.0.0
     #   -r requirements/test.txt
     #   diff-cover
     #   pytest
-psutil==5.9.4
+psutil==5.9.5
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -255,7 +255,7 @@ pycparser==2.21
     # via
     #   -r requirements/test.txt
     #   cffi
-pygments==2.15.0
+pygments==2.15.1
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -362,7 +362,7 @@ social-auth-app-django==5.2.0
     # via
     #   -r requirements/test.txt
     #   edx-auth-backends
-social-auth-core==4.4.1
+social-auth-core==4.4.2
     # via
     #   -r requirements/test.txt
     #   edx-auth-backends
@@ -396,7 +396,7 @@ sphinxcontrib-serializinghtml==1.1.5
     # via
     #   -r requirements/docs.txt
     #   sphinx
-sqlparse==0.4.3
+sqlparse==0.4.4
     # via
     #   -r requirements/test.txt
     #   django
