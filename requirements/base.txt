@@ -51,7 +51,7 @@ django-crum==0.7.9
     # via edx-django-utils
 django-environ==0.10.0
     # via -r requirements/base.in
-django-filter==23.1
+django-filter==23.2
     # via -r requirements/base.in
 django-waffle==3.0.0
     # via
@@ -117,7 +117,7 @@ pytz==2023.3
     #   drf-yasg
 pyyaml==6.0
     # via edx-django-release-util
-requests==2.28.2
+requests==2.29.0
     # via
     #   coreapi
     #   requests-oauthlib
