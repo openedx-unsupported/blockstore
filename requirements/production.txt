@@ -10,11 +10,11 @@ asgiref==3.6.0
     #   django
 attrs==23.1.0
     # via -r requirements/base.txt
-boto3==1.26.118
+boto3==1.26.123
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.29.118
+botocore==1.29.123
     # via
     #   boto3
     #   s3transfer
@@ -76,7 +76,7 @@ django-crum==0.7.9
     #   edx-django-utils
 django-environ==0.10.0
     # via -r requirements/base.txt
-django-filter==23.1
+django-filter==23.2
     # via -r requirements/base.txt
 django-storages==1.13.2
     # via -r requirements/production.in
@@ -190,7 +190,7 @@ pyyaml==6.0
     #   -r requirements/base.txt
     #   -r requirements/production.in
     #   edx-django-release-util
-requests==2.28.2
+requests==2.29.0
     # via
     #   -r requirements/base.txt
     #   coreapi
