@@ -12,7 +12,7 @@ asgiref==3.6.0
     # via
     #   -r requirements/test.txt
     #   django
-astroid==2.15.4
+astroid==2.15.5
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -23,7 +23,7 @@ babel==2.12.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
-certifi==2022.12.7
+certifi==2023.5.7
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -88,7 +88,7 @@ dill==0.3.6
     # via
     #   -r requirements/test.txt
     #   pylint
-django==3.2.18
+django==3.2.19
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -154,7 +154,7 @@ exceptiongroup==1.1.1
     #   pytest
 factory-boy==3.2.1
     # via -r requirements/test.txt
-faker==18.6.0
+faker==18.7.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -208,7 +208,7 @@ mccabe==0.7.0
     # via
     #   -r requirements/test.txt
     #   pylint
-mypy==1.2.0
+mypy==1.3.0
     # via -r requirements/test.txt
 mypy-extensions==1.0.0
     # via
@@ -236,7 +236,7 @@ pbr==5.11.1
     # via
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==3.5.0
+platformdirs==3.5.1
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -261,12 +261,12 @@ pygments==2.15.1
     #   -r requirements/test.txt
     #   diff-cover
     #   sphinx
-pyjwt[crypto]==2.6.0
+pyjwt[crypto]==2.7.0
     # via
     #   -r requirements/test.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.17.3
+pylint==2.17.4
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -281,7 +281,7 @@ pylint-django==2.5.3
     # via
     #   -r requirements/test.txt
     #   edx-lint
-pylint-plugin-utils==0.7
+pylint-plugin-utils==0.8.1
     # via
     #   -r requirements/test.txt
     #   pylint-celery
@@ -324,7 +324,7 @@ pyyaml==6.0
     #   -r requirements/test.txt
     #   code-annotations
     #   edx-django-release-util
-requests==2.29.0
+requests==2.30.0
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -336,7 +336,7 @@ requests-oauthlib==1.3.1
     # via
     #   -r requirements/test.txt
     #   social-auth-core
-ruamel-yaml==0.17.21
+ruamel-yaml==0.17.26
     # via
     #   -r requirements/test.txt
     #   drf-yasg
@@ -434,6 +434,7 @@ uritemplate==4.1.1
     #   drf-yasg
 urllib3==1.26.15
     # via
+    #   -c requirements/constraints.txt
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
