@@ -10,11 +10,11 @@ asgiref==3.6.0
     #   django
 attrs==23.1.0
     # via -r requirements/base.txt
-boto3==1.26.133
+boto3==1.26.137
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.29.133
+botocore==1.29.137
     # via
     #   boto3
     #   s3transfer
@@ -230,7 +230,7 @@ sqlparse==0.4.4
     # via
     #   -r requirements/base.txt
     #   django
-stevedore==5.0.0
+stevedore==5.1.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils

@@ -142,7 +142,7 @@ sqlparse==0.4.4
     # via
     #   -r requirements/base.in
     #   django
-stevedore==5.0.0
+stevedore==5.1.0
     # via edx-django-utils
 uritemplate==4.1.1
     # via
