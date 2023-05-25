@@ -133,6 +133,19 @@ If you want to develop blockstore as a local python package installed in edx-pla
       
 Seeing your changes will sometimes require running make requirements and then restarting the container.
 
+You're probably also going to want to create a collection for using content libraries, using:
+
+   .. code::
+   
+       # Create a "Collection" that new content libraries / xblocks can be created within:
+        docker exec -t edx.devstack.blockstore bash -c "source ~/.bashrc && echo \"from blockstore.apps.bundles.models import Collection; coll, _ = Collection.objects.get_or_create(title='Devstack Content Collection', uuid='11111111-2111-4111-8111-111111111111')\" | ./manage.py shell"
+       # Create an "Organization":
+       docker exec -t edx.devstack.lms bash -c "source /edx/app/edxapp/edxapp_env && echo \"from organizations.models import Organization; Organization.objects.get_or_create(short_name='DeveloperInc', defaults={'name': 'DeveloperInc', 'active': True})\" | python /edx/app/edxapp/edx-platform/manage.py lms shell"
+       
+The Library Authoring MFE will want to know about that collection id `using a ENV variable. <https://github.com/openedx/frontend-app-library-authoring/blob/d590aa2eb54c94b39d94f2ba12a6b458082c2e5e/.env#L19>`_
+       
+Then restart Studio and the LMS (``make dev.restart-devserver.lms dev.restart-devserver.studio``).
+
 -------------------------------------------------------
 Running and testing as a separate service
 -------------------------------------------------------
