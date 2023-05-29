@@ -32,7 +32,7 @@ pygments==2.15.1
     # via sphinx
 pytz==2023.3
     # via babel
-requests==2.30.0
+requests==2.31.0
     # via sphinx
 six==1.16.0
     # via edx-sphinx-theme
@@ -55,7 +55,7 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-urllib3==1.26.15
+urllib3==1.26.16
     # via
     #   -c requirements/constraints.txt
     #   requests
