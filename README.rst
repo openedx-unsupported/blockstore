@@ -97,7 +97,7 @@ If you want to develop blockstore as a local python package installed in edx-pla
 
 #. Prerequisite: Have an Open edX `Devstack <https://github.com/openedx/devstack>`_ properly installed and working. Your devstack must use the Nutmeg release of Open edX (or newer) or be tracking the ``master`` branch of ``edx-platform``.
 
-#. To run blockstore as an app inside of Open edX, enable it by activating the waffle switch `blockstore.use_blockstore_app_api in LMS or Studio admin. <https://edx.readthedocs.io/projects/edx-platform-technical/en/latest/featuretoggles.html#featuretoggle-blockstore.use_blockstore_app_api>`_.
+#. To run blockstore as an app inside of Open edX, enable it by activating the waffle switch `blockstore.use_blockstore_app_api <https://edx.readthedocs.io/projects/edx-platform-technical/en/latest/featuretoggles.html#featuretoggle-blockstore.use_blockstore_app_api>`_ in LMS or Studio admin.
 
 #. Clone this repo in the ``src/`` directory, a sibling directory of your devstack folder.
 
