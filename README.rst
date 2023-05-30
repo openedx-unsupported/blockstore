@@ -90,7 +90,66 @@ By default, blockstore is run as an app inside of Open edX. Enable it using the 
 If you need to run blockstore as a separate service (e.g. for scalability or performance reasons), you can deploy blockstore in production using `the blockstore ansible role <https://github.com/openedx/configuration/tree/master/playbooks/roles/blockstore>`_.
 
 -------------------------------------------------------
-Running and testing as a separate service (development)
+Development in Devstack
+-------------------------------------------------------
+
+If you want to develop blockstore as a local python package installed in edx-platform, use the following steps:
+
+#. Prerequisite: Have an Open edX `Devstack <https://github.com/openedx/devstack>`_ properly installed and working. Your devstack must use the Nutmeg release of Open edX (or newer) or be tracking the ``master`` branch of ``edx-platform``.
+
+#. To run blockstore as an app inside of Open edX, enable it by activating the waffle switch `blockstore.use_blockstore_app_api <https://edx.readthedocs.io/projects/edx-platform-technical/en/latest/featuretoggles.html#featuretoggle-blockstore.use_blockstore_app_api>`_ in LMS or Studio admin.
+
+#. Clone this repo in the ``src/`` directory, a sibling directory of your devstack folder.
+
+#. In your devstack directory, run the following commands in order:
+
+   .. code::
+      
+      # bring up the lms +studio containers
+      make dev.up.large-and-slow
+      # Bring up the studio shell
+      make dev.shell.studio
+      # Unistall the pypi blockstore
+      pip uninstall openedx-blockstore #You will need to confirm the unistall with "Y".
+      #Install your local blockstore.
+      pip install -e /edx/src/blockstore/  
+      exit
+      
+      # do the same in the LMS
+      make dev.shell.lms
+      # Unistall the pypi blockstore
+      pip uninstall openedx-blockstore #You will need to confirm the unistall with "Y".
+      #Install your local blockstore.
+      pip install -e /edx/src/blockstore/  
+      exit
+    
+      #restart the servers to bring in changes.
+      make dev.restart-devserver.lms dev.restart-devserver.studio
+
+      # you can see that your env is now installed openedx-blockstore from a local directory ``/edx/src/blockstore`` by running:
+      make dev.shell.lms
+      pip list
+       
+      
+Seeing your changes will sometimes require running make requirements and then restarting the container.
+
+You're probably also going to want to create a collection and organization for using content libraries from the devstack command line, using:
+
+   .. code::
+   
+       # Create a "Collection" that new content libraries / xblocks can be created within:
+        docker exec -t edx.devstack.lms bash -c "source ~/.bashrc && echo \"from blockstore.apps.bundles.models import Collection; coll, _ = Collection.objects.get_or_create(title='Devstack Content Collection', uuid='11111111-2111-4111-8111-111111111111')\" | ./manage.py shell"
+       # Create an "Organization":
+       docker exec -t edx.devstack.lms bash -c "source /edx/app/edxapp/edxapp_env && echo \"from organizations.models import Organization; Organization.objects.get_or_create(short_name='DeveloperInc', defaults={'name': 'DeveloperInc', 'active': True})\" | python /edx/app/edxapp/edx-platform/manage.py lms shell"
+       
+The Library Authoring MFE will want to know about that collection id `using a ENV variable. <https://github.com/openedx/frontend-app-library-authoring/blob/d590aa2eb54c94b39d94f2ba12a6b458082c2e5e/.env#L19>`_
+       
+Then restart Studio and the LMS (``make dev.restart-devserver.lms dev.restart-devserver.studio``).
+
+You then can begin setting up the `library authoring MFE <https://github.com/openedx/frontend-app-library-authoring/>`_ to use the feature of blockstore for content libraries V2.
+
+-------------------------------------------------------
+Running and testing as a separate service
 -------------------------------------------------------
 
 Blockstore was initially developed as an independently deployed application, which runs in a separate container/proccess from the LMS. It is still possible to run blockstore that way, both in production and development.
