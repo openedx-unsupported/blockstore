@@ -1,4 +1,4 @@
 -c constraints.txt
 
 Sphinx
-edx-sphinx-theme
+sphinx-book-theme

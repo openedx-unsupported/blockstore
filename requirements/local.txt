@@ -4,6 +4,10 @@
 #
 #    make upgrade
 #
+accessible-pygments==0.0.4
+    # via
+    #   -r requirements/docs.txt
+    #   pydata-sphinx-theme
 alabaster==0.7.13
     # via
     #   -r requirements/docs.txt
@@ -22,7 +26,12 @@ attrs==23.1.0
 babel==2.12.1
     # via
     #   -r requirements/docs.txt
+    #   pydata-sphinx-theme
     #   sphinx
+beautifulsoup4==4.12.2
+    # via
+    #   -r requirements/docs.txt
+    #   pydata-sphinx-theme
 certifi==2023.5.7
     # via
     #   -r requirements/docs.txt
@@ -129,6 +138,7 @@ djangorestframework==3.14.0
 docutils==0.19
     # via
     #   -r requirements/docs.txt
+    #   pydata-sphinx-theme
     #   sphinx
 drf-nested-routers==0.93.4
     # via -r requirements/test.txt
@@ -146,8 +156,6 @@ edx-django-utils==5.4.0
     # via -r requirements/test.txt
 edx-lint==5.3.4
     # via -r requirements/test.txt
-edx-sphinx-theme==3.1.0
-    # via -r requirements/docs.txt
 exceptiongroup==1.1.1
     # via
     #   -r requirements/test.txt
@@ -230,6 +238,7 @@ packaging==23.1
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   drf-yasg
+    #   pydata-sphinx-theme
     #   pytest
     #   sphinx
 pbr==5.11.1
@@ -255,11 +264,17 @@ pycparser==2.21
     # via
     #   -r requirements/test.txt
     #   cffi
+pydata-sphinx-theme==0.13.3
+    # via
+    #   -r requirements/docs.txt
+    #   sphinx-book-theme
 pygments==2.15.1
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
+    #   accessible-pygments
     #   diff-cover
+    #   pydata-sphinx-theme
     #   sphinx
 pyjwt[crypto]==2.7.0
     # via
@@ -346,13 +361,11 @@ ruamel-yaml-clib==0.2.7
     #   ruamel-yaml
 six==1.16.0
     # via
-    #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   django-dynamic-fixture
     #   edx-auth-backends
     #   edx-django-release-util
     #   edx-lint
-    #   edx-sphinx-theme
     #   python-dateutil
 snowballstemmer==2.2.0
     # via
@@ -367,11 +380,18 @@ social-auth-core==4.4.2
     #   -r requirements/test.txt
     #   edx-auth-backends
     #   social-auth-app-django
+soupsieve==2.4.1
+    # via
+    #   -r requirements/docs.txt
+    #   beautifulsoup4
 sphinx==5.3.0
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/docs.txt
-    #   edx-sphinx-theme
+    #   pydata-sphinx-theme
+    #   sphinx-book-theme
+sphinx-book-theme==1.0.1
+    # via -r requirements/docs.txt
 sphinxcontrib-applehelp==1.0.4
     # via
     #   -r requirements/docs.txt
@@ -423,10 +443,12 @@ tomlkit==0.11.8
     #   pylint
 typing-extensions==4.6.2
     # via
+    #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   asgiref
     #   astroid
     #   mypy
+    #   pydata-sphinx-theme
     #   pylint
 uritemplate==4.1.1
     # via
