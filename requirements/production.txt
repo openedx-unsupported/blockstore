@@ -10,11 +10,11 @@ asgiref==3.7.2
     #   django
 attrs==23.1.0
     # via -r requirements/base.txt
-boto3==1.26.155
+boto3==1.26.160
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.29.155
+botocore==1.29.160
     # via
     #   boto3
     #   s3transfer
@@ -113,7 +113,7 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-mysqlclient==2.1.1
+mysqlclient==2.2.0
     # via -r requirements/base.txt
 newrelic==8.8.0
     # via
@@ -219,7 +219,7 @@ urllib3==1.26.16
     #   -r requirements/base.txt
     #   botocore
     #   requests
-zope-event==4.6
+zope-event==5.0
     # via gevent
 zope-interface==6.0
     # via gevent
