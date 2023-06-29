@@ -2,12 +2,11 @@
 API Client methods for working with Blockstore bundles and drafts
 """
 
-from django.conf import settings
-
 import base64
 import re
 from crum import get_current_request
 
+from django.conf import settings
 from django.db.models import Q
 from rest_framework import serializers
 
