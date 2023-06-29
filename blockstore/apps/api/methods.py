@@ -6,6 +6,7 @@ import base64
 import re
 from crum import get_current_request
 
+from django.conf import settings
 from django.db.models import Q
 from rest_framework import serializers
 
@@ -485,6 +486,11 @@ def _build_absolute_uri(url):
     Build an absolute URI from the given url, using the CRUM middleware's stored request.
     """
     request = get_current_request()
+    if not request:  # this method can be called from internal python apis. In that case, return a simple uri.
+        if url.startswith('https://'):
+            return url
+        return settings.LMS_ROOT_URL + url
+
     return request.build_absolute_uri(url)
 
 
