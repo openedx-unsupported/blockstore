@@ -61,7 +61,7 @@ diff-cover==7.6.0
     # via -r requirements/test.in
 dill==0.3.6
     # via pylint
-django==3.2.19
+django==3.2.20
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -112,11 +112,11 @@ edx-django-utils==5.5.0
     # via -r requirements/base.txt
 edx-lint==5.3.4
     # via -r requirements/test.in
-exceptiongroup==1.1.1
+exceptiongroup==1.1.2
     # via pytest
 factory-boy==3.2.1
     # via -r requirements/test.in
-faker==18.11.1
+faker==18.11.2
     # via factory-boy
 idna==3.4
     # via
@@ -146,7 +146,7 @@ mypy-extensions==1.0.0
     # via mypy
 mysqlclient==2.2.0
     # via -r requirements/base.txt
-newrelic==8.8.0
+newrelic==8.8.1
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -279,7 +279,7 @@ tomli==2.0.1
     #   pytest
 tomlkit==0.11.8
     # via pylint
-typing-extensions==4.6.3
+typing-extensions==4.7.1
     # via
     #   -r requirements/base.txt
     #   asgiref
