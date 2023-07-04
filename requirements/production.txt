@@ -10,11 +10,11 @@ asgiref==3.7.2
     #   django
 attrs==23.1.0
     # via -r requirements/base.txt
-boto3==1.26.160
+boto3==1.27.0
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.29.160
+botocore==1.30.0
     # via
     #   boto3
     #   s3transfer
@@ -45,7 +45,7 @@ defusedxml==0.7.1
     #   -r requirements/base.txt
     #   python3-openid
     #   social-auth-core
-django==3.2.19
+django==3.2.20
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -115,7 +115,7 @@ jmespath==1.0.1
     #   botocore
 mysqlclient==2.2.0
     # via -r requirements/base.txt
-newrelic==8.8.0
+newrelic==8.8.1
     # via
     #   -r requirements/base.txt
     #   -r requirements/production.in
@@ -205,7 +205,7 @@ stevedore==5.1.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-typing-extensions==4.6.3
+typing-extensions==4.7.1
     # via
     #   -r requirements/base.txt
     #   asgiref
