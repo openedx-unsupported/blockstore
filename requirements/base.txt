@@ -26,7 +26,7 @@ defusedxml==0.7.1
     # via
     #   python3-openid
     #   social-auth-core
-django==3.2.19
+django==3.2.20
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -75,7 +75,7 @@ inflection==0.5.1
     # via drf-yasg
 mysqlclient==2.2.0
     # via -r requirements/base.in
-newrelic==8.8.0
+newrelic==8.8.1
     # via edx-django-utils
 oauthlib==3.2.2
     # via
@@ -129,7 +129,7 @@ sqlparse==0.4.4
     #   django
 stevedore==5.1.0
     # via edx-django-utils
-typing-extensions==4.6.3
+typing-extensions==4.7.1
     # via asgiref
 uritemplate==4.1.1
     # via drf-yasg
