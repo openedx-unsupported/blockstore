@@ -10,11 +10,11 @@ asgiref==3.7.2
     #   django
 attrs==23.1.0
     # via -r requirements/base.txt
-boto3==1.28.1
+boto3==1.28.3
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.31.1
+botocore==1.31.3
     # via
     #   boto3
     #   s3transfer
@@ -31,11 +31,11 @@ charset-normalizer==3.2.0
     # via
     #   -r requirements/base.txt
     #   requests
-click==8.1.4
+click==8.1.5
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-cryptography==41.0.1
+cryptography==41.0.2
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -95,7 +95,7 @@ edx-django-release-util==1.2.0
     # via -r requirements/base.txt
 edx-django-utils==5.5.0
     # via -r requirements/base.txt
-gevent==22.10.2
+gevent==23.7.0
     # via -r requirements/production.in
 greenlet==2.0.2
     # via gevent
