@@ -14,7 +14,7 @@ Change Log
 Unreleased
 ~~~~~~~~~~
 
-*
+* Removed custom datetime parser in favor of ``datetime.fromisoformat`` which is more robust.
 
 [1.4.0] - 2023-08-07
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
