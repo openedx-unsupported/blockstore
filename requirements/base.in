@@ -12,5 +12,4 @@ edx-auth-backends
 edx-django-release-util
 edx-django-utils
 mysqlclient
-pytz
 sqlparse
