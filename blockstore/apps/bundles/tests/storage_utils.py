@@ -18,7 +18,7 @@ from pathlib import Path
 import re
 
 from django.conf import settings
-from django.conf.urls import url
+from django.urls import re_path
 from django.views.static import serve
 from django.test import override_settings
 
@@ -122,7 +122,7 @@ def url_for_test_media():
     horrible performance characteristics.
     """
     media_url = re.escape(settings.MEDIA_URL.lstrip('/'))
-    return url(
+    return re_path(
         fr'^{media_url}(?P<path>.*)$',
         serve_media,
     )

@@ -16,7 +16,7 @@ import os
 
 from auth_backends.urls import oauth2_urlpatterns
 from django.conf import settings
-from django.conf.urls import include, url
+from django.urls import include, path, re_path
 from django.conf.urls.static import static
 from django.contrib import admin
 
@@ -35,19 +35,19 @@ api_info = make_api_info(
 
 
 urlpatterns = oauth2_urlpatterns + [
-    url(r'^admin/', admin.site.urls),
-    url(r'^api/', include('blockstore.apps.rest_api.urls', namespace='api')),
+    re_path(r'^admin/', admin.site.urls),
+    path('api/', include('blockstore.apps.rest_api.urls', namespace='api')),
     # Use the same auth views for all logins, including those originating from the browseable API.
-    url(r'^api-auth/', include((oauth2_urlpatterns, 'auth_backends'), namespace='rest_framework')),
-    url(r'^auto_auth/$', core_views.AutoAuth.as_view(), name='auto_auth'),
-    url(r'^health/$', core_views.health, name='health'),
+    path('api-auth/', include((oauth2_urlpatterns, 'auth_backends'), namespace='rest_framework')),
+    path('auto_auth/', core_views.AutoAuth.as_view(), name='auto_auth'),
+    path('health/', core_views.health, name='health'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += make_docs_urls(api_info)
 
 if settings.DEBUG:  # pragma: no cover
     import debug_toolbar  # pylint: disable=import-error,useless-suppression
-    urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
+    urlpatterns.append(path('__debug__/', include(debug_toolbar.urls)))
 
 if settings.DEBUG or os.environ['DJANGO_SETTINGS_MODULE'] == 'blockstore.settings.test':
     urlpatterns.append(url_for_test_media())

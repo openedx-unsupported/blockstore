@@ -73,6 +73,7 @@ class DraftInline(admin.StackedInline):
         return max(obj.drafts.count(), 3)
 
 
+@admin.register(Bundle)
 class BundleAdmin(admin.ModelAdmin):
     """
     View for creating or updating Bundles and their BundleVersions & Drafts.
@@ -90,9 +91,6 @@ class BundleAdmin(admin.ModelAdmin):
             return ('uuid',)
 
 
+@admin.register(Collection)
 class CollectionAdmin(admin.ModelAdmin):
     list_display = ('title', 'uuid')
-
-
-admin.site.register(Bundle, BundleAdmin)
-admin.site.register(Collection, CollectionAdmin)
