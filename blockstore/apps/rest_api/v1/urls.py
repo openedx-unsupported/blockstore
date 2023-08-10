@@ -1,6 +1,6 @@
 """ API v1 URLs. """
 
-from django.conf.urls import url, include
+from django.urls import include, path
 
 from ..routers import DefaultRouter
 from .views.bundles import BundleViewSet, BundleVersionViewSet
@@ -17,5 +17,5 @@ root_router.register(r'collections', CollectionViewSet)
 root_router.register(r'drafts', DraftViewSet)
 
 urlpatterns = [
-    url(r'^', include(root_router.urls)),
+    path('', include(root_router.urls)),
 ]

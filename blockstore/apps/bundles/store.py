@@ -28,7 +28,7 @@ from .links import Dependency, Link, LinkCollection, LinkChangeSet
 from .storage import default_asset_storage
 
 logger = logging.getLogger(__name__)
-snapshot_created = Signal(providing_args=["bundle_uuid", "hash_digest"])
+snapshot_created = Signal()
 
 
 @attr.s(frozen=True)
