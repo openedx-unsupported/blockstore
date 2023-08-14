@@ -41,7 +41,7 @@ click-log==0.4.0
     # via edx-lint
 code-annotations==1.5.0
     # via edx-lint
-coverage[toml]==7.2.7
+coverage[toml]==7.3.0
     # via
     #   -r requirements/test.in
     #   pytest-cov
@@ -117,7 +117,7 @@ exceptiongroup==1.1.2
     # via pytest
 factory-boy==3.3.0
     # via -r requirements/test.in
-faker==19.2.0
+faker==19.3.0
     # via factory-boy
 idna==3.4
     # via
@@ -141,13 +141,13 @@ markupsafe==2.1.3
     # via jinja2
 mccabe==0.7.0
     # via pylint
-mypy==1.4.1
+mypy==1.5.0
     # via -r requirements/test.in
 mypy-extensions==1.0.0
     # via mypy
 mysqlclient==2.2.0
     # via -r requirements/base.txt
-newrelic==8.9.0
+newrelic==8.10.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -225,6 +225,7 @@ python3-openid==3.2.0
     #   social-auth-core
 pytz==2023.3
     # via
+    #   -r requirements/base.txt
     #   django
     #   djangorestframework
     #   drf-yasg
