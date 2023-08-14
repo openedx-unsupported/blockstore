@@ -66,7 +66,7 @@ code-annotations==1.5.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-coverage[toml]==7.2.7
+coverage[toml]==7.3.0
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -109,7 +109,7 @@ django-crum==0.7.9
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
-django-debug-toolbar==4.1.0
+django-debug-toolbar==4.2.0
     # via -r requirements/local.in
 django-dynamic-fixture==3.1.2
     # via -r requirements/test.txt
@@ -154,7 +154,7 @@ exceptiongroup==1.1.2
     #   pytest
 factory-boy==3.3.0
     # via -r requirements/test.txt
-faker==19.2.0
+faker==19.3.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -203,7 +203,7 @@ mccabe==0.7.0
     # via
     #   -r requirements/test.txt
     #   pylint
-mypy==1.4.1
+mypy==1.5.0
     # via -r requirements/test.txt
 mypy-extensions==1.0.0
     # via
@@ -211,7 +211,7 @@ mypy-extensions==1.0.0
     #   mypy
 mysqlclient==2.2.0
     # via -r requirements/test.txt
-newrelic==8.9.0
+newrelic==8.10.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -315,6 +315,8 @@ python3-openid==3.2.0
     #   social-auth-core
 pytz==2023.3
     # via
+    #   -r requirements/docs.txt
+    #   -r requirements/test.txt
     #   babel
     #   django
     #   djangorestframework
