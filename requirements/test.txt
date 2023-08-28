@@ -81,7 +81,7 @@ django-crum==0.7.9
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-django-dynamic-fixture==3.1.3
+django-dynamic-fixture==4.0.0
     # via -r requirements/test.in
 django-environ==0.10.0
     # via -r requirements/base.txt
@@ -117,7 +117,7 @@ exceptiongroup==1.1.3
     # via pytest
 factory-boy==3.3.0
     # via -r requirements/test.in
-faker==19.3.0
+faker==19.3.1
     # via factory-boy
 idna==3.4
     # via
@@ -147,7 +147,7 @@ mypy-extensions==1.0.0
     # via mypy
 mysqlclient==2.2.0
     # via -r requirements/base.txt
-newrelic==8.10.1
+newrelic==8.11.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -167,7 +167,7 @@ pbr==5.11.1
     #   stevedore
 platformdirs==3.10.0
     # via pylint
-pluggy==1.2.0
+pluggy==1.3.0
     # via
     #   diff-cover
     #   pytest
@@ -247,7 +247,6 @@ requests-oauthlib==1.3.1
 six==1.16.0
     # via
     #   -r requirements/base.txt
-    #   django-dynamic-fixture
     #   edx-auth-backends
     #   edx-django-release-util
     #   edx-lint
