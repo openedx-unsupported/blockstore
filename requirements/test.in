@@ -6,7 +6,7 @@ astroid
 coverage
 ddt
 diff-cover
-django_dynamic_fixture
+django-dynamic-fixture
 edx-lint
 factory_boy
 mypy
