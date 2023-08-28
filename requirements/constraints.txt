@@ -17,6 +17,11 @@ boto3<2.0
 
 django>3.2,<3.3
 
+# django-dynamic-fixture>=4.0.0 removes Django 3 compatibility. The newer version does not break any tests, but we
+# should not use an incompatible release.
+# Changelog entry: https://django-dynamic-fixture.readthedocs.io/en/latest/change_log.html#version-4-0-0-2023-08-26
+django-dynamic-fixture<4.0.0
+
 # `botocore` still requires `urllib3>=1.25.4,<1.27`: https://github.com/boto/botocore/issues/2926
 # `edx-platform` also pins `urllib3<2.0.0`: https://github.com/openedx/edx-platform/issues/32222
 urllib3<2.0.0

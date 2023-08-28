@@ -112,7 +112,9 @@ django-crum==0.7.9
 django-debug-toolbar==4.2.0
     # via -r requirements/local.in
 django-dynamic-fixture==3.1.3
-    # via -r requirements/test.txt
+    # via
+    #   -c requirements/constraints.txt
+    #   -r requirements/test.txt
 django-environ==0.10.0
     # via -r requirements/test.txt
 django-filter==23.2
@@ -154,7 +156,7 @@ exceptiongroup==1.1.3
     #   pytest
 factory-boy==3.3.0
     # via -r requirements/test.txt
-faker==19.3.0
+faker==19.3.1
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -211,7 +213,7 @@ mypy-extensions==1.0.0
     #   mypy
 mysqlclient==2.2.0
     # via -r requirements/test.txt
-newrelic==8.10.1
+newrelic==8.11.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -236,7 +238,7 @@ platformdirs==3.10.0
     # via
     #   -r requirements/test.txt
     #   pylint
-pluggy==1.2.0
+pluggy==1.3.0
     # via
     #   -r requirements/test.txt
     #   diff-cover
