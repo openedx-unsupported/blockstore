@@ -81,9 +81,9 @@ To run these integration tests while using Elasticsearch, add ``EDXAPP_ENABLE_EL
 
    EDXAPP_ENABLE_ELASTICSEARCH_FOR_TESTS=1 EDXAPP_TEST_ELASTICSEARCH_HOST=edx.devstack.elasticsearch710 python -Wd -m pytest ...
 
--------------------
-Using in Production
--------------------
+-------------------------------
+Using in Production Or Locally
+-------------------------------
 
 By default, blockstore is run as an app inside of Open edX. Enable it using the waffle switch `blockstore.use_blockstore_app_api <https://edx.readthedocs.io/projects/edx-platform-technical/en/latest/featuretoggles.html#featuretoggle-blockstore.use_blockstore_app_api>`_.
 
