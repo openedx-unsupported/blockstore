@@ -89,6 +89,13 @@ By default, blockstore is run as an app inside of Open edX. Enable it using the 
 
 If you need to run blockstore as a separate service (e.g. for scalability or performance reasons), you can deploy blockstore in production using `the blockstore ansible role <https://github.com/openedx/configuration/tree/master/playbooks/roles/blockstore>`_.
 
+you'll want to also create a collection and organization.
+
+# Create a "Collection" that new content libraries / xblocks can be created within:
+ docker exec -t edx.devstack.lms bash -c "source ~/.bashrc && echo \"from blockstore.apps.bundles.models import Collection; coll, _ = Collection.objects.get_or_create(title='Devstack Content Collection', uuid='11111111-2111-4111-8111-111111111111')\" | ./manage.py lms shell"
+# Create an "Organization":
+docker exec -t edx.devstack.lms bash -c "source /edx/app/edxapp/edxapp_env && echo \"from organizations.models import Organization; Organization.objects.get_or_create(short_name='DeveloperInc', defaults={'name': 'DeveloperInc', 'active': True})\" | python /edx/app/edxapp/edx-platform/manage.py lms shell"
+
 -------------------------------------------------------
 Development in Devstack
 -------------------------------------------------------
