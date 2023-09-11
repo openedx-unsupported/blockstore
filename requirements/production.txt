@@ -10,11 +10,11 @@ asgiref==3.7.2
     #   django
 attrs==23.1.0
     # via -r requirements/base.txt
-boto3==1.28.40
+boto3==1.28.44
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.31.40
+botocore==1.31.44
     # via
     #   boto3
     #   s3transfer
@@ -45,7 +45,7 @@ defusedxml==0.7.1
     #   -r requirements/base.txt
     #   python3-openid
     #   social-auth-core
-django==3.2.20
+django==3.2.21
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -70,7 +70,7 @@ django-environ==0.11.2
     # via -r requirements/base.txt
 django-filter==23.2
     # via -r requirements/base.txt
-django-storages==1.13.2
+django-storages==1.14
     # via -r requirements/production.in
 django-waffle==4.0.0
     # via
@@ -160,7 +160,7 @@ python3-openid==3.2.0
     # via
     #   -r requirements/base.txt
     #   social-auth-core
-pytz==2023.3
+pytz==2023.3.post1
     # via
     #   -r requirements/base.txt
     #   django
