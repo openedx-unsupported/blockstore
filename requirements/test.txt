@@ -87,7 +87,7 @@ django-dynamic-fixture==3.1.3
     #   -r requirements/test.in
 django-environ==0.11.2
     # via -r requirements/base.txt
-django-filter==23.2
+django-filter==23.3
     # via -r requirements/base.txt
 django-waffle==4.0.0
     # via
@@ -119,7 +119,7 @@ exceptiongroup==1.1.3
     # via pytest
 factory-boy==3.3.0
     # via -r requirements/test.in
-faker==19.6.0
+faker==19.6.1
     # via factory-boy
 idna==3.4
     # via
