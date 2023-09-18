@@ -46,7 +46,7 @@ django-crum==0.7.9
     # via edx-django-utils
 django-environ==0.11.2
     # via -r requirements/base.in
-django-filter==23.2
+django-filter==23.3
     # via -r requirements/base.in
 django-waffle==4.0.0
     # via
