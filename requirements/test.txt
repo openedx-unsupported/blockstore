@@ -8,7 +8,7 @@ asgiref==3.7.2
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.15.6
+astroid==2.15.7
     # via
     #   -r requirements/test.in
     #   pylint
@@ -45,7 +45,7 @@ coverage[toml]==7.3.1
     # via
     #   -r requirements/test.in
     #   pytest-cov
-cryptography==41.0.3
+cryptography==41.0.4
     # via
     #   -r requirements/base.txt
     #   pyjwt
@@ -119,7 +119,7 @@ exceptiongroup==1.1.3
     # via pytest
 factory-boy==3.3.0
     # via -r requirements/test.in
-faker==19.6.1
+faker==19.6.2
     # via factory-boy
 idna==3.4
     # via
@@ -282,7 +282,7 @@ tomli==2.0.1
     #   pytest
 tomlkit==0.12.1
     # via pylint
-typing-extensions==4.7.1
+typing-extensions==4.8.0
     # via
     #   -r requirements/base.txt
     #   asgiref
