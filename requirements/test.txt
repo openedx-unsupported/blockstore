@@ -8,7 +8,7 @@ asgiref==3.7.2
     # via
     #   -r requirements/base.txt
     #   django
-astroid==2.15.7
+astroid==2.15.8
     # via
     #   -r requirements/test.in
     #   pylint
@@ -19,14 +19,14 @@ certifi==2023.7.22
     # via
     #   -r requirements/base.txt
     #   requests
-cffi==1.15.1
+cffi==1.16.0
     # via
     #   -r requirements/base.txt
     #   cryptography
     #   pynacl
 chardet==5.2.0
     # via diff-cover
-charset-normalizer==3.2.0
+charset-normalizer==3.3.0
     # via
     #   -r requirements/base.txt
     #   requests
@@ -52,7 +52,7 @@ cryptography==41.0.4
     #   social-auth-core
 ddt==1.6.0
     # via -r requirements/test.in
-defusedxml==0.7.1
+defusedxml==0.8.0rc2
     # via
     #   -r requirements/base.txt
     #   python3-openid
@@ -149,7 +149,7 @@ mypy-extensions==1.0.0
     # via mypy
 mysqlclient==2.2.0
     # via -r requirements/base.txt
-newrelic==9.0.0
+newrelic==9.1.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -158,7 +158,7 @@ oauthlib==3.2.2
     #   -r requirements/base.txt
     #   requests-oauthlib
     #   social-auth-core
-packaging==23.1
+packaging==23.2
     # via
     #   -r requirements/base.txt
     #   drf-yasg
@@ -190,7 +190,7 @@ pyjwt[crypto]==2.8.0
     #   -r requirements/base.txt
     #   edx-auth-backends
     #   social-auth-core
-pylint==2.17.5
+pylint==2.17.7
     # via
     #   edx-lint
     #   pylint-celery
