@@ -10,11 +10,11 @@ attrs==23.1.0
     # via -r requirements/base.in
 certifi==2023.7.22
     # via requests
-cffi==1.15.1
+cffi==1.16.0
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.2.0
+charset-normalizer==3.3.0
     # via requests
 click==8.1.7
     # via edx-django-utils
@@ -22,7 +22,7 @@ cryptography==41.0.4
     # via
     #   pyjwt
     #   social-auth-core
-defusedxml==0.7.1
+defusedxml==0.8.0rc2
     # via
     #   python3-openid
     #   social-auth-core
@@ -76,13 +76,13 @@ inflection==0.5.1
     # via drf-yasg
 mysqlclient==2.2.0
     # via -r requirements/base.in
-newrelic==9.0.0
+newrelic==9.1.0
     # via edx-django-utils
 oauthlib==3.2.2
     # via
     #   requests-oauthlib
     #   social-auth-core
-packaging==23.1
+packaging==23.2
     # via drf-yasg
 pbr==5.11.1
     # via stevedore
