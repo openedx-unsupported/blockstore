@@ -23,7 +23,7 @@ astroid==2.15.8
     #   pylint-celery
 attrs==23.1.0
     # via -r requirements/test.txt
-babel==2.12.1
+babel==2.13.0
     # via
     #   -r requirements/docs.txt
     #   pydata-sphinx-theme
@@ -66,7 +66,7 @@ code-annotations==1.5.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-coverage[toml]==7.3.1
+coverage[toml]==7.3.2
     # via
     #   -r requirements/test.txt
     #   pytest-cov
@@ -88,7 +88,7 @@ dill==0.3.7
     # via
     #   -r requirements/test.txt
     #   pylint
-django==3.2.21
+django==3.2.22
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -234,7 +234,7 @@ pbr==5.11.1
     # via
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==3.10.0
+platformdirs==3.11.0
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -435,7 +435,7 @@ uritemplate==4.1.1
     # via
     #   -r requirements/test.txt
     #   drf-yasg
-urllib3==1.26.16
+urllib3==1.26.17
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/docs.txt
