@@ -26,7 +26,7 @@ defusedxml==0.8.0rc2
     # via
     #   python3-openid
     #   social-auth-core
-django==3.2.21
+django==3.2.22
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -133,7 +133,7 @@ typing-extensions==4.8.0
     # via asgiref
 uritemplate==4.1.1
     # via drf-yasg
-urllib3==1.26.16
+urllib3==1.26.17
     # via
     #   -c requirements/constraints.txt
     #   requests
