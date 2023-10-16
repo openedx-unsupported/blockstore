@@ -10,11 +10,11 @@ asgiref==3.7.2
     #   django
 attrs==23.1.0
     # via -r requirements/base.txt
-boto3==1.28.62
+boto3==1.28.63
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.31.62
+botocore==1.31.63
     # via
     #   boto3
     #   s3transfer
@@ -70,7 +70,7 @@ django-environ==0.11.2
     # via -r requirements/base.txt
 django-filter==23.3
     # via -r requirements/base.txt
-django-storages==1.14.1
+django-storages==1.14.2
     # via -r requirements/production.in
 django-waffle==4.0.0
     # via
@@ -135,7 +135,7 @@ pbr==5.11.1
     # via
     #   -r requirements/base.txt
     #   stevedore
-psutil==5.9.5
+psutil==5.9.6
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -147,6 +147,7 @@ pyjwt[crypto]==2.8.0
     # via
     #   -r requirements/base.txt
     #   edx-auth-backends
+    #   pyjwt
     #   social-auth-core
 pynacl==1.5.0
     # via

@@ -57,7 +57,7 @@ defusedxml==0.8.0rc2
     #   -r requirements/base.txt
     #   python3-openid
     #   social-auth-core
-diff-cover==7.7.0
+diff-cover==8.0.0
     # via -r requirements/test.in
 dill==0.3.7
     # via pylint
@@ -119,7 +119,7 @@ exceptiongroup==1.1.3
     # via pytest
 factory-boy==3.3.0
     # via -r requirements/test.in
-faker==19.6.2
+faker==19.10.0
     # via factory-boy
 idna==3.4
     # via
@@ -143,7 +143,7 @@ markupsafe==2.1.3
     # via jinja2
 mccabe==0.7.0
     # via pylint
-mypy==1.5.1
+mypy==1.6.0
     # via -r requirements/test.in
 mypy-extensions==1.0.0
     # via mypy
@@ -173,11 +173,11 @@ pluggy==1.3.0
     # via
     #   diff-cover
     #   pytest
-psutil==5.9.5
+psutil==5.9.6
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
-pycodestyle==2.11.0
+pycodestyle==2.11.1
     # via -r requirements/test.in
 pycparser==2.21
     # via
@@ -189,6 +189,7 @@ pyjwt[crypto]==2.8.0
     # via
     #   -r requirements/base.txt
     #   edx-auth-backends
+    #   pyjwt
     #   social-auth-core
 pylint==2.17.7
     # via
