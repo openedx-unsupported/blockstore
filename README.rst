@@ -260,7 +260,7 @@ file in this repo.
 Reporting Security Issues
 -------------------------
 
-Please do not report security issues in public. Please email security@edx.org.
+Please do not report security issues in public. Please email security@openedx.org.
 
 
 .. |ci-badge| image:: https://github.com/openedx/blockstore/workflows/CI/badge.svg?branch=master
