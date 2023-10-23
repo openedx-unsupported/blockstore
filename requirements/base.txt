@@ -14,7 +14,7 @@ cffi==1.16.0
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==3.3.0
+charset-normalizer==3.3.1
     # via requests
 click==8.1.7
     # via edx-django-utils
@@ -76,7 +76,7 @@ inflection==0.5.1
     # via drf-yasg
 mysqlclient==2.2.0
     # via -r requirements/base.in
-newrelic==9.1.0
+newrelic==9.1.1
     # via edx-django-utils
 oauthlib==3.2.2
     # via
@@ -118,7 +118,7 @@ six==1.16.0
     # via
     #   edx-auth-backends
     #   edx-django-release-util
-social-auth-app-django==5.3.0
+social-auth-app-django==5.4.0
     # via edx-auth-backends
 social-auth-core==4.4.2
     # via
@@ -134,7 +134,7 @@ typing-extensions==4.8.0
     # via asgiref
 uritemplate==4.1.1
     # via drf-yasg
-urllib3==1.26.17
+urllib3==1.26.18
     # via
     #   -c requirements/constraints.txt
     #   requests
