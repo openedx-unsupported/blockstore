@@ -50,7 +50,7 @@ cryptography==41.0.5
     #   -r requirements/base.txt
     #   pyjwt
     #   social-auth-core
-ddt==1.6.0
+ddt==1.7.0
     # via -r requirements/test.in
 defusedxml==0.8.0rc2
     # via
@@ -119,7 +119,7 @@ exceptiongroup==1.1.3
     # via pytest
 factory-boy==3.3.0
     # via -r requirements/test.in
-faker==19.13.0
+faker==20.0.0
     # via factory-boy
 idna==3.4
     # via
@@ -141,7 +141,7 @@ markupsafe==2.1.3
     # via jinja2
 mccabe==0.7.0
     # via pylint
-mypy==1.6.1
+mypy==1.7.0
     # via -r requirements/test.in
 mypy-extensions==1.0.0
     # via mypy
@@ -161,11 +161,11 @@ packaging==23.2
     #   -r requirements/base.txt
     #   drf-yasg
     #   pytest
-pbr==5.11.1
+pbr==6.0.0
     # via
     #   -r requirements/base.txt
     #   stevedore
-platformdirs==3.11.0
+platformdirs==4.0.0
     # via pylint
 pluggy==1.3.0
     # via
@@ -214,7 +214,7 @@ pytest==7.4.3
     #   pytest-django
 pytest-cov==4.1.0
     # via -r requirements/test.in
-pytest-django==4.6.0
+pytest-django==4.7.0
     # via -r requirements/test.in
 python-dateutil==2.8.2
     # via faker

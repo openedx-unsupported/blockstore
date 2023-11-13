@@ -84,7 +84,7 @@ oauthlib==3.2.2
     #   social-auth-core
 packaging==23.2
     # via drf-yasg
-pbr==5.11.1
+pbr==6.0.0
     # via stevedore
 psutil==5.9.6
     # via edx-django-utils
