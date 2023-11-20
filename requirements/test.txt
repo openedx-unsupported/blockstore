@@ -15,7 +15,7 @@ astroid==3.0.1
     #   pylint-celery
 attrs==23.1.0
     # via -r requirements/base.txt
-certifi==2023.7.22
+certifi==2023.11.17
     # via
     #   -r requirements/base.txt
     #   requests
@@ -57,7 +57,7 @@ defusedxml==0.8.0rc2
     #   -r requirements/base.txt
     #   python3-openid
     #   social-auth-core
-diff-cover==8.0.0
+diff-cover==8.0.1
     # via -r requirements/test.in
 dill==0.3.7
     # via pylint
@@ -119,7 +119,7 @@ exceptiongroup==1.1.3
     # via pytest
 factory-boy==3.3.0
     # via -r requirements/test.in
-faker==20.0.0
+faker==20.0.3
     # via factory-boy
 idna==3.4
     # via
@@ -147,7 +147,7 @@ mypy-extensions==1.0.0
     # via mypy
 mysqlclient==2.2.0
     # via -r requirements/base.txt
-newrelic==9.1.1
+newrelic==9.2.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -165,8 +165,10 @@ pbr==6.0.0
     # via
     #   -r requirements/base.txt
     #   stevedore
-platformdirs==4.0.0
-    # via pylint
+platformdirs==3.11.0
+    # via
+    #   -c requirements/common_constraints.txt
+    #   pylint
 pluggy==1.3.0
     # via
     #   diff-cover
@@ -181,7 +183,7 @@ pycparser==2.21
     # via
     #   -r requirements/base.txt
     #   cffi
-pygments==2.16.1
+pygments==2.17.1
     # via diff-cover
 pyjwt[crypto]==2.8.0
     # via
@@ -279,7 +281,7 @@ tomli==2.0.1
     #   mypy
     #   pylint
     #   pytest
-tomlkit==0.12.2
+tomlkit==0.12.3
     # via pylint
 typing-extensions==4.8.0
     # via

@@ -10,15 +10,15 @@ asgiref==3.7.2
     #   django
 attrs==23.1.0
     # via -r requirements/base.txt
-boto3==1.28.84
+boto3==1.29.3
     # via
     #   -c requirements/constraints.txt
     #   -r requirements/production.in
-botocore==1.31.84
+botocore==1.32.3
     # via
     #   boto3
     #   s3transfer
-certifi==2023.7.22
+certifi==2023.11.17
     # via
     #   -r requirements/base.txt
     #   requests
@@ -116,7 +116,7 @@ jmespath==1.0.1
     #   botocore
 mysqlclient==2.2.0
     # via -r requirements/base.txt
-newrelic==9.1.1
+newrelic==9.2.0
     # via
     #   -r requirements/base.txt
     #   -r requirements/production.in
