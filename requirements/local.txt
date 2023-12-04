@@ -71,7 +71,7 @@ coverage[toml]==7.3.2
     #   -r requirements/test.txt
     #   coverage
     #   pytest-cov
-cryptography==41.0.5
+cryptography==41.0.7
     # via
     #   -r requirements/test.txt
     #   pyjwt
@@ -147,7 +147,7 @@ edx-auth-backends==4.2.0
     # via -r requirements/test.txt
 edx-django-release-util==1.3.0
     # via -r requirements/test.txt
-edx-django-utils==5.8.0
+edx-django-utils==5.9.0
     # via -r requirements/test.txt
 edx-lint==5.3.6
     # via -r requirements/test.txt
@@ -170,7 +170,7 @@ imagesize==1.4.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
-importlib-metadata==6.8.0
+importlib-metadata==7.0.0
     # via
     #   -r requirements/docs.txt
     #   sphinx
@@ -251,7 +251,7 @@ pycparser==2.21
     # via
     #   -r requirements/test.txt
     #   cffi
-pydata-sphinx-theme==0.14.3
+pydata-sphinx-theme==0.14.4
     # via
     #   -r requirements/docs.txt
     #   sphinx-book-theme
@@ -355,7 +355,7 @@ social-auth-app-django==5.4.0
     # via
     #   -r requirements/test.txt
     #   edx-auth-backends
-social-auth-core==4.5.0
+social-auth-core==4.5.1
     # via
     #   -r requirements/test.txt
     #   edx-auth-backends
