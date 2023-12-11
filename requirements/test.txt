@@ -4,6 +4,8 @@
 #
 #    make upgrade
 #
+annotated-types==0.6.0
+    # via pydantic
 asgiref==3.7.2
     # via
     #   -r requirements/base.txt
@@ -15,6 +17,8 @@ astroid==3.0.1
     #   pylint-celery
 attrs==23.1.0
     # via -r requirements/base.txt
+cerberus==1.3.5
+    # via plette
 certifi==2023.11.17
     # via
     #   -r requirements/base.txt
@@ -61,6 +65,8 @@ diff-cover==8.0.1
     # via -r requirements/test.in
 dill==0.3.7
     # via pylint
+distlib==0.3.7
+    # via requirementslib
 django==3.2.23
     # via
     #   -c requirements/common_constraints.txt
@@ -87,7 +93,7 @@ django-dynamic-fixture==3.1.3
     #   -r requirements/test.in
 django-environ==0.11.2
     # via -r requirements/base.txt
-django-filter==23.4
+django-filter==23.5
     # via -r requirements/base.txt
 django-waffle==4.0.0
     # via
@@ -99,6 +105,8 @@ djangorestframework==3.14.0
     #   drf-nested-routers
     #   drf-yasg
     #   edx-api-doc-tools
+docopt==0.6.2
+    # via pipreqs
 drf-nested-routers==0.93.4
     # via -r requirements/base.txt
 drf-yasg==1.21.7
@@ -131,7 +139,7 @@ inflection==0.5.1
     #   drf-yasg
 iniconfig==2.0.0
     # via pytest
-isort==5.12.0
+isort==5.13.0
     # via pylint
 jinja2==3.1.2
     # via
@@ -147,7 +155,7 @@ mypy-extensions==1.0.0
     # via mypy
 mysqlclient==2.2.0
     # via -r requirements/base.txt
-newrelic==9.2.0
+newrelic==9.3.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
@@ -165,10 +173,18 @@ pbr==6.0.0
     # via
     #   -r requirements/base.txt
     #   stevedore
-platformdirs==3.11.0
+pep517==0.13.1
+    # via requirementslib
+pip-api==0.0.30
+    # via isort
+pipreqs==0.4.13
+    # via isort
+platformdirs==4.1.0
     # via
-    #   -c requirements/common_constraints.txt
     #   pylint
+    #   requirementslib
+plette[validation]==0.4.4
+    # via requirementslib
 pluggy==1.3.0
     # via
     #   diff-cover
@@ -183,6 +199,10 @@ pycparser==2.21
     # via
     #   -r requirements/base.txt
     #   cffi
+pydantic==2.5.2
+    # via requirementslib
+pydantic-core==2.14.5
+    # via pydantic
 pygments==2.17.2
     # via diff-cover
 pyjwt[crypto]==2.8.0
@@ -242,11 +262,15 @@ requests==2.31.0
     # via
     #   -r requirements/base.txt
     #   requests-oauthlib
+    #   requirementslib
     #   social-auth-core
+    #   yarg
 requests-oauthlib==1.3.1
     # via
     #   -r requirements/base.txt
     #   social-auth-core
+requirementslib==3.0.0
+    # via isort
 six==1.16.0
     # via
     #   -r requirements/base.txt
@@ -279,17 +303,24 @@ tomli==2.0.1
     # via
     #   coverage
     #   mypy
+    #   pep517
     #   pylint
     #   pytest
 tomlkit==0.12.3
-    # via pylint
-typing-extensions==4.8.0
+    # via
+    #   plette
+    #   pylint
+    #   requirementslib
+typing-extensions==4.9.0
     # via
     #   -r requirements/base.txt
+    #   annotated-types
     #   asgiref
     #   astroid
     #   faker
     #   mypy
+    #   pydantic
+    #   pydantic-core
     #   pylint
 uritemplate==4.1.1
     # via
@@ -300,3 +331,9 @@ urllib3==1.26.18
     #   -c requirements/constraints.txt
     #   -r requirements/base.txt
     #   requests
+yarg==0.1.9
+    # via pipreqs
+
+# The following packages are considered to be unsafe in a requirements file:
+# pip
+# setuptools

@@ -12,6 +12,10 @@ alabaster==0.7.13
     # via
     #   -r requirements/docs.txt
     #   sphinx
+annotated-types==0.6.0
+    # via
+    #   -r requirements/test.txt
+    #   pydantic
 asgiref==3.7.2
     # via
     #   -r requirements/test.txt
@@ -32,6 +36,10 @@ beautifulsoup4==4.12.2
     # via
     #   -r requirements/docs.txt
     #   pydata-sphinx-theme
+cerberus==1.3.5
+    # via
+    #   -r requirements/test.txt
+    #   plette
 certifi==2023.11.17
     # via
     #   -r requirements/docs.txt
@@ -89,6 +97,10 @@ dill==0.3.7
     # via
     #   -r requirements/test.txt
     #   pylint
+distlib==0.3.7
+    # via
+    #   -r requirements/test.txt
+    #   requirementslib
 django==3.2.23
     # via
     #   -c requirements/common_constraints.txt
@@ -118,7 +130,7 @@ django-dynamic-fixture==3.1.3
     #   -r requirements/test.txt
 django-environ==0.11.2
     # via -r requirements/test.txt
-django-filter==23.4
+django-filter==23.5
     # via -r requirements/test.txt
 django-waffle==4.0.0
     # via
@@ -130,6 +142,10 @@ djangorestframework==3.14.0
     #   drf-nested-routers
     #   drf-yasg
     #   edx-api-doc-tools
+docopt==0.6.2
+    # via
+    #   -r requirements/test.txt
+    #   pipreqs
 docutils==0.19
     # via
     #   -r requirements/docs.txt
@@ -182,7 +198,7 @@ iniconfig==2.0.0
     # via
     #   -r requirements/test.txt
     #   pytest
-isort==5.12.0
+isort==5.13.0
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -210,7 +226,7 @@ mypy-extensions==1.0.0
     #   mypy
 mysqlclient==2.2.0
     # via -r requirements/test.txt
-newrelic==9.2.0
+newrelic==9.3.0
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
@@ -231,11 +247,28 @@ pbr==6.0.0
     # via
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==3.11.0
+pep517==0.13.1
     # via
-    #   -c requirements/common_constraints.txt
+    #   -r requirements/test.txt
+    #   requirementslib
+pip-api==0.0.30
+    # via
+    #   -r requirements/test.txt
+    #   isort
+pipreqs==0.4.13
+    # via
+    #   -r requirements/test.txt
+    #   isort
+platformdirs==4.1.0
+    # via
     #   -r requirements/test.txt
     #   pylint
+    #   requirementslib
+plette[validation]==0.4.4
+    # via
+    #   -r requirements/test.txt
+    #   plette
+    #   requirementslib
 pluggy==1.3.0
     # via
     #   -r requirements/test.txt
@@ -251,6 +284,14 @@ pycparser==2.21
     # via
     #   -r requirements/test.txt
     #   cffi
+pydantic==2.5.2
+    # via
+    #   -r requirements/test.txt
+    #   requirementslib
+pydantic-core==2.14.5
+    # via
+    #   -r requirements/test.txt
+    #   pydantic
 pydata-sphinx-theme==0.14.4
     # via
     #   -r requirements/docs.txt
@@ -333,12 +374,18 @@ requests==2.31.0
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests-oauthlib
+    #   requirementslib
     #   social-auth-core
     #   sphinx
+    #   yarg
 requests-oauthlib==1.3.1
     # via
     #   -r requirements/test.txt
     #   social-auth-core
+requirementslib==3.0.0
+    # via
+    #   -r requirements/test.txt
+    #   isort
 six==1.16.0
     # via
     #   -r requirements/test.txt
@@ -414,20 +461,26 @@ tomli==2.0.1
     #   -r requirements/test.txt
     #   coverage
     #   mypy
+    #   pep517
     #   pylint
     #   pytest
 tomlkit==0.12.3
     # via
     #   -r requirements/test.txt
+    #   plette
     #   pylint
-typing-extensions==4.8.0
+    #   requirementslib
+typing-extensions==4.9.0
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
+    #   annotated-types
     #   asgiref
     #   astroid
     #   faker
     #   mypy
+    #   pydantic
+    #   pydantic-core
     #   pydata-sphinx-theme
     #   pylint
 uritemplate==4.1.1
@@ -440,7 +493,15 @@ urllib3==1.26.18
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
     #   requests
+yarg==0.1.9
+    # via
+    #   -r requirements/test.txt
+    #   pipreqs
 zipp==3.17.0
     # via
     #   -r requirements/docs.txt
     #   importlib-metadata
+
+# The following packages are considered to be unsafe in a requirements file:
+# pip
+# setuptools
