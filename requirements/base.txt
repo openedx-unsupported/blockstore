@@ -86,7 +86,7 @@ packaging==23.2
     # via drf-yasg
 pbr==6.0.0
     # via stevedore
-psutil==5.9.6
+psutil==5.9.7
     # via edx-django-utils
 pycparser==2.21
     # via cffi
