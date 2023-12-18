@@ -4,7 +4,7 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: 'Blockstore'
+  name: 'blockstore'
   description: "A system for storing versioned, reusable educational content for Open edX."
   annotations:
     # (Optional) Annotation keys and values can be whatever you want.
