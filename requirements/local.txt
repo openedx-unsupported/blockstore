@@ -66,7 +66,7 @@ code-annotations==1.5.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-coverage[toml]==7.3.3
+coverage[toml]==7.3.4
     # via
     #   -r requirements/test.txt
     #   coverage
@@ -135,7 +135,7 @@ docutils==0.19
     #   -r requirements/docs.txt
     #   pydata-sphinx-theme
     #   sphinx
-drf-nested-routers==0.93.4
+drf-nested-routers==0.93.5
     # via -r requirements/test.txt
 drf-yasg==1.21.7
     # via
@@ -170,7 +170,7 @@ imagesize==1.4.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
-importlib-metadata==7.0.0
+importlib-metadata==7.0.1
     # via
     #   -r requirements/docs.txt
     #   sphinx
@@ -202,7 +202,7 @@ mccabe==0.7.0
     # via
     #   -r requirements/test.txt
     #   pylint
-mypy==1.7.1
+mypy==1.8.0
     # via -r requirements/test.txt
 mypy-extensions==1.0.0
     # via

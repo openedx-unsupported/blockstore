@@ -58,7 +58,7 @@ djangorestframework==3.14.0
     #   drf-nested-routers
     #   drf-yasg
     #   edx-api-doc-tools
-drf-nested-routers==0.93.4
+drf-nested-routers==0.93.5
     # via -r requirements/base.in
 drf-yasg==1.21.7
     # via edx-api-doc-tools
