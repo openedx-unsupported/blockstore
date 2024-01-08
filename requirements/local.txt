@@ -76,7 +76,7 @@ cryptography==41.0.7
     #   -r requirements/test.txt
     #   pyjwt
     #   social-auth-core
-ddt==1.7.0
+ddt==1.7.1
     # via -r requirements/test.txt
 defusedxml==0.8.0rc2
     # via
