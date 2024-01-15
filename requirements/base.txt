@@ -76,7 +76,7 @@ inflection==0.5.1
     # via drf-yasg
 mysqlclient==2.2.1
     # via -r requirements/base.in
-newrelic==9.3.0
+newrelic==9.5.0
     # via edx-django-utils
 oauthlib==3.2.2
     # via

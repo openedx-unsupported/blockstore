@@ -119,7 +119,7 @@ exceptiongroup==1.2.0
     # via pytest
 factory-boy==3.3.0
     # via -r requirements/test.in
-faker==22.0.0
+faker==22.2.0
     # via factory-boy
 idna==3.6
     # via
@@ -133,7 +133,7 @@ iniconfig==2.0.0
     # via pytest
 isort==5.13.2
     # via pylint
-jinja2==3.1.2
+jinja2==3.1.3
     # via
     #   code-annotations
     #   diff-cover
@@ -147,7 +147,7 @@ mypy-extensions==1.0.0
     # via mypy
 mysqlclient==2.2.1
     # via -r requirements/base.txt
-newrelic==9.3.0
+newrelic==9.5.0
     # via
     #   -r requirements/base.txt
     #   edx-django-utils
