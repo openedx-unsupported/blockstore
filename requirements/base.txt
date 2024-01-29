@@ -18,7 +18,7 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via edx-django-utils
-cryptography==41.0.7
+cryptography==42.0.1
     # via
     #   pyjwt
     #   social-auth-core
@@ -76,7 +76,7 @@ inflection==0.5.1
     # via drf-yasg
 mysqlclient==2.2.1
     # via -r requirements/base.in
-newrelic==9.5.0
+newrelic==9.6.0
     # via edx-django-utils
 oauthlib==3.2.2
     # via
@@ -120,7 +120,7 @@ six==1.16.0
     #   edx-django-release-util
 social-auth-app-django==5.4.0
     # via edx-auth-backends
-social-auth-core==4.5.1
+social-auth-core==4.5.2
     # via
     #   edx-auth-backends
     #   social-auth-app-django
