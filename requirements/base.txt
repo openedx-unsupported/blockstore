@@ -8,7 +8,7 @@ asgiref==3.7.2
     # via django
 attrs==23.2.0
     # via -r requirements/base.in
-certifi==2023.11.17
+certifi==2024.2.2
     # via requests
 cffi==1.16.0
     # via
@@ -18,7 +18,7 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via edx-django-utils
-cryptography==42.0.1
+cryptography==42.0.2
     # via
     #   pyjwt
     #   social-auth-core
@@ -74,7 +74,7 @@ idna==3.6
     # via requests
 inflection==0.5.1
     # via drf-yasg
-mysqlclient==2.2.1
+mysqlclient==2.2.3
     # via -r requirements/base.in
 newrelic==9.6.0
     # via edx-django-utils
@@ -99,7 +99,7 @@ pynacl==1.5.0
     # via edx-django-utils
 python3-openid==3.2.0
     # via social-auth-core
-pytz==2023.3.post1
+pytz==2024.1
     # via
     #   django
     #   djangorestframework

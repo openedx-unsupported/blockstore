@@ -16,7 +16,7 @@ asgiref==3.7.2
     # via
     #   -r requirements/test.txt
     #   django
-astroid==3.0.2
+astroid==3.0.3
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -32,7 +32,7 @@ beautifulsoup4==4.12.3
     # via
     #   -r requirements/docs.txt
     #   pydata-sphinx-theme
-certifi==2023.11.17
+certifi==2024.2.2
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -62,7 +62,7 @@ click-log==0.4.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-code-annotations==1.5.0
+code-annotations==1.6.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
@@ -71,7 +71,7 @@ coverage[toml]==7.4.1
     #   -r requirements/test.txt
     #   coverage
     #   pytest-cov
-cryptography==42.0.1
+cryptography==42.0.2
     # via
     #   -r requirements/test.txt
     #   pyjwt
@@ -110,7 +110,7 @@ django-crum==0.7.9
     # via
     #   -r requirements/test.txt
     #   edx-django-utils
-django-debug-toolbar==4.2.0
+django-debug-toolbar==4.3.0
     # via -r requirements/local.in
 django-dynamic-fixture==3.1.3
     # via
@@ -157,7 +157,7 @@ exceptiongroup==1.2.0
     #   pytest
 factory-boy==3.3.0
     # via -r requirements/test.txt
-faker==22.5.1
+faker==22.6.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -193,7 +193,7 @@ jinja2==3.1.3
     #   code-annotations
     #   diff-cover
     #   sphinx
-markupsafe==2.1.4
+markupsafe==2.1.5
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
@@ -208,7 +208,7 @@ mypy-extensions==1.0.0
     # via
     #   -r requirements/test.txt
     #   mypy
-mysqlclient==2.2.1
+mysqlclient==2.2.3
     # via -r requirements/test.txt
 newrelic==9.6.0
     # via
@@ -231,7 +231,7 @@ pbr==6.0.0
     # via
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==4.1.0
+platformdirs==4.2.0
     # via
     #   -r requirements/test.txt
     #   pylint
@@ -299,13 +299,13 @@ pytest==8.0.0
     #   pytest-django
 pytest-cov==4.1.0
     # via -r requirements/test.txt
-pytest-django==4.7.0
+pytest-django==4.8.0
     # via -r requirements/test.txt
 python-dateutil==2.8.2
     # via
     #   -r requirements/test.txt
     #   faker
-python-slugify==8.0.2
+python-slugify==8.0.3
     # via
     #   -r requirements/test.txt
     #   code-annotations
@@ -313,7 +313,7 @@ python3-openid==3.2.0
     # via
     #   -r requirements/test.txt
     #   social-auth-core
-pytz==2023.3.post1
+pytz==2024.1
     # via
     #   -r requirements/docs.txt
     #   -r requirements/test.txt
