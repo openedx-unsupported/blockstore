@@ -61,7 +61,7 @@ diff-cover==8.0.3
     # via -r requirements/test.in
 dill==0.3.8
     # via pylint
-django==3.2.23
+django==3.2.24
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -119,7 +119,7 @@ exceptiongroup==1.2.0
     # via pytest
 factory-boy==3.3.0
     # via -r requirements/test.in
-faker==22.6.0
+faker==23.1.0
     # via factory-boy
 idna==3.6
     # via
@@ -145,7 +145,7 @@ mypy==1.8.0
     # via -r requirements/test.in
 mypy-extensions==1.0.0
     # via mypy
-mysqlclient==2.2.3
+mysqlclient==2.2.4
     # via -r requirements/base.txt
 newrelic==9.6.0
     # via
@@ -218,7 +218,7 @@ pytest-django==4.8.0
     # via -r requirements/test.in
 python-dateutil==2.8.2
     # via faker
-python-slugify==8.0.3
+python-slugify==8.0.4
     # via code-annotations
 python3-openid==3.2.0
     # via

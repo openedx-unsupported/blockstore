@@ -89,7 +89,7 @@ dill==0.3.8
     # via
     #   -r requirements/test.txt
     #   pylint
-django==3.2.23
+django==3.2.24
     # via
     #   -c requirements/common_constraints.txt
     #   -c requirements/constraints.txt
@@ -157,7 +157,7 @@ exceptiongroup==1.2.0
     #   pytest
 factory-boy==3.3.0
     # via -r requirements/test.txt
-faker==22.6.0
+faker==23.1.0
     # via
     #   -r requirements/test.txt
     #   factory-boy
@@ -208,7 +208,7 @@ mypy-extensions==1.0.0
     # via
     #   -r requirements/test.txt
     #   mypy
-mysqlclient==2.2.3
+mysqlclient==2.2.4
     # via -r requirements/test.txt
 newrelic==9.6.0
     # via
@@ -305,7 +305,7 @@ python-dateutil==2.8.2
     # via
     #   -r requirements/test.txt
     #   faker
-python-slugify==8.0.3
+python-slugify==8.0.4
     # via
     #   -r requirements/test.txt
     #   code-annotations
