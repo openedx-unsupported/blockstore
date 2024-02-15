@@ -1,11 +1,11 @@
 name: Publish package to PyPI
 
 on:
-  release:
-    types: [published]
+  push:
+    tags: 
+      - '*'
 
 jobs:
-
   push:
     runs-on: ubuntu-20.04
 
@@ -13,20 +13,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: setup python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
       - name: Install pip
-        run: pip install pip
-
-      - name: Install Dependencies
-        run: pip install setuptools wheel
+        run: pip install -r requirements/pip.txt
 
       - name: Build package
         run: python setup.py sdist bdist_wheel
 
-      - name: Publish to PyPi
+      - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
