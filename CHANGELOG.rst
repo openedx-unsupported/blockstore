@@ -9,10 +9,15 @@ Change Log
 
    This project adheres to Semantic Versioning (https://semver.org/).
 
-.. There should always be an "Unreleased" section for changes pending release.
+[1.4.1] - 2024-02-15
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Unreleased
-~~~~~~~~~~
+This package is now `DEPRECATED <https://github.com/openedx/blockstore/issues/314>`_!
+This is the final release.
+Please use `Learing Core <https://github.com/openedx/openedx-learning/>` instead.
+
+Changed
+_______
 
 * Removed custom datetime parser in favor of ``datetime.fromisoformat`` which is more robust.
 
