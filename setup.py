@@ -78,7 +78,7 @@ setup(
     zip_safe=False,
     keywords='Python edx',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 7 - Inactive',
         'Framework :: Django',
         'Framework :: Django :: 3.2',
         'Intended Audience :: Developers',

@@ -2,7 +2,18 @@
 Blockstore
 ==========
 
-|status-badge| |license-badge| |ci-badge|
+----------
+⚠️ NOTICE ⚠️
+----------
+
+Blockstore has been `deprecated <https://github.com/openedx/blockstore/issues/314>`_.
+It will no longer receive maintenance, bugfixes, PRs, requests, or security patches.
+
+Please check out the
+`Learning Core <https://github.com/openedx/openedx-learning/>`_ project instead,
+which continues the goals of Blockstore.
+
+|license-badge| |ci-badge|
 
 -------
 Purpose
@@ -266,9 +277,6 @@ Please do not report security issues in public. Please email security@openedx.or
 .. |ci-badge| image:: https://github.com/openedx/blockstore/workflows/CI/badge.svg?branch=master
     :target: https://github.com/openedx/blockstore/actions
     :alt: Test suite status
-
-.. |status-badge| image:: https://img.shields.io/badge/Status-Maintained-brightgreen
-    :alt: Maintained
 
 .. |license-badge| image:: https://img.shields.io/github/license/openedx/blockstore.svg
     :target: https://github.com/openedx/blockstore/blob/master/LICENSE
